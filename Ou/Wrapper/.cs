@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class R1 : UnitBase {
-    public System.Int32 RR;
-public System.String ccs;
+public class RRR : UnitBase {
+    public System.String fg;
 //OuTian
 }

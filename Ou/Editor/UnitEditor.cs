@@ -191,17 +191,7 @@ public class UnitEditor : EditorWindow {
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label(Fields[j].Name);
-            switch (Fields[j].FieldType.ToString())
-            {
-                case "System.Int32":
-                    Fields[j].SetValue(CurrentUnit, EditorGUILayout.IntField((int)Fields[j].GetValue(CurrentUnit)));
-                    break;
-                case "System.String":
-                    Fields[j].SetValue(CurrentUnit, EditorGUILayout.TextField(Fields[j].GetValue(CurrentUnit) != null ? Fields[j].GetValue(CurrentUnit).ToString() : ""));
-                    break;
-                default:
-                    break;
-            }
+            WriteFieldByString(Fields[j], CurrentUnit);
             GUILayout.EndHorizontal();
         }
         GUILayout.EndVertical();
@@ -217,17 +207,7 @@ public class UnitEditor : EditorWindow {
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label(Fields[j].Name);
-            switch (Fields[j].FieldType.ToString())
-            {
-                case "System.Int32":
-                    Fields[j].SetValue(SelectedUnit, EditorGUILayout.IntField((int)Fields[j].GetValue(SelectedUnit)));
-                    break;
-                case "System.String":
-                    Fields[j].SetValue(SelectedUnit, EditorGUILayout.TextField(Fields[j].GetValue(SelectedUnit) != null ? Fields[j].GetValue(SelectedUnit).ToString() : ""));
-                    break;
-                default:
-                    break;
-            }
+            WriteFieldByString(Fields[j], SelectedUnit);
             GUILayout.EndHorizontal();
         }
         GUILayout.EndVertical();
@@ -275,7 +255,7 @@ public class UnitEditor : EditorWindow {
     }
     string fieldsName = "";
     int fieldType;
-    string[] fieldsType = { "真值型", "字符串型" };
+    string[] fieldsType = { "真值型", "字符串型","实值型" };
     string metaInsert = "";
     List<UnitBase> Temp = new List<UnitBase>();
     int TempIndex = 0;
@@ -292,17 +272,7 @@ public class UnitEditor : EditorWindow {
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(Fields[j].Name);
-                switch (Fields[j].FieldType.ToString())
-                {
-                    case "System.Int32":
-                        GUILayout.Label("真值型");
-                        break;
-                    case "System.String":
-                        GUILayout.Label("字符串型");
-                        break;
-                    default:
-                        break;
-                }
+                GUILayout.Label(fieldsType[StringMetaToINT(Fields[j].FieldType.ToString())] );
                 GUILayout.EndHorizontal();
             }
             GUILayout.Label("添加："); 
@@ -352,8 +322,42 @@ public class UnitEditor : EditorWindow {
                 return "System.Int32";
             case 1:
                 return "System.String";
+            case 2:
+                return "System.Single";
             default:
                 return "";
+        }
+    }
+    int StringMetaToINT(string type)
+    {
+        switch (type)
+        {
+            case "System.Int32":
+                return 0;
+            case "System.String":
+                return 1;
+            case "System.Single":
+                return 2;
+            default:
+                return -1;
+        }
+    }
+    void WriteFieldByString(FieldInfo f, UnitBase t)
+    {
+        switch (StringMetaToINT(f.FieldType.ToString()))
+        {
+            case 0:
+                f.SetValue(t, EditorGUILayout.IntField((int)f.GetValue(t)));
+                break;
+            case 1:
+                f.SetValue(t, EditorGUILayout.TextField(f.GetValue(t) != null ? f.GetValue(t).ToString() : ""));
+                break;
+            case 2:
+                f.SetValue(t, EditorGUILayout.FloatField((float)f.GetValue(t)));
+                break;
+            default:
+                Debug.Log("Warnning!"+f.GetType().ToString());
+                break;
         }
     }
 }
