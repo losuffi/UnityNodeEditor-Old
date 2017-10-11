@@ -1,4 +1,5 @@
 ﻿using System;
+using Ou.Support.Node;
 using UnityEditor;
 using UnityEngine;
 
@@ -46,7 +47,15 @@ namespace Ou.Editor.Views
                               size.width*percentageSize.width,
                               size.height*percentageSize.height);
         }
-
+        public virtual void UpdateView(Rect size, Rect percentageSize, Event e,NodeGraph currentNode)
+        {
+            if (ViewSkin == null)
+                GetGUISkin();
+            ViewRect = new Rect(size.x * percentageSize.x,
+                size.y * percentageSize.y,
+                size.width * percentageSize.width,
+                size.height * percentageSize.height);
+        }
         public virtual void ProcessEvent(Event e)
         {
             

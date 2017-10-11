@@ -12,5 +12,11 @@ namespace Ou.Editor
         {
             UnitEditorWindows.Init();
         }
+
+        [MenuItem("Ou/TriggerEditor")]
+        static void TriggerEditor()
+        {
+            TriggerEditorWindows.Init();
+        }
     }
 }
