@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 [System.Serializable]
-public class UnitBase {
+public class UnitBase:ScriptableObject{
     public int ID;
     public string Name;
     public void Clone(UnitBase copier)
