@@ -1,5 +1,7 @@
 ﻿using System;
 using Ou.Editor.Views;
+using Ou.Support.Node;
+using Ou.Support.OuUtility;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,6 +16,8 @@ namespace Ou.Editor.Windows
         public TriggerEditorToolBarView ToolBarView;
 
         private bool IsPaintDone;
+        private NodeGraph nodeGraph;
+        private NodeEditorState nodeEditorState;
         public static void Init()
         {
             Instance = GetWindow<TriggerEditorWindows>();
@@ -25,6 +29,9 @@ namespace Ou.Editor.Windows
         private void OnEnable()
         {
             IsPaintDone = false;
+            nodeGraph=new NodeGraph();
+            nodeEditorState=new NodeEditorState();
+            TriggerEditorUtility.Init();
         }
         private void OnGUI()
         {
@@ -45,6 +52,7 @@ namespace Ou.Editor.Windows
                 ToolBarView.UpdateView(position,
                     new Rect(0, 0, 1, 0.099f),
                     e);
+                NodeEditor.DrawCanvas(nodeGraph, nodeEditorState);
                 if (!IsPaintDone && e.type == EventType.Layout)
                 {
                     IsPaintDone = true;
