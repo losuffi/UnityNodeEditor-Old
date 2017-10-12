@@ -1,4 +1,5 @@
 ﻿
+using Ou.Support.Node;
 using UnityEngine;
 
 namespace Ou.Editor.Views
@@ -22,7 +23,14 @@ namespace Ou.Editor.Views
             GUI.Box(ViewRect, Title,ViewSkin.GetStyle("TriggerEditorToolBar"));
             GUILayout.BeginArea(ViewRect);
             {
-                //TODO:ContexView
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Clear", GUILayout.Width(ViewRect.height), GUILayout.Height(ViewRect.height)))
+                {
+                    //TODO:Clear Node
+                    NodeEditor.Clear();
+                }
+
+                GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
         }

@@ -18,5 +18,10 @@ namespace Ou.Support.Node
                 curNodeGraph.nodes[nodeCnt].Draw();
             }
         }
+
+        public static void Clear()
+        {
+            curNodeGraph.Clear();
+        }
     }
 }

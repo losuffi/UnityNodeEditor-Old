@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Ou.Support.Node
@@ -8,5 +9,10 @@ namespace Ou.Support.Node
         //TODO:NodeCanvas Configue
         public List<Node> nodes=new List<Node>();
 
+        public void Clear()
+        {
+            if(nodes.Any())
+                nodes.Clear();
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace Ou.Editor.Views
                         GUILayout.Space(10);
                         if (GUI.Button(GUILayoutUtility.GetRect(180, 30), "生成"))
                         {
-                            string Tempelte = File.ReadAllText(RootPath + @"Support/UnitPerson.cs");
+                            string Tempelte = File.ReadAllText(RootPath + @"Support/Unit/UnitPerson.cs");
                             Tempelte = Regex.Replace(Tempelte, @"UnitPerson", ClassName);
                             File.WriteAllText(RootPath + @"Wrapper/" + ClassName + ".cs", Tempelte);
                             UnitEditorWindows.Instance.ClassView.CurrentIndex  = -1;
