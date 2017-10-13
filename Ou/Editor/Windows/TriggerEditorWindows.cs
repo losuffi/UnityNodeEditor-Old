@@ -16,8 +16,6 @@ namespace Ou.Editor.Windows
         public TriggerEditorToolBarView ToolBarView;
 
         private bool IsPaintDone;
-        private NodeGraph nodeGraph;
-        private NodeEditorState nodeEditorState;
         public static void Init()
         {
             Instance = GetWindow<TriggerEditorWindows>();
@@ -29,8 +27,6 @@ namespace Ou.Editor.Windows
         private void OnEnable()
         {
             IsPaintDone = false;
-            nodeGraph=new NodeGraph();
-            nodeEditorState=new NodeEditorState();
             TriggerEditorUtility.Init();
         }
         private void OnGUI()
@@ -43,16 +39,8 @@ namespace Ou.Editor.Windows
             {
                 if(e.type==EventType.Repaint&&!IsPaintDone)
                     return;
-                AdjustView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                    new Rect(0, 0.1f, 0.2f, 0.901f),
-                    e);
-                CanvasView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                    new Rect(0.201f, 0.1f, 0.799f, 0.901f),
-                    e);
-                ToolBarView.UpdateView(position,
-                    new Rect(0, 0, 1, 0.099f),
-                    e);
-                NodeEditor.DrawCanvas(nodeGraph, nodeEditorState);
+                //Draw SubWindows
+                DrawViews(e);
                 if (!IsPaintDone && e.type == EventType.Layout)
                 {
                     IsPaintDone = true;
@@ -61,6 +49,18 @@ namespace Ou.Editor.Windows
            Repaint();
         }
 
+        private void DrawViews(Event e)
+        {
+            AdjustView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
+                new Rect(0, 0.1f, 0.2f, 0.901f),
+                e);
+            CanvasView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
+                new Rect(0.201f, 0.1f, 0.799f, 0.901f),
+                e);
+            ToolBarView.UpdateView(position,
+                new Rect(0, 0, 1, 0.099f),
+                e);
+        }
         bool CheckView()
         {
             if (Instance == null)

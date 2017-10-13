@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Ou.Support.Node
 {
@@ -9,6 +10,7 @@ namespace Ou.Support.Node
     {
         public static NodeGraph curNodeGraph;
         public static NodeEditorState curNodeEditorState;
+        public static NodeInputInfo CurNodeInputInfo;
         public static void DrawCanvas(NodeGraph nodeGraph,NodeEditorState nodeEditorState)
         {
             curNodeGraph = nodeGraph;
@@ -17,6 +19,12 @@ namespace Ou.Support.Node
             {
                 curNodeGraph.nodes[nodeCnt].Draw();
             }
+
+            if (CurNodeInputInfo == null)
+            {
+                CurNodeInputInfo = new NodeInputInfo("test", curNodeEditorState);
+            }
+            NodeInputSystem.DynamicInvoke(CurNodeInputInfo);
         }
 
         public static void Clear()

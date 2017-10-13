@@ -14,5 +14,17 @@ namespace Ou.Support.Node
             if(nodes.Any())
                 nodes.Clear();
         }
+
+        public Node CheckFocus(Vector2 pos)
+        {
+            for (int i = nodes.Count - 1; i >= 0; i--)
+            {
+                if (nodes[i].nodeRect.Contains(pos))
+                {
+                    return nodes[i];
+                }
+            }
+            return null;
+        }
     }
 }

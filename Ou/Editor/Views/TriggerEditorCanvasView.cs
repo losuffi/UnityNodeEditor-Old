@@ -8,8 +8,15 @@ namespace Ou.Editor.Views
     {
         private GenericMenu menu;
         private Event processE;
+
+        private NodeGraph nodeGraph;
+        private NodeEditorState nodeEditorState;
+
         public TriggerEditorCanvasView(string title) : base(title)
         {
+            nodeGraph = ScriptableObject.CreateInstance<NodeGraph>();
+            nodeEditorState = ScriptableObject.CreateInstance<NodeEditorState>();
+            nodeEditorState.CurGraph = nodeGraph;
             menu = new GenericMenu();
             foreach (Node node in NodeTypes.nodes.Keys)
             {
@@ -29,11 +36,22 @@ namespace Ou.Editor.Views
             GUI.Box(ViewRect, Title, ViewSkin.GetStyle("TriggerEditorCanvas"));
             GUILayout.BeginArea(ViewRect);
             {
-                //TODO:ContexView
+
+                //TODO:Convert to Input System 
+                nodeEditorState.CurGraphRect = ViewRect;
                 if (e.button == 1 && e.type == EventType.mouseDown)
                 {
                     menu.ShowAsContext();
                 }
+                //Draw NodeCanvas
+                NodeEditor.DrawCanvas(nodeGraph, nodeEditorState);
+                //if (e.button == 0 && e.type == EventType.MouseDrag)
+                //{
+                //    if (NodeEditor.curNodeEditorState != null)
+                //    {
+                //        NodeEditor.curNodeEditorState.UpdateData(e);
+                //    }
+                //}
             }
             GUILayout.EndArea();
         }
@@ -41,11 +59,11 @@ namespace Ou.Editor.Views
         void CallBack(object obj)
         {
             Node node = obj as Node;
-            if (NodeEditor.curNodeGraph != null)
+            if (nodeGraph != null)
             {
-                NodeEditor.curNodeGraph.nodes.Add(Node.CreateNode(processE.mousePosition, node.GetId));
+                Vector2 pos = processE.mousePosition - ViewRect.position;
+                nodeGraph.nodes.Add(Node.CreateNode(pos, node.GetId));
             }
-            //Node.CreateNode(e.mousePosition, "TestNode");
         }
     }
 }

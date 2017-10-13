@@ -9,6 +9,7 @@ namespace Ou.Support.Node
         protected GUISkin NodeSkin;
         public string Title;
         public Rect rect=new Rect();
+        public Rect nodeRect;
         public EditorWindow editorwindow;
         protected abstract void Evaluator();
         public virtual void Init()
@@ -23,24 +24,29 @@ namespace Ou.Support.Node
             {
                 Debug.Log("node editor running is warning!");
             }
-            node = node.Create(pos);
+            node = node.Create(pos - NodeEditor.curNodeEditorState.PanOffset);
             node.Init();
             return node;
         }
         protected internal virtual void Draw()
         {
             //TODO:DrawNode
-            Rect nodeRect = rect;
+            nodeRect = rect;
             //nodeRect.position = NodeEditor.curNodeEditorState.PanAdjust + NodeEditor.curNodeEditorState.PanOffset;
-            //nodeRect.position = new Vector2(0, 0);
+            nodeRect.position += NodeEditor.curNodeEditorState.PanOffset;
             Vector2 contentOffset = new Vector2(0, 20);
             Rect nodeHead = new Rect(nodeRect.x, nodeRect.y, nodeRect.width, contentOffset.y);
             Rect nodeBody = new Rect(nodeRect.x, nodeRect.y + contentOffset.y, nodeRect.width,
                 nodeRect.height - contentOffset.y);
-            GUI.Label(nodeHead, Title, NodeSkin.GetStyle("nodeHead"));
+            GUI.Label(nodeHead, Title,
+                NodeEditor.curNodeEditorState.SelectedNode == this
+                    ? NodeSkin.GetStyle("nodeHeadSelected")
+                    : NodeSkin.GetStyle("nodeHead"));
             GUI.BeginGroup(nodeBody);
             nodeBody.position = Vector2.zero;
-            GUILayout.BeginArea(nodeBody, NodeSkin.GetStyle("nodeBody"));
+            GUILayout.BeginArea(nodeBody, NodeEditor.curNodeEditorState.SelectedNode == this
+                ? NodeSkin.GetStyle("nodeBodySelected")
+                : NodeSkin.GetStyle("nodeBody"));
             NodeGUI();
             GUILayout.EndArea();
             GUI.EndGroup();

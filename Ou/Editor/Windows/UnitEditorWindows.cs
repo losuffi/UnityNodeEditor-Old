@@ -16,7 +16,6 @@ namespace Ou.Editor.Windows
 
         public  UnitPool unitPool;
         public bool IsInit;
-        private bool LayoutisDone;
         public UnitBase SelectedUnit;
         public static void Init()
         {
@@ -26,7 +25,6 @@ namespace Ou.Editor.Windows
 
         void OnEnable()
         {
-            LayoutisDone = false;
             SelectedUnit = null;
             unitPool = AssetDatabase.LoadAssetAtPath<UnitPool>(@"Assets/Ou/Property/Unit.asset");
             IsInit = unitPool != null;

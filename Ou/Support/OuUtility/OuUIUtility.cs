@@ -21,6 +21,7 @@ namespace Ou.Support.OuUtility
         public static void Init()
         {
             NodeTypes.FetchNode();
+            NodeInputSystem.Fetch();
         }
     }
 }
