@@ -43,10 +43,12 @@ namespace Ou.Editor.Views
                     //CurrentUnit = Assembly.Load("Assembly-CSharp").CreateInstance(UnitEditorWindows.Instance.unitPool.Pool[UnitEditorWindows.Instance.ClassView.CurrentIndex].Name) as UnitBase;
                     UnitEditorWindows.Instance.unitPool.Pool[UnitEditorWindows.Instance.ClassView.CurrentIndex].datas.Add(CurrentUnit);
                     UnitEditorWindows.Instance.SelectedUnit = CurrentUnit;
-                    AssetDatabase.CreateAsset(CurrentUnit,
-                        @"Assets/Ou/Property/" +
-                        UnitEditorWindows.Instance.unitPool.Pool[UnitEditorWindows.Instance.ClassView.CurrentIndex]
-                            .Name + UnitEditorWindows.Instance.unitPool.Pool[UnitEditorWindows.Instance.ClassView.CurrentIndex].datas.Count + ".asset");
+                    AssetDatabase.AddObjectToAsset(CurrentUnit,
+                        UnitEditorWindows.Instance.unitPool.Pool[UnitEditorWindows.Instance.ClassView.CurrentIndex]);
+                    //AssetDatabase.CreateAsset(CurrentUnit,
+                    //    @"Assets/Ou/Property/" +
+                    //    UnitEditorWindows.Instance.unitPool.Pool[UnitEditorWindows.Instance.ClassView.CurrentIndex]
+                    //        .Name + UnitEditorWindows.Instance.unitPool.Pool[UnitEditorWindows.Instance.ClassView.CurrentIndex].datas.Count + ".asset");
                     UnitEditorWindows.Instance.FieldsView.fieldViewType =
                         UnitEditorFieldsView.FieldViewType.UpdateUnit;
                 }
@@ -55,14 +57,6 @@ namespace Ou.Editor.Views
                     if (UnitEditorWindows.Instance.IsInit)
                     {
                         EditorUtility.SetDirty(UnitEditorWindows.Instance.unitPool);
-                        foreach (var pool in UnitEditorWindows.Instance.unitPool.Pool)
-                        {
-                            foreach (var unit in pool.datas)
-                            {
-                                EditorUtility.SetDirty(unit);
-                            }
-                            //EditorUtility.SetDirty(pool);
-                        }
                         AssetDatabase.SaveAssets();
                     }
                     else

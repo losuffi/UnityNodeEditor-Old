@@ -1,4 +1,6 @@
 ﻿
+using Ou.Support.Node;
+using UnityEditor;
 using UnityEngine;
 
 namespace Ou.Editor.Views
@@ -22,7 +24,7 @@ namespace Ou.Editor.Views
             GUI.Box(ViewRect, Title, ViewSkin.GetStyle("TriggerEditorAdjust"));
             GUILayout.BeginArea(ViewRect);
             {
-                //TODO:ContexView
+                NodeAdjust.Draw(ViewSkin);
             }
             GUILayout.EndArea();
         }

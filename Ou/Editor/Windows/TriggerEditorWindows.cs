@@ -51,11 +51,11 @@ namespace Ou.Editor.Windows
 
         private void DrawViews(Event e)
         {
-            AdjustView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                new Rect(0, 0.1f, 0.2f, 0.901f),
-                e);
             CanvasView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
                 new Rect(0.201f, 0.1f, 0.799f, 0.901f),
+                e);
+            AdjustView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
+                new Rect(0, 0.1f, 0.2f, 0.901f),
                 e);
             ToolBarView.UpdateView(position,
                 new Rect(0, 0, 1, 0.099f),
@@ -68,13 +68,13 @@ namespace Ou.Editor.Windows
                 Init();
                 return false;
             }
+            if (CanvasView == null)
+            {
+                CanvasView = new TriggerEditorCanvasView("Canvas");
+            }
             if (AdjustView == null)
             {
                 AdjustView=new TriggerEditorAdjustView("Adjust");
-            }
-            if (CanvasView == null)
-            {
-                CanvasView=new TriggerEditorCanvasView("Canvas");
             }
             if (ToolBarView == null)
             {

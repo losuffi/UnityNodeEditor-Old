@@ -14,9 +14,7 @@ namespace Ou.Editor.Views
 
         public TriggerEditorCanvasView(string title) : base(title)
         {
-            nodeGraph = ScriptableObject.CreateInstance<NodeGraph>();
-            nodeEditorState = ScriptableObject.CreateInstance<NodeEditorState>();
-            nodeEditorState.CurGraph = nodeGraph;
+            NodeEditor.InitAssetData(out nodeEditorState, out nodeGraph);
             menu = new GenericMenu();
             foreach (Node node in NodeTypes.nodes.Keys)
             {
@@ -36,22 +34,12 @@ namespace Ou.Editor.Views
             GUI.Box(ViewRect, Title, ViewSkin.GetStyle("TriggerEditorCanvas"));
             GUILayout.BeginArea(ViewRect);
             {
-
-                //TODO:Convert to Input System 
                 nodeEditorState.CurGraphRect = ViewRect;
                 if (e.button == 1 && e.type == EventType.mouseDown)
                 {
                     menu.ShowAsContext();
                 }
-                //Draw NodeCanvas
                 NodeEditor.DrawCanvas(nodeGraph, nodeEditorState);
-                //if (e.button == 0 && e.type == EventType.MouseDrag)
-                //{
-                //    if (NodeEditor.curNodeEditorState != null)
-                //    {
-                //        NodeEditor.curNodeEditorState.UpdateData(e);
-                //    }
-                //}
             }
             GUILayout.EndArea();
         }
@@ -62,7 +50,7 @@ namespace Ou.Editor.Views
             if (nodeGraph != null)
             {
                 Vector2 pos = processE.mousePosition - ViewRect.position;
-                nodeGraph.nodes.Add(Node.CreateNode(pos, node.GetId));
+                nodeGraph.AddNode(node, pos);
             }
         }
     }

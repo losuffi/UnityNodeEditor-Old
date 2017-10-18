@@ -52,13 +52,15 @@ namespace Ou.Editor.Views
                             Tempelte = Regex.Replace(Tempelte, @"UnitPerson", ClassName);
                             File.WriteAllText(RootPath + @"Wrapper/" + ClassName + ".cs", Tempelte);
                             UnitEditorWindows.Instance.ClassView.CurrentIndex  = -1;
-                            var tar = new Pool(ClassName);
-                            UnitEditorWindows.Instance.unitPool.Pool.Add(tar);
                             if (!UnitEditorWindows.Instance.IsInit)
                             {
                                 UnitEditorWindows.Instance.IsInit = true;
                                 AssetDatabase.CreateAsset(UnitEditorWindows.Instance.unitPool, @"Assets/Ou/Property/Unit.asset");
                             }
+                            var tar = ScriptableObject.CreateInstance<Pool>();
+                            tar.Name = ClassName;
+                            UnitEditorWindows.Instance.unitPool.Pool.Add(tar);
+                            AssetDatabase.AddObjectToAsset(tar, UnitEditorWindows.Instance.unitPool);
                             Start = true;
                         }
                         GUILayout.Space(20);
@@ -106,7 +108,6 @@ namespace Ou.Editor.Views
                                 Start = true;
                                 string Tempelte = File.ReadAllText(RootPath + @"Wrapper/" + TargetName + ".cs");
                                 Tempelte = Regex.Replace(Tempelte, @"//OuTian", metaInsert + @"//OuTian");
-                                Debug.Log(Tempelte);
                                 File.WriteAllText(RootPath + @"Wrapper/" + TargetName + ".cs", Tempelte);
                             }
                             if (Start)

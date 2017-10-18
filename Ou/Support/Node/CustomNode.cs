@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Ou.Support.Node
 {
-    [Node(false,"TestNode")]
+    [Node(false,"TestNode", EditorType.Tree)]
     public class CustomNode:Node
     {
         protected override void Evaluator()
@@ -23,6 +23,8 @@ namespace Ou.Support.Node
 
             node.Title = "Test!";
             node.rect = new Rect(pos, new Vector2(100, 80));
+            node.CreateNodeInput("Input 1", "Float");
+            node.CreateNodeOutput("Output 1", "Float");
             return node;
         }
 

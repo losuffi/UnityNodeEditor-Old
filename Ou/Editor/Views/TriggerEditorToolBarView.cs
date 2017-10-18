@@ -1,4 +1,5 @@
 ﻿
+using Assets.Ou.Support.Node;
 using Ou.Support.Node;
 using UnityEngine;
 
@@ -24,12 +25,7 @@ namespace Ou.Editor.Views
             GUILayout.BeginArea(ViewRect);
             {
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Clear", GUILayout.Width(ViewRect.height), GUILayout.Height(ViewRect.height)))
-                {
-                    //TODO:Clear Node
-                    NodeEditor.Clear();
-                }
-
+                NodeToolBar.DrawToolBar(ViewRect);
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
