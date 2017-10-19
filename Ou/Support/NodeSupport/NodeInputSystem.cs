@@ -44,6 +44,10 @@ namespace Ou.Support.Node
 
         internal static void DynamicInvoke(NodeInputInfo inputInfo)
         {
+            if (_eventHandles == null)
+            {
+                return;
+            }
             foreach (var keyValuePair in _eventHandles)
             {
                 if (keyValuePair.Key.eventType == inputInfo.InputEvent.type)

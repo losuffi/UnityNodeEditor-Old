@@ -6,11 +6,12 @@ using UnityEngine;
 
 namespace Ou.Support.Node
 {
-    [Node(false,"TestNode", EditorType.Tree)]
-    public class CustomNode:Node
+    [Node(false, "树型|自定义|日志打印")]
+    public class TreelogNode:Node
     {
-        protected override void Evaluator()
+        protected internal override void Evaluator()
         {
+            Debug.Log(this.inputKnobs[0].GetValue<object>().ToString());
         }
 
         protected internal override void NodeGUI()
@@ -19,16 +20,15 @@ namespace Ou.Support.Node
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<CustomNode>();
+            Node node = CreateInstance<TreelogNode>();
 
-            node.Title = "Test!";
+            node.Title = "打印";
             node.rect = new Rect(pos, new Vector2(100, 80));
-            node.CreateNodeInput("Input 1", "Float");
-            node.CreateNodeOutput("Output 1", "Float");
+            node.CreateNodeInput("Input 1", "Object");
             return node;
         }
 
-        private const string nodeId = "TestNode";
+        private const string nodeId = "日志打印";
         public override string GetId { get { return nodeId; } }
     }
 }

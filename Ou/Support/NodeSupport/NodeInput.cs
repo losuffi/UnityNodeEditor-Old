@@ -27,5 +27,18 @@ namespace Ou.Support.Node
             if(connection!=null)
                 OuUIUtility.DrawLine(connection.rect.center, this.rect.center);
         }
+
+        public T GetValue<T>()
+        {
+            return connection != null ? connection.GetValue<T>() : NodeOutput.GetDefault<T>();
+        }
+
+        public void SetValue<T>(T obj)
+        {
+            if (connection != null)
+            {
+                connection.SetValue<T>(obj);
+            }
+        }
     }
 }

@@ -105,6 +105,7 @@ namespace Ou.Support.OuUtility
         {
             NodeTypes.FetchNode();
             NodeInputSystem.Fetch();
+            ConnectionType.Fetch();
         }
     }
 }

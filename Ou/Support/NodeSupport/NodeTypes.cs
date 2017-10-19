@@ -10,8 +10,8 @@ namespace Ou.Support.Node
 {
     public static class NodeTypes
     {
+        #region NodeType
         public static Dictionary<Node, NodeData> nodes;
-        public static Dictionary<EditorType?, GenericMenu> menus;
         public static Node getDefaultNode(string nodeName)
         {
             return nodes.Keys.Single(ar => ar.GetId == nodeName);
@@ -19,7 +19,6 @@ namespace Ou.Support.Node
         public static void FetchNode()
         {
             nodes=new Dictionary<Node, NodeData>();
-            menus=new Dictionary<EditorType?, GenericMenu>();
             IEnumerable<Assembly> scriptAssemblies =
                 AppDomain.CurrentDomain.GetAssemblies().Where(ar=>ar.FullName.Contains("Assembly-"));
             foreach (var assembly in scriptAssemblies)
@@ -31,50 +30,39 @@ namespace Ou.Support.Node
                     NodeAttribute attr=attrs[0] as NodeAttribute;
                     if (attr == null||!attr.IsHide)
                     {
-                        //if (menus.ContainsKey(attr.Type))
-                        //{
-                        //    menus[attr.Type].AddItem(new GUIContent(NodeTypes.nodes[node].Adress), false, CallBack,
-                        //        node);
-                        //}
                         nodes.Add(node,
-                            new NodeData(attr == null ? node.name : attr.Context, attr == null ? null : attr.Type));
+                            new NodeData(attr == null ? node.name : attr.Context));
                     }
                 }
             }
         }
+        #endregion
 
-        //public static void CallBack(object obj)
-        //{
-        //    Node node = obj as Node;
-        //    if (NodeEditor.curNodeGraph != null)
-        //    {
-        //        Vector2 pos = processE.mousePosition - ViewRect.position;
-        //        NodeEditor.curNodeGraph.AddNode(node, pos);
-        //    }
-        //}
+        #region TypeStructSetting
+
+        #endregion
     }
+
 
     public struct NodeData
     {
         public string Adress;
-        public EditorType? Type;
+        public bool ToggleState;
 
-        public NodeData(string adress,EditorType? type)
+        public NodeData(string adress)
         {
             Adress = adress;
-            Type = type;
+            ToggleState = false;
         }
     }
     public class NodeAttribute : Attribute
     {
         public bool IsHide { get; private set; }
         public string Context { get; private set; }
-        public EditorType? Type { get; private set; }
-        public NodeAttribute(bool isHide, string context,EditorType type)
+        public NodeAttribute(bool isHide, string context)
         {
             IsHide = isHide;
             Context = context;
-            Type = type;
         }
     }
 }

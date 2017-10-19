@@ -69,5 +69,13 @@ namespace Ou.Support.Node
                 AssetDatabase.AddObjectToAsset(nodeOutputKnob, node);
             }
         }
+        //Work :需要搭建， Test Vision；
+        public void Run()
+        {
+            foreach (Node node in nodes)
+            {
+                node.Evaluator();
+            }
+        }
     }
 }

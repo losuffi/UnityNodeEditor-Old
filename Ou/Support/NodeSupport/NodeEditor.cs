@@ -14,7 +14,7 @@ namespace Ou.Support.Node
         public static NodeGraph curNodeGraph;
         public static NodeEditorState curNodeEditorState;
         public static NodeInputInfo CurNodeInputInfo;
-        private const string Path = @"Assets/Ou/Property/Canva.asset";
+        private const string Path = @"Assets/Ou/Property/Canvas.asset";
 
         public static void Clear()
         {
@@ -78,6 +78,33 @@ namespace Ou.Support.Node
             }
         }
 
+        public static GenericMenu GetGenericMenu()
+        {
+            GenericMenu menu=new GenericMenu();
+            foreach (var node in NodeTypes.nodes)
+            {
+                if (NodeAdjust.CurrentNodeType.Equals(string.Empty) ||
+                    NodeAdjust.CurrentEditorType.Equals(string.Empty))
+                {
+                    break;
+                }
+                if (node.Value.Adress.Contains(NodeAdjust.CurrentEditorType+"|"+NodeAdjust.CurrentNodeType))
+                {
+                    menu.AddItem(new GUIContent(node.Key.GetId), false, CallBack, node.Key); //需要修改 装入InputControls中。
+                }
+            }
+            return menu;
+        }
+
+        static void CallBack(object obj)
+        {
+            Node node = obj as Node;
+            if (curNodeGraph != null)
+            {
+                Vector2 pos = CurNodeInputInfo.InputPos - curNodeEditorState.CurGraphRect.position;
+                curNodeGraph.AddNode(node, pos);
+            }
+        }
         #endregion
         #region DataSave
 
@@ -103,6 +130,7 @@ namespace Ou.Support.Node
                 AssetDatabase.CreateAsset(state, Path);
                 AssetDatabase.AddObjectToAsset(graph, state);
             }
+            CurNodeInputInfo = null;
         }
         #endregion
     }

@@ -11,6 +11,12 @@ namespace Ou.Support.Node
         Tree,
         StateMachine,
     }
+
+    public enum NodeType
+    {
+        Custom,
+        Signal,
+    }
     public class NodeEditorState:ScriptableObject
     {
         public NodeGraph CurGraph;
@@ -19,13 +25,19 @@ namespace Ou.Support.Node
         public Vector2 ZoomPos;
         public Vector2 PanOffset=new Vector2();
 
+        [NonSerialized]
         public bool IsPineSetting = false;
         public Vector2 DragStart=Vector2.zero;
         public Vector2 DragOffset=Vector2.zero;
+        [NonSerialized]
         public Node SelectedNode;
+        [NonSerialized]
         public Node FocusNode;
+        [NonSerialized]
         public NodeKnob FocusKnob;
+        [NonSerialized]
         public NodeKnob SelectedKnob;
+        [NonSerialized]
         public bool IsLinkSetting = false;
         public void UpdateData(Event e)
         {
@@ -42,7 +54,7 @@ namespace Ou.Support.Node
         [NonSerialized]
         public bool IsStateMachine = false;
 
-        public EditorType? editorType = EditorType.Tree;
+        public EditorType? editorType;
 
         public void SelectedEditorType(EditorType type,ref bool _switch)
         {

@@ -13,7 +13,7 @@ namespace Ou.Support.Node
         public Rect rect=new Rect();
         public Rect nodeRect;
 
-        protected abstract void Evaluator();
+        protected internal abstract void Evaluator();
         [NonSerialized] public List<NodeKnob> Knobs = new List<NodeKnob>();
         [SerializeField]
         internal List<NodeInput> inputKnobs=new List<NodeInput>();
