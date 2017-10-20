@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.OuUtility;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ou.Support.Node
-{
+namespace Ou.Support.NodeSupport { 
     public static class NodeInputControls
     {
 
@@ -29,11 +27,16 @@ namespace Ou.Support.Node
             }
         }
 
-        [Handle(EventType.MouseDown, 100)]
+        static bool NodeTest(NodeInputInfo info)
+        {
+            return info.InputEvent.button == 0;
+        }
+
+        [Handle(EventType.MouseDown)]
         private static void HandleWindowPineDown(NodeInputInfo inputInfo)
         {
             NodeEditorState state = inputInfo.EdState;
-            if (state.FocusNode != null&&state.FocusKnob!=null)
+            if (state.FocusNode != null&&state.FocusKnob!=null||inputInfo.InputEvent.button!=0)
             {
                 return;
             }
@@ -66,7 +69,6 @@ namespace Ou.Support.Node
             NodeEditorState state = inputInfo.EdState;
             state.IsPineSetting = false;
         }
-
         [Handle(EventType.scrollWheel)]
         private static void HandleWindowScroll(NodeInputInfo inputInfo)
         {
@@ -202,6 +204,24 @@ namespace Ou.Support.Node
                 state.SelectedKnob = null;
             }
         }
+        #endregion
+
+        #region HandleSetting
+
+        [Handle(EventType.MouseDown)]
+        private static void HandleSettingMouseDown(NodeInputInfo inputInfo)
+        {
+            var state = inputInfo.EdState;
+            if (inputInfo.InputEvent.button != 1)
+            {
+                return;
+            }
+            if (state.SelectedNode != null && state.FocusNode == state.SelectedNode)
+            {
+                NodeEditor.DrawSelectedNodeMenu();
+            }
+        }
+
         #endregion
     }
 }

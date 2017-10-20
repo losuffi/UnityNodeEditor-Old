@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ou.Support.NodeSupport;
 using UnityEngine;
 
-namespace Ou.Support.Node
+namespace Ou.Support.Runtime
 {
-    [Node(false, "树型|自定义|日志打印")]
-    public class TreelogNode:Node
+    [Node(false, "日志打印","Node")]
+    public class TreelogNode:TreeNodeAction
     {
         protected internal override void Evaluator()
         {

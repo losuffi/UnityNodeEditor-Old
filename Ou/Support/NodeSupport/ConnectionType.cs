@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
-namespace Ou.Support.Node
+namespace Ou.Support.NodeSupport
 {
     public static class ConnectionType
     {

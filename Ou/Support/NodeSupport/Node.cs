@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ou.Support.OuUtility;
 using UnityEditor;
-namespace Ou.Support.Node
+namespace Ou.Support.NodeSupport
 {
     public abstract class Node:ScriptableObject
     {

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.OuUtility;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ou.Support.Node
+namespace Ou.Support.NodeSupport
 {
     public static class NodeEditor
     {
@@ -83,14 +82,14 @@ namespace Ou.Support.Node
             GenericMenu menu=new GenericMenu();
             foreach (var node in NodeTypes.nodes)
             {
-                if (NodeAdjust.CurrentNodeType.Equals(string.Empty) ||
-                    NodeAdjust.CurrentEditorType.Equals(string.Empty))
+                if (NodeAdjust.selectedEditorTypeName.Equals(string.Empty) ||
+                    NodeAdjust.selectedNodeTypeName.Equals(string.Empty))
                 {
                     break;
                 }
-                if (node.Value.Adress.Contains(NodeAdjust.CurrentEditorType+"|"+NodeAdjust.CurrentNodeType))
+                if (node.Value.type.IsSubclassOf(NodeAdjust.nodeTypeDatas[NodeAdjust.selectedNodeTypeName].type))
                 {
-                    menu.AddItem(new GUIContent(node.Key.GetId), false, CallBack, node.Key); //需要修改 装入InputControls中。
+                    menu.AddItem(new GUIContent(node.Value.Name), false, CallBack, node.Key); //需要修改 装入InputControls中。
                 }
             }
             return menu;
@@ -105,6 +104,22 @@ namespace Ou.Support.Node
                 curNodeGraph.AddNode(node, pos);
             }
         }
+
+        public static void DrawSelectedNodeMenu()
+        {
+            GenericMenu menu=new GenericMenu();
+            menu.AddItem(new GUIContent("删除节点"),false,SelectedNodeMenuCallback,"Remov");
+            menu.ShowAsContext();
+        }
+
+        static void SelectedNodeMenuCallback(object obj)
+        {
+            if (obj.ToString().Equals("Remov"))
+            {
+                var node = curNodeEditorState.SelectedNode;
+                curNodeGraph.Remove(node);
+            }
+        }
         #endregion
         #region DataSave
 
@@ -117,6 +132,7 @@ namespace Ou.Support.Node
 
         public static void InitAssetData(out NodeEditorState state,out NodeGraph graph)
         {
+            TriggerEditorUtility.Init();
             state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(Path);
             if (state!=null)
             {
@@ -131,6 +147,8 @@ namespace Ou.Support.Node
                 AssetDatabase.AddObjectToAsset(graph, state);
             }
             CurNodeInputInfo = null;
+            curNodeGraph = graph;
+            curNodeEditorState = state;
         }
         #endregion
     }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Ou.Support.Node
+namespace Ou.Support.NodeSupport
 {
     public enum EditorType
     {

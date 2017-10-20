@@ -1,6 +1,5 @@
 ﻿
-using Assets.Ou.Support.Node;
-using Ou.Support.Node;
+using Ou.Support.NodeSupport;
 using UnityEngine;
 
 namespace Ou.Editor.Views

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ou.Support.Node
+namespace Ou.Support.NodeSupport
 {
     [Serializable]
     public  class NodeGraph: ScriptableObject
@@ -26,6 +26,20 @@ namespace Ou.Support.Node
                 }
                 nodes.Clear();
             }
+        }
+
+        public void Remove(Node node)
+        {
+            if (!nodes.Contains(node))
+            {
+                return;
+            }
+            nodes.Remove(node);
+            foreach (NodeKnob nodeKnob in node.Knobs)
+            {
+                DestroyImmediate(nodeKnob, true);
+            }
+            DestroyImmediate(node,true);
         }
 
         public Node CheckFocus(Vector2 pos)

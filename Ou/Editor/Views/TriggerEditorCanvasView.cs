@@ -1,4 +1,5 @@
-﻿using Ou.Support.Node;
+﻿
+using Ou.Support.NodeSupport;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,10 +31,11 @@ namespace Ou.Editor.Views
                 nodeEditorState.CurGraphRect = ViewRect;
                 if (e.button == 1 && e.type == EventType.mouseDown)
                 {
-                    menu = NodeEditor.GetGenericMenu();//需要修改 装入InputControls中。
+                    menu = NodeEditor.GetGenericMenu();//需要修改 装入InputControls中
                     menu.ShowAsContext();
                 }
-                NodeEditor.DrawCanvas(nodeGraph, nodeEditorState);
+                if(TriggerEditorUtility.CheckInit())
+                    NodeEditor.DrawCanvas(nodeGraph, nodeEditorState);
             }
             GUILayout.EndArea();
         }

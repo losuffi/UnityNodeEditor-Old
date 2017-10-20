@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.Node;
+using Ou.Support.NodeSupport;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ou.Support.OuUtility
+namespace Ou.Support.NodeSupport
 {
 
     public static class OuUIUtility
@@ -101,11 +101,36 @@ namespace Ou.Support.OuUtility
 
     public static class TriggerEditorUtility
     {
+        public static bool IsInit = false;
+        public static bool IsLayout = false;
+
+        public static Event e;
         public static void Init()
         {
+            IsInit = false;
             NodeTypes.FetchNode();
             NodeInputSystem.Fetch();
             ConnectionType.Fetch();
+            IsInit = true;
+        }
+
+        public static void ProcessE(Event e)
+        {
+            TriggerEditorUtility.e = e;
+        }
+        public static bool CheckInit()
+        {
+            return IsInit && NodeEditor.curNodeEditorState != null && NodeEditor.curNodeGraph != null;
+        }
+
+        public static bool LayoutCheck()
+        {
+            if ((IsLayout && e.type != EventType.Layout) || e.type == EventType.Layout)
+            {
+                IsLayout = true;
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.Node;
-using Ou.Support.OuUtility;
 using UnityEngine;
 
-namespace Assets.Ou.Support.Node
+namespace Ou.Support.NodeSupport
 {
     public static class NodeToolBar
     {

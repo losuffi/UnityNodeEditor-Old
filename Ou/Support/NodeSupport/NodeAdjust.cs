@@ -3,21 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Ou.Support.OuUtility;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ou.Support.Node
+namespace Ou.Support.NodeSupport
 {
     public static class NodeAdjust
     {
-        static Dictionary<string,bool> EditorTypes=new Dictionary<string, bool>();
-        static Dictionary<string, bool>  nodesTypes = new Dictionary<string, bool>();
-        public static string CurrentEditorType=string.Empty;
-        public static string CurrentNodeType=string.Empty;
+        public class SelectedTypeData
+        {
+            public Type type;
+            public bool isSelected;
 
-        private static string currentEditorTypeCache = string.Empty;
-        private static string currentNodeTypeCache = string.Empty;
+            public SelectedTypeData(Type type)
+            {
+                this.type = type;
+                isSelected = false;
+            }
+        }
+
+        private static Dictionary<string,SelectedTypeData> editorTypeDatas=new Dictionary<string, SelectedTypeData>();
+        public static string selectedEditorTypeName = string.Empty;
+        public static Dictionary<string, SelectedTypeData> nodeTypeDatas = new Dictionary<string, SelectedTypeData>();
+        public static string selectedNodeTypeName = string.Empty;
         public static void Draw(GUISkin skin)
         {
             #region Handle
@@ -33,93 +41,108 @@ namespace Ou.Support.Node
             #endregion
 
             #region NodeType
-            GUILayout.Label("---NodeType----", skin.GetStyle("adjustBodyLabel"));
+            GUILayout.Label("---节点种类----", skin.GetStyle("adjustBodyLabel"));
             DrawNodeTypeToggles(skin);
             #endregion
         }
 
-        static void DrawEditorTypeToggles(GUISkin skin)
+        private static void DrawNodeTypeToggles(GUISkin skin)
         {
-            if (!EditorTypes.Any())
+            if (!nodeTypeDatas.Any())
             {
-                foreach (var node in NodeTypes.nodes)
+                NodeTypesInitialzaion();
+            }
+            else
+            {
+                foreach (string key in new List<string>(nodeTypeDatas.Keys))
                 {
-                    var str = node.Value.Adress.Split('|')[0];
-                    if (!EditorTypes.Keys.Contains(str))
+                    if (TriggerEditorUtility.LayoutCheck())
                     {
-                        EditorTypes.Add(str, false);
-                    }
-                }
-            }
-            foreach (var key in new List<string>(EditorTypes.Keys))
-            {
-                if (GUILayout.Toggle(EditorTypes[key], new GUIContent(key), skin.toggle))
-                {
-                    CurrentEditorType = key;
-                    if (!CurrentEditorType.Equals(currentEditorTypeCache))
-                        SelectedEditorType(CurrentEditorType);
-                }
-            }
-
-        }
-
-        static void DrawNodeTypeToggles(GUISkin skin)
-        {
-            if (CurrentEditorType.Equals(string.Empty))
-            {
-                return;
-            }
-            if (!nodesTypes.Any())
-            {
-                foreach (var node in NodeTypes.nodes)
-                {
-                    if (node.Value.Adress.Contains(CurrentEditorType))
-                    {
-                        var str = node.Value.Adress.Split('|')[1];
-                        if (!nodesTypes.Keys.Contains(str))
+                        if (GUILayout.Toggle(nodeTypeDatas[key].isSelected, new GUIContent(key), skin.toggle))
                         {
-                            nodesTypes.Add(str, false);
+                            SelectedNodeType(key);
                         }
                     }
                 }
             }
-            foreach (var key in new List<string>(nodesTypes.Keys))
+        }
+
+        private static void SelectedNodeType(string key)
+        {
+            if (selectedNodeTypeName.Equals(key))
             {
-                if (GUILayout.Toggle(nodesTypes[key], new GUIContent(key), skin.toggle))
+                return;
+            }
+            selectedNodeTypeName = key;
+            foreach (string s in new List<string>(nodeTypeDatas.Keys))
+            {
+                nodeTypeDatas[s].isSelected = false;
+            }
+            nodeTypeDatas[selectedNodeTypeName].isSelected = true;
+        }
+
+        private static void NodeTypesInitialzaion()
+        {
+            if (selectedEditorTypeName.Equals(string.Empty))
+            {
+                return;
+            }
+            foreach (var nodeData in NodeTypes.nodes)
+            {
+                if (nodeData.Value.Identity.Equals("NodeType")&&nodeData.Value.type.IsSubclassOf(editorTypeDatas[selectedEditorTypeName].type))
                 {
-                    CurrentNodeType = key;
-                    if(!CurrentNodeType.Equals(currentNodeTypeCache))
-                        SelectedNodeType(key);
+                    nodeTypeDatas.Add(nodeData.Value.Name, new SelectedTypeData(nodeData.Value.type));
                 }
             }
         }
 
-        static void SelectedEditorType(string type)
+        private static void DrawEditorTypeToggles(GUISkin skin)
         {
-            if (type.Equals(string.Empty))
-                return;
-            var keys = new List<string>(EditorTypes.Keys);
-            foreach (var key in keys)
+            if (!editorTypeDatas.Any())
             {
-                EditorTypes[key] = false;
+                EditorTypesInitialzation();
             }
-            EditorTypes[type] = true;
-            currentEditorTypeCache = type;
-            CurrentNodeType = string.Empty;
-            currentNodeTypeCache = string.Empty;
-            nodesTypes.Clear();
+            else
+            {
+                foreach (var key in new List<string>(editorTypeDatas.Keys))
+                {
+                    if (TriggerEditorUtility.LayoutCheck())
+                    {
+                        if (GUILayout.Toggle(editorTypeDatas[key].isSelected, new GUIContent(key), skin.toggle))
+                        {
+                            SelectedEditorType(key);
+                        }
+                    }
+                }
+            }
         }
 
-        static void SelectedNodeType(string type)
+        private static void EditorTypesInitialzation()
         {
-            if (type.Equals(string.Empty))
-                return;
-            foreach (var key in new List<string>(nodesTypes.Keys))
+            foreach (var nodeData in NodeTypes.nodes)
             {
-                nodesTypes[key] = false;
+                if (nodeData.Value.Identity.Equals("EditorType"))
+                {
+                    editorTypeDatas.Add(nodeData.Value.Name, new SelectedTypeData(nodeData.Value.type));
+                }
             }
-            nodesTypes[type] = true;
-            currentNodeTypeCache = type;
+        }
+
+        private static void SelectedEditorType(string name)
+        {
+            if (selectedEditorTypeName.Equals(name))
+            {
+                return;
+            }
+            selectedEditorTypeName = name;
+            foreach (string key in new List<string>(editorTypeDatas.Keys))
+            {
+                editorTypeDatas[key].isSelected = false;
+            }
+            editorTypeDatas[selectedEditorTypeName].isSelected = true;
+            selectedNodeTypeName = string.Empty;
+            TriggerEditorUtility.IsLayout = false;
+            nodeTypeDatas.Clear();
         }
     }
 }

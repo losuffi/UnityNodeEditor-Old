@@ -1,7 +1,6 @@
 ﻿using System;
 using Ou.Editor.Views;
-using Ou.Support.Node;
-using Ou.Support.OuUtility;
+using Ou.Support.NodeSupport;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,7 +26,6 @@ namespace Ou.Editor.Windows
         private void OnEnable()
         {
             IsPaintDone = false;
-            TriggerEditorUtility.Init();
         }
         private void OnGUI()
         {

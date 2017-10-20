@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ou.Support.NodeSupport;
 using UnityEngine;
 
-namespace Ou.Support.Node
+namespace Ou.Support.Runtime
 {
-    [Node(false, "状态机型|自定义|字符输入")]
-    public class CustomNode1 : Node
+    [Node(false, "字符输入","Node")]
+    public class TreeInputNode : TreeNodeAction
     {
         private string Value=string.Empty;
 
@@ -24,8 +25,7 @@ namespace Ou.Support.Node
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<CustomNode1>();
-
+            Node node = CreateInstance<TreeInputNode>();
             node.Title = "字符串输入";
             node.rect = new Rect(pos, new Vector2(100, 80));
             node.CreateNodeOutput("Output 1", "String");
