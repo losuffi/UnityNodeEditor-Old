@@ -22,29 +22,33 @@ namespace Ou.Support.NodeSupport
             }
         }
 
+        private static string drawIdentity = "Normal";
+
+        private static GUISkin skin = null;
         private static Dictionary<string,SelectedTypeData> editorTypeDatas=new Dictionary<string, SelectedTypeData>();
         public static string selectedEditorTypeName = string.Empty;
         public static Dictionary<string, SelectedTypeData> nodeTypeDatas = new Dictionary<string, SelectedTypeData>();
         public static string selectedNodeTypeName = string.Empty;
+
+        private static string updateVariableName = string.Empty;
+        private static string typeName = string.Empty;
+        private static int updateVariableIndex = 0;
+        private static string[] VariableTypeName = null;
+        private static object updateObject = null;
+
         public static void Draw(GUISkin skin)
         {
-            #region Handle
-            GUILayout.Label("---操作---", skin.GetStyle("adjustBodyLabel"));
-            OuUIUtility.FormatButton("Clear", NodeEditor.Clear, skin.GetStyle("adjustBodyButton"));
-            #endregion
-
-            #region EditorType
-            GUILayout.Label("---工作模式----", skin.GetStyle("adjustBodyLabel"));
-            GUILayout.BeginHorizontal();
-            DrawEditorTypeToggles(skin);
-            GUILayout.EndHorizontal();
-            #endregion
-
-            #region NodeType
-            GUILayout.Label("---节点种类----", skin.GetStyle("adjustBodyLabel"));
-            DrawNodeTypeToggles(skin);
-            #endregion
+            NodeAdjust.skin = skin;
+            if (drawIdentity.Equals("Normal"))
+            {
+                DrawTreeNodeNormal();
+            }else if (drawIdentity.Equals("Variable"))
+            {
+                DrawTreeNodeVariable();
+            }
         }
+
+        #region NodeType
 
         private static void DrawNodeTypeToggles(GUISkin skin)
         {
@@ -144,5 +148,69 @@ namespace Ou.Support.NodeSupport
             TriggerEditorUtility.IsLayout = false;
             nodeTypeDatas.Clear();
         }
+        #endregion
+
+        #region DrawType
+
+        private static void DrawTreeNodeNormal()
+        {
+            #region Handle
+            GUILayout.Label("---操作---", skin.GetStyle("adjustBodyLabel"));
+            OuUIUtility.FormatButton("Register", NodeEditor.RegisterTreeManager, skin.GetStyle("adjustBodyButton"));
+            OuUIUtility.FormatButton("Clear", NodeEditor.Clear, skin.GetStyle("adjustBodyButton"));
+            NodeEditor.curNodeEditorState.Name = GUILayout.TextArea(NodeEditor.curNodeEditorState.Name, skin.GetStyle("adjustBodyTextArea"));
+            OuUIUtility.FormatButton("SetName", NodeEditor.RemDataAsset, skin.GetStyle("adjustBodyButton"));
+            OuUIUtility.FormatButton("Global Variable", () => { drawIdentity = "Variable"; }, skin.GetStyle("adjustBodyButton"));
+            #endregion
+
+            #region EditorType
+            GUILayout.Label("---工作模式----", skin.GetStyle("adjustBodyLabel"));
+            GUILayout.BeginHorizontal();
+            DrawEditorTypeToggles(skin);
+            GUILayout.EndHorizontal();
+            #endregion
+
+            #region NodeType
+            GUILayout.Label("---节点种类----", skin.GetStyle("adjustBodyLabel"));
+            DrawNodeTypeToggles(skin);
+            #endregion
+        }
+
+        private static void DrawTreeNodeVariable()
+        {
+            GUILayout.Label("---全局变量库---", skin.GetStyle("adjustBodyLabel"));
+            for (int i=0;i<NodeEditor.curNodeGraph.globalVariables.Count;i++)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(NodeEditor.curNodeGraph.globalVariables[i].Key);
+                OuUIUtility.FormatButton("-", () => { NodeEditor.curNodeGraph.globalVariables.RemoveAt(i);
+                    i--;
+                });
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Label("---添加变量---", skin.GetStyle("adjustBodyLabel"));
+            GUILayout.Label("变量名：");
+            OuUIUtility.FormatTextfield(ref updateVariableName);
+            GUILayout.Label("变量种类：");
+            VariableTypeName = VariableTypeName ?? ConnectionType.identitys;
+            updateVariableIndex =
+                EditorGUILayout.Popup(updateVariableIndex, VariableTypeName);
+            typeName= VariableTypeName[updateVariableIndex];
+            ConnectionType.types[typeName].GUILayout(out updateObject);
+            OuUIUtility.FormatButton("添加",AddVariable);
+
+
+            GUILayout.Space(20);
+            OuUIUtility.FormatButton("返回", () => { drawIdentity = "Normal"; }, skin.GetStyle("adjustBodyButton"));
+        }
+
+        private static void AddVariable()
+        {
+            typeName = VariableTypeName[updateVariableIndex];
+            var iconType = ConnectionType.types[typeName];
+            NodeEditor.curNodeGraph.globalVariables.Add(new KeyValuePair<string, GlobalVariable>(updateVariableName,
+                new GlobalVariable(iconType.type, updateObject, iconType.identity)));
+        }
+        #endregion
     }
 }

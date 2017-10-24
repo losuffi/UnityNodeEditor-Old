@@ -9,12 +9,10 @@ namespace Ou.Editor.Views
     {
         private GenericMenu menu;
 
-        private NodeGraph nodeGraph;
-        private NodeEditorState nodeEditorState;
 
         public TriggerEditorCanvasView(string title) : base(title)
         {
-            NodeEditor.InitAssetData(out nodeEditorState, out nodeGraph);
+            NodeEditor.InitAssetData();
         }
         public override void ProcessEvent(Event e)
         {
@@ -28,14 +26,14 @@ namespace Ou.Editor.Views
             GUI.Box(ViewRect, Title, ViewSkin.GetStyle("TriggerEditorCanvas"));
             GUILayout.BeginArea(ViewRect);
             {
-                nodeEditorState.CurGraphRect = ViewRect;
+                NodeEditor.curNodeEditorState.CurGraphRect = ViewRect;
                 if (e.button == 1 && e.type == EventType.mouseDown)
                 {
                     menu = NodeEditor.GetGenericMenu();//需要修改 装入InputControls中
                     menu.ShowAsContext();
                 }
                 if(TriggerEditorUtility.CheckInit())
-                    NodeEditor.DrawCanvas(nodeGraph, nodeEditorState);
+                    NodeEditor.DrawCanvas();
             }
             GUILayout.EndArea();
         }

@@ -19,6 +19,7 @@ namespace Ou.Support.NodeSupport
     }
     public class NodeEditorState:ScriptableObject
     {
+        public string Name = "Default";
         public NodeGraph CurGraph;
         public Rect CurGraphRect;
         public Vector2 PanAdjust=Vector2.zero;

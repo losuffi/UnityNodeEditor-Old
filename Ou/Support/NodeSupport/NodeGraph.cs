@@ -11,6 +11,7 @@ namespace Ou.Support.NodeSupport
     {
         //TODO:NodeCanvas Configue
         public List<Node> nodes=new List<Node>();
+        public List<KeyValuePair<string,GlobalVariable>> globalVariables=new List<KeyValuePair<string, GlobalVariable>>();
 
         public void Clear()
         {
@@ -82,13 +83,78 @@ namespace Ou.Support.NodeSupport
             {
                 AssetDatabase.AddObjectToAsset(nodeOutputKnob, node);
             }
+            node.curGraph = this;
+            node.Start();
+        }
+
+
+        public void InitNode(Node node,Vector2 pos)
+        {
+            node = node.Create(
+                (pos - NodeEditor.curNodeEditorState.PanOffset) / NodeEditor.curNodeEditorState.GraphZoom);
+            node.Init();
+            nodes.Add(node);
+            AssetDatabase.AddObjectToAsset(node, this);
+            foreach (NodeInput input in node.inputKnobs)
+            {
+                AssetDatabase.AddObjectToAsset(input, node);
+            }
+            foreach (NodeOutput nodeOutputKnob in node.outputKnobs)
+            {
+                AssetDatabase.AddObjectToAsset(nodeOutputKnob, node);
+            }
+        }
+
+
+        public string[] selectorVariable(params string[] id)
+        {
+            List<string> res=new List<string>();
+            for (int j = 0; j < globalVariables.Count; j++)
+            {
+                foreach (string s in id)
+                {
+                    if (globalVariables[j].Value.identity.Equals(s))
+                    {
+                        res.Add(globalVariables[j].Key);
+                        break;
+                    }
+                }
+            }
+            return res.ToArray();
+        }
+
+        public GlobalVariable ReadGlobalVariable(string key)
+        {
+            if (CheckKey(key))
+                return globalVariables.Find(z => z.Key.Equals(key)).Value;
+            return null;
+        }
+        public bool CheckKey(string key)
+        {
+            for (int i = 0; i < globalVariables.Count; i++)
+            {
+                if (globalVariables[i].Key.Equals(key))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         //Work :需要搭建， Test Vision；
-        public void Run()
+        public void TreeRun()
         {
-            foreach (Node node in nodes)
+            foreach (TreeNode node in nodes)
             {
-                node.Evaluator();
+                if(node.OnCheckCompelete())
+                    continue;
+                if (node.state == TreeNodeResult.Running)
+                {
+                    node.state = node.OnUpdate();
+                }
+                if (node.IsCompelete)
+                {
+                    node.Evaluator();
+                }
             }
         }
     }

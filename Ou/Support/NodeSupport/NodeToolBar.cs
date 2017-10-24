@@ -11,6 +11,8 @@ namespace Ou.Support.NodeSupport
         public static void DrawToolBar(Rect rect)
         {
             OuUIUtility.FormatButton("Save", NodeEditor.SaveCurrentCanvas, new Vector2(rect.height, rect.height));
+            OuUIUtility.FormatButton("Load", NodeEditor.LoadCanvas, new Vector2(rect.height, rect.height));
+            OuUIUtility.FormatButton("New", NodeEditor.NewCanvas, new Vector2(rect.height, rect.height));
             GUILayout.Space(10);
         }
     }

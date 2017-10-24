@@ -23,7 +23,7 @@ namespace Ou.Support.NodeSupport
                 AppDomain.CurrentDomain.GetAssemblies().Where(ar=>ar.FullName.Contains("Assembly-"));
             foreach (var assembly in scriptAssemblies)
             {
-                foreach (Type type in assembly.GetTypes().Where(ar=>ar.IsClass&&ar.IsSubclassOf(typeof(Node))))
+                foreach (Type type in assembly.GetTypes().Where(ar=>ar.IsClass&&!ar.IsAbstract&& ar.IsSubclassOf(typeof(Node))))
                 {
                     Node node=ScriptableObject.CreateInstance(type.Name) as  Node;
                     object[] attrs = type.GetCustomAttributes(typeof(NodeAttribute), false);

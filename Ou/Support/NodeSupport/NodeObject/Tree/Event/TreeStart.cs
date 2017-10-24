@@ -2,39 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ou.Support.NodeSupport;
 using UnityEngine;
 
-namespace Ou.Support.NodeSupport
+namespace Ou.Support.Runtime
 {
-    [Node(false, "动作", "NodeType")]
-    public class TreeNodeAction:TreeNode
+    [Node(false, "开始", "Node")]
+    public class TreeStart:TreeNodeEvent
     {
-        private const string nodeId = "动作";
         protected internal override void Evaluator()
         {
-            base.Evaluator();
         }
 
         protected internal override void NodeGUI()
         {
-            base.NodeGUI();
         }
 
         public override Node Create(Vector2 pos)
         {
-            return base.Create(pos);
+            Node node = CreateInstance<TreeStart>();
+            node.Title = "开始";
+            node.rect = new Rect(pos, new Vector2(60, 60));
+            node.CreateNodeOutput("Output 1", "String");
+            return node;
         }
 
         protected internal override TreeNodeResult OnUpdate()
         {
-            return base.OnUpdate();
+            return TreeNodeResult.Running;
         }
 
         protected internal override void OnStart()
         {
-            base.OnStart();
         }
-
-        public override string GetId { get { return nodeId; } }
     }
 }

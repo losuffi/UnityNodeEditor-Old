@@ -6,33 +6,33 @@ using UnityEngine;
 
 namespace Ou.Support.NodeSupport
 {
-    [Node(false, "动作", "NodeType")]
-    public class TreeNodeAction:TreeNode
+    [Node(false, "事件", "NodeType")]
+    public class TreeNodeEvent:TreeNode
     {
-        private const string nodeId = "动作";
+        private const string nodeId = "事件";
         protected internal override void Evaluator()
         {
-            base.Evaluator();
+            throw new NotImplementedException();
         }
 
         protected internal override void NodeGUI()
         {
-            base.NodeGUI();
+            throw new NotImplementedException();
         }
 
         public override Node Create(Vector2 pos)
         {
-            return base.Create(pos);
+            throw new NotImplementedException();
         }
 
         protected internal override TreeNodeResult OnUpdate()
         {
-            return base.OnUpdate();
+            throw new NotImplementedException();
         }
 
         protected internal override void OnStart()
         {
-            base.OnStart();
+            throw new NotImplementedException();
         }
 
         public override string GetId { get { return nodeId; } }

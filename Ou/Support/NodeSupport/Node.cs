@@ -11,7 +11,7 @@ namespace Ou.Support.NodeSupport
         public string Title;
         public Rect rect=new Rect();
         public Rect nodeRect;
-
+        public NodeGraph curGraph;
         protected internal abstract void Evaluator();
         [NonSerialized] public List<NodeKnob> Knobs = new List<NodeKnob>();
         [SerializeField]
@@ -98,6 +98,11 @@ namespace Ou.Support.NodeSupport
 
 
         public abstract Node Create(Vector2 pos);
+
+        protected internal virtual void Start()
+        {
+            
+        }
 
         public abstract string GetId { get; }
 

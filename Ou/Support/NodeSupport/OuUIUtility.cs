@@ -2,13 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.NodeSupport;
 using UnityEditor;
 using UnityEngine;
 
 namespace Ou.Support.NodeSupport
 {
+    [Serializable]
+    public struct PopupStructer
+    {
+        public string[] datas;
+        public int selectionIndex;
+        public string value;
 
+        public PopupStructer(string[] datas)
+        {
+            this.datas = datas;
+            this.selectionIndex = 0;
+            this.value = this.datas[0];
+        }
+
+    }
     public static class OuUIUtility
     {
 
@@ -37,11 +50,40 @@ namespace Ou.Support.NodeSupport
 
         #region FunctionalUI
 
+
         public static void DrawLine(Vector3 startPos, Vector3 endPos)
         {
             Vector3 startTan = startPos + Vector3.right * 50;
             Vector3 endTan = endPos + Vector3.left * 50;
             Handles.DrawBezier(startPos, endPos, startTan, endTan, Color.white, null, 5);
+        }
+
+        public static void FormatSetType(SettingType type,ref string fill,ref PopupStructer popupStructer)
+        {
+            if (type == SettingType.填充)
+            {
+                GUILayout.Label("填充所需变量");
+                fill = GUILayout.TextField(fill);
+            }
+            else
+            {
+                GUILayout.Label("选择全局变量");
+                if (GUILayout.Button("*"))
+                {
+                    popupStructer.selectionIndex =
+                        EditorGUILayout.Popup(popupStructer.selectionIndex, popupStructer.datas);
+                    popupStructer.value = popupStructer.datas[popupStructer.selectionIndex];
+                }
+            }
+        }
+
+        public static void FormatTextfield(ref string str)
+        {
+            str = GUILayout.TextField(str);
+        }
+        public static void FormatTextfield(ref string str,GUIStyle style)
+        {
+            str = GUILayout.TextField(str, style);
         }
 
         public static void FormatButton(string label, Action method,GUIStyle style=null)
@@ -111,6 +153,7 @@ namespace Ou.Support.NodeSupport
             NodeTypes.FetchNode();
             NodeInputSystem.Fetch();
             ConnectionType.Fetch();
+            NodeEditor.CreateManager();
             IsInit = true;
         }
 

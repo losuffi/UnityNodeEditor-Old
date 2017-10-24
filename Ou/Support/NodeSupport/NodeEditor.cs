@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,19 +14,26 @@ namespace Ou.Support.NodeSupport
         public static NodeGraph curNodeGraph;
         public static NodeEditorState curNodeEditorState;
         public static NodeInputInfo CurNodeInputInfo;
-        private const string Path = @"Assets/Ou/Property/Canvas.asset";
-
+        public static NodeManager NodeManager;
+        public static TreeNodeManager TreeNodeManager;
+        public static string Path = @"Assets/Ou/Property/Node/Default.asset";
         public static void Clear()
         {
             curNodeGraph.Clear();
         }
 
         #region GUIDraw
-        public static void DrawCanvas(NodeGraph nodeGraph,NodeEditorState nodeEditorState)
+        public static void DrawCanvas()
         {
             DrawBackground();
-            curNodeGraph = nodeGraph;
-            curNodeEditorState = nodeEditorState;
+            if (curNodeGraph == null || curNodeEditorState == null)
+            {
+                return;
+            }
+            if (!curNodeGraph.nodes.Exists(res => res.GetId.Equals("初始化")))
+            {
+                InitGraphNode();
+            }
             for (int nodeCnt = 0; nodeCnt < curNodeGraph.nodes.Count; nodeCnt++)
             {
                 curNodeGraph.nodes[nodeCnt].Draw();
@@ -120,20 +128,33 @@ namespace Ou.Support.NodeSupport
                 curNodeGraph.Remove(node);
             }
         }
+
+        static void InitGraphNode()
+        {
+            TreeInitNode initNode = ScriptableObject.CreateInstance<TreeInitNode>();
+            curNodeGraph.InitNode(initNode,Vector2.zero);
+        }
         #endregion
         #region DataSave
 
         public static void SaveCurrentCanvas()
         {
+
             EditorUtility.SetDirty(curNodeEditorState);
             AssetDatabase.SaveAssets();
-
         }
 
-        public static void InitAssetData(out NodeEditorState state,out NodeGraph graph)
+        public static void RemDataAsset()
+        {
+            var newPath = @"Assets/Ou/Property/Node/" + curNodeEditorState.Name + ".asset";
+            AssetDatabase.MoveAsset(Path, newPath);
+        }
+
+        public static void InitAssetData()
         {
             TriggerEditorUtility.Init();
-            state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(Path);
+            NodeEditorState state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(Path);
+            NodeGraph graph = null;
             if (state!=null)
             {
                 graph = state.CurGraph;
@@ -150,6 +171,84 @@ namespace Ou.Support.NodeSupport
             curNodeGraph = graph;
             curNodeEditorState = state;
         }
+
+        public static void LoadCanvas()
+        {
+            string path = EditorUtility.OpenFilePanel("Load Canvas", Application.dataPath + "/Ou/Property/Node", "asset");
+            path = Regex.Replace(path, @"^.+/Assets", "Assets");
+            TriggerEditorUtility.Init();
+            NodeEditorState state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(path);
+            NodeGraph graph = null;
+            if (state != null)
+            {
+                graph = state.CurGraph;
+            }
+            CurNodeInputInfo = null;
+            curNodeGraph = graph;
+            curNodeEditorState = state;
+        }
+
+        public static void NewCanvas()
+        {
+            Path = @"Assets/Ou/Property/Node/Default.asset";
+            if (curNodeEditorState != null)
+            {
+                if (AssetDatabase.GetAssetPath(curNodeEditorState).Contains("Default"))
+                {
+                    curNodeEditorState.CurGraph.Clear();
+                    return;
+                }
+            }
+            NodeEditorState state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(Path);
+            NodeGraph graph = null;
+            if (state != null)
+            {
+                graph = state.CurGraph;
+                graph.Clear();
+            }
+            else
+            {
+                TriggerEditorUtility.Init();
+                state = ScriptableObject.CreateInstance<NodeEditorState>();
+                graph = ScriptableObject.CreateInstance<NodeGraph>();
+                state.CurGraph = graph;
+                AssetDatabase.CreateAsset(state, Path);
+                AssetDatabase.AddObjectToAsset(graph, state);
+            }
+            CurNodeInputInfo = null;
+            curNodeGraph = graph;
+            curNodeEditorState = state;
+        }
         #endregion
+
+        #region App
+
+        public static void CreateManager()
+        {
+            var obj = GameObject.Find("_nodeTreeManager");
+            if (obj == null)
+            {
+                obj = new GameObject("_nodeTreeManager");
+                TreeNodeManager = obj.AddComponent<TreeNodeManager>();
+            }
+        }
+
+        public static void RegisterManager()
+        {
+
+        }
+
+        public static void RegisterTreeManager()
+        {
+            if (GameObject.Find("_nodeTreeManager") == null)
+            {
+                CreateManager();
+            }
+            TreeNodeManager = TreeNodeManager ?? GameObject.Find("_nodeTreeManager").GetComponent<TreeNodeManager>();
+            TreeNodeManager.RegisterGraph(curNodeGraph);
+        }
+        #endregion
+
+
     }
 }
