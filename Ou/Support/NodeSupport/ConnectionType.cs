@@ -51,9 +51,11 @@ namespace Ou.Support.NodeSupport
         public Color color;
         public bool isGlobalVariable;
 
-        public delegate void DelLayout(out object t);
+        public delegate void DelLayout(ref object t);
 
         public DelLayout GUILayout;
+        public Func<object,string> ObjtoString;
+        public Func<string, object> StringtoObj;
         internal ConnectionTypeData(IConnectionDecorator icd)
         {
             this.identity = icd.identity;
@@ -61,6 +63,8 @@ namespace Ou.Support.NodeSupport
             this.color = icd.color;
             this.isGlobalVariable = icd.isGlobalType;
             this.GUILayout = icd.GUIFill;
+            this.ObjtoString = icd.objTostring;
+            this.StringtoObj = icd.stringtoobj;
         }
     }
 
@@ -70,7 +74,9 @@ namespace Ou.Support.NodeSupport
         Type type { get; }
         Color color { get; }
         bool isGlobalType { get; }
-        void GUIFill(out object obj);
+        void GUIFill(ref object obj);
+        string objTostring(object obj);
+        object stringtoobj(string str);
     }
 
     public class StringType : IConnectionDecorator
@@ -79,10 +85,23 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(string); } }
         public Color color { get{return Color.cyan;} }
         public bool isGlobalType { get { return true; } }
-        public void GUIFill(out object obj)
+
+
+        public void GUIFill(ref object obj)
         {
-            obj = string.Empty;
-            obj = GUILayout.TextArea(obj.ToString());
+            if (obj == null)
+                obj = string.Empty;
+            obj = GUILayout.TextArea((string)obj);
+        }
+
+        public string objTostring(object obj)
+        {
+            return obj.ToString();
+        }
+
+        public object stringtoobj(string str)
+        {
+            return str;
         }
     }
     public class IntValueType : IConnectionDecorator
@@ -91,11 +110,26 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(int); } }
         public Color color { get { return Color.cyan; } }
         public bool isGlobalType { get { return true; } }
-        public void GUIFill(out object obj)
+
+
+        public void GUIFill(ref object obj)
         {
-            obj=new int();
-            obj = 0;
+            if (!obj.GetType().IsAssignableFrom(typeof(int)))
+            {
+                obj=new int();
+                obj = 0;
+            }
             obj = EditorGUILayout.IntField((int) obj);
+        }
+
+        public string objTostring(object obj)
+        {
+            return obj.ToString();
+        }
+
+        public object stringtoobj(string str)
+        {
+            return int.Parse(str);
         }
     }
     public class RealValueType : IConnectionDecorator
@@ -104,11 +138,26 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(float); } }
         public Color color { get { return Color.cyan; } }
         public bool isGlobalType { get { return true; } }
-        public void GUIFill(out object obj)
+
+
+        public void GUIFill(ref object obj)
         {
-            obj=new float();
-            obj = 0.1f;
+            if (!obj.GetType().IsAssignableFrom(typeof(float)))
+            {
+                obj = new float();
+                obj = 0.1f;
+            }
             obj = EditorGUILayout.FloatField((float)obj);
+        }
+
+        public string objTostring(object obj)
+        {
+            return obj.ToString();
+        }
+
+        public object stringtoobj(string str)
+        {
+            return float.Parse(str);
         }
     }
     public class WorkstateType : IConnectionDecorator
@@ -117,9 +166,19 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(TreeNodeResult);  }}
         public Color color { get { return Color.cyan; } }
         public bool isGlobalType { get { return false; } }
-        public void GUIFill(out object obj)
+        public void GUIFill(ref object obj)
         {
             obj = null;
+        }
+
+        public string objTostring(object obj)
+        {
+            return string.Empty;
+        }
+
+        public object stringtoobj(string str)
+        {
+            return null;
         }
     }
 }

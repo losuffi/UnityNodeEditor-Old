@@ -10,15 +10,18 @@ namespace Ou.Support.NodeSupport
     [Serializable]
     public struct PopupStructer
     {
+        [HideInInspector]
         public string[] datas;
+        [HideInInspector]
         public int selectionIndex;
+        [HideInInspector]
         public string value;
 
         public PopupStructer(string[] datas)
         {
             this.datas = datas;
             this.selectionIndex = 0;
-            this.value = this.datas[0];
+            this.value = datas.Length > 0 ? datas[0] : string.Empty;
         }
 
     }
@@ -68,12 +71,11 @@ namespace Ou.Support.NodeSupport
             else
             {
                 GUILayout.Label("选择全局变量");
-                if (GUILayout.Button("*"))
-                {
-                    popupStructer.selectionIndex =
-                        EditorGUILayout.Popup(popupStructer.selectionIndex, popupStructer.datas);
-                    popupStructer.value = popupStructer.datas[popupStructer.selectionIndex];
-                }
+                popupStructer.selectionIndex =
+                    EditorGUILayout.Popup(popupStructer.selectionIndex, popupStructer.datas);
+                popupStructer.value = popupStructer.datas.Length > 0
+                    ? popupStructer.datas[popupStructer.selectionIndex]
+                    : string.Empty;
             }
         }
 
@@ -145,6 +147,7 @@ namespace Ou.Support.NodeSupport
     {
         public static bool IsInit = false;
         public static bool IsLayout = false;
+        public static event Action TrigInit; 
 
         public static Event e;
         public static void Init()
@@ -155,6 +158,8 @@ namespace Ou.Support.NodeSupport
             ConnectionType.Fetch();
             NodeEditor.CreateManager();
             IsInit = true;
+            if (TrigInit != null)
+                TrigInit();
         }
 
         public static void ProcessE(Event e)

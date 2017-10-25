@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEditor.VersionControl;
 using UnityEngine;
-
 namespace Ou.Support.NodeSupport
 {
     public static class NodeEditor
@@ -117,6 +118,8 @@ namespace Ou.Support.NodeSupport
         {
             GenericMenu menu=new GenericMenu();
             menu.AddItem(new GUIContent("删除节点"),false,SelectedNodeMenuCallback,"Remov");
+            menu.AddItem(new GUIContent("剔除入口线"), false, SelectedNodeMenuCallback, "RemovInputLine");
+            menu.AddItem(new GUIContent("剔除出口线"), false, SelectedNodeMenuCallback, "RemovOutputLine");
             menu.ShowAsContext();
         }
 
@@ -126,6 +129,31 @@ namespace Ou.Support.NodeSupport
             {
                 var node = curNodeEditorState.SelectedNode;
                 curNodeGraph.Remove(node);
+            }else if (obj.ToString().Equals("RemovInputLine"))
+            {
+                var node = curNodeEditorState.SelectedNode;
+                foreach (NodeInput nodeInputKnob in node.inputKnobs)
+                {
+                    if (nodeInputKnob.connection != null)
+                    {
+                        nodeInputKnob.connection = null;
+                    }
+                }
+            }
+            else if(obj.ToString().Equals("RemovOutputLine"))
+            {
+                var node = curNodeEditorState.SelectedNode;
+                foreach (NodeOutput knob in node.outputKnobs)
+                {
+                    foreach (NodeInput knobConnection in knob.connections)
+                    {
+                        if (knobConnection != null)
+                        {
+                            knobConnection.connection = null;
+                        }
+                    }
+                    knob.connections.Clear();
+                }
             }
         }
 
@@ -176,6 +204,7 @@ namespace Ou.Support.NodeSupport
         {
             string path = EditorUtility.OpenFilePanel("Load Canvas", Application.dataPath + "/Ou/Property/Node", "asset");
             path = Regex.Replace(path, @"^.+/Assets", "Assets");
+            Debug.Log(path);
             TriggerEditorUtility.Init();
             NodeEditorState state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(path);
             NodeGraph graph = null;
@@ -188,6 +217,19 @@ namespace Ou.Support.NodeSupport
             curNodeEditorState = state;
         }
 
+        public static void LoadCanvas(string path)
+        {
+            NodeEditorState state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(path);
+            TriggerEditorUtility.Init();
+            NodeGraph graph = null;
+            if (state != null)
+            {
+                graph = state.CurGraph;
+            }
+            CurNodeInputInfo = null;
+            curNodeGraph = graph;
+            curNodeEditorState = state;
+        }
         public static void NewCanvas()
         {
             Path = @"Assets/Ou/Property/Node/Default.asset";

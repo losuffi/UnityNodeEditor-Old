@@ -12,7 +12,6 @@ namespace Ou.Editor.Views
 
         public TriggerEditorCanvasView(string title) : base(title)
         {
-            NodeEditor.InitAssetData();
         }
         public override void ProcessEvent(Event e)
         {

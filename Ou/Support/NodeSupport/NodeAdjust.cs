@@ -160,7 +160,9 @@ namespace Ou.Support.NodeSupport
             OuUIUtility.FormatButton("Clear", NodeEditor.Clear, skin.GetStyle("adjustBodyButton"));
             NodeEditor.curNodeEditorState.Name = GUILayout.TextArea(NodeEditor.curNodeEditorState.Name, skin.GetStyle("adjustBodyTextArea"));
             OuUIUtility.FormatButton("SetName", NodeEditor.RemDataAsset, skin.GetStyle("adjustBodyButton"));
-            OuUIUtility.FormatButton("Global Variable", () => { drawIdentity = "Variable"; }, skin.GetStyle("adjustBodyButton"));
+            OuUIUtility.FormatButton("Global Variable", () => { drawIdentity = "Variable";
+                Selection.activeObject = NodeEditor.curNodeGraph;
+            }, skin.GetStyle("adjustBodyButton"));
             #endregion
 
             #region EditorType
@@ -182,7 +184,8 @@ namespace Ou.Support.NodeSupport
             for (int i=0;i<NodeEditor.curNodeGraph.globalVariables.Count;i++)
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(NodeEditor.curNodeGraph.globalVariables[i].Key);
+                GUILayout.Label(NodeEditor.curNodeGraph.globalVariables[i].name);
+                //GUILayout.Label(NodeEditor.curNodeGraph.globalVariables[i].Value.obj.ToString());
                 OuUIUtility.FormatButton("-", () => { NodeEditor.curNodeGraph.globalVariables.RemoveAt(i);
                     i--;
                 });
@@ -196,7 +199,7 @@ namespace Ou.Support.NodeSupport
             updateVariableIndex =
                 EditorGUILayout.Popup(updateVariableIndex, VariableTypeName);
             typeName= VariableTypeName[updateVariableIndex];
-            ConnectionType.types[typeName].GUILayout(out updateObject);
+            ConnectionType.types[typeName].GUILayout(ref updateObject);
             OuUIUtility.FormatButton("添加",AddVariable);
 
 
@@ -208,8 +211,9 @@ namespace Ou.Support.NodeSupport
         {
             typeName = VariableTypeName[updateVariableIndex];
             var iconType = ConnectionType.types[typeName];
-            NodeEditor.curNodeGraph.globalVariables.Add(new KeyValuePair<string, GlobalVariable>(updateVariableName,
-                new GlobalVariable(iconType.type, updateObject, iconType.identity)));
+            NodeEditor.curNodeGraph.AddGlobalVariable(new GlobalVariable(iconType.type, updateObject, iconType.identity,
+                updateVariableName));
+            NodeEditor.curNodeGraph.nodes.ForEach(z=>z.Start());
         }
         #endregion
     }

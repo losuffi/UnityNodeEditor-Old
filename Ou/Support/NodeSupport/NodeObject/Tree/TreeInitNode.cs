@@ -32,7 +32,7 @@ namespace Ou.Support.NodeSupport
             Node node = CreateInstance<TreeInitNode>();
             node.Title = "初始";
             node.rect = new Rect(pos, new Vector2(60, 60));
-            node.CreateNodeOutput("Output 1", "Workstate");
+            node.CreateNodeOutput("Output 1", "工作状态");
             return node;
         }
 

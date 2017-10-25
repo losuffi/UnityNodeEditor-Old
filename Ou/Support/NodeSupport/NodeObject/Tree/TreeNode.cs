@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -10,6 +12,11 @@ namespace Ou.Support.NodeSupport
     [Node(false,"树型","EditorType")]
     public class TreeNode:Node
     {
+
+        [SerializeField]
+
+        protected PopupStructer popupStructer;
+
         protected internal virtual TreeNodeResult OnUpdate()
         {
             return TreeNodeResult.Idle;
@@ -23,7 +30,7 @@ namespace Ou.Support.NodeSupport
         {
             if (outputKnobs.Any())
             {
-                foreach (var output in outputKnobs.FindAll(T => T.outputType.Equals("Workstate")))
+                foreach (var output in outputKnobs.FindAll(T => T.outputType.Equals("工作状态")))
                 {
                     output.SetValue<TreeNodeResult>(TreeNodeResult.Running);
                 }
@@ -39,7 +46,7 @@ namespace Ou.Support.NodeSupport
             }
             if (inputKnobs.Any())
             {
-                foreach (var input in inputKnobs.FindAll(T => T.InputType.Equals("Workstate")))
+                foreach (var input in inputKnobs.FindAll(T => T.InputType.Equals("工作状态")))
                 {
                     state = input.GetValue<TreeNodeResult>();
                 }
@@ -92,18 +99,47 @@ namespace Ou.Support.NodeSupport
         全局变量,
     }
 
-
-    public class GlobalVariable
+    [Serializable]
+    public class GlobalVariable:ISerializationCallbackReceiver
     {
         public Type type;
         public object obj;
         public string identity;
+        public string name;
 
-        public GlobalVariable(Type type, object obj,string id)
+        // [SerializeField] private string objMessage;
+        [SerializeField] private string objMessage;
+
+        private bool flag = false;
+        public GlobalVariable(Type type, object obj,string id,string name)
         {
             this.type = type;
             this.obj = obj;
             this.identity = id;
+            this.name = name;
+
+        }
+
+        public void OnBeforeSerialize()
+        {
+            TriggerEditorUtility.CheckInit();
+            if (!flag)
+            {
+                objMessage = ConnectionType.types[this.identity].ObjtoString(this.obj);
+                flag = true;
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            if (flag && objMessage.Length > 0)
+            {
+                TriggerEditorUtility.TrigInit += () =>
+                {
+                    this.obj = ConnectionType.types[this.identity].StringtoObj(this.objMessage);
+                };
+                flag = true;
+            }
         }
     }
 }

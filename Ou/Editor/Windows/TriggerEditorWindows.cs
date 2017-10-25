@@ -21,6 +21,7 @@ namespace Ou.Editor.Windows
             Instance.titleContent = new GUIContent("TriggerEditor");
             Instance.maxSize = new Vector2(2000, 1600);
             Instance.minSize = new Vector2(1280, 800);
+            NodeEditor.InitAssetData();
         }
 
         private void OnEnable()

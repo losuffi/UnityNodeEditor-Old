@@ -15,7 +15,8 @@ namespace Ou.Support.NodeSupport
 
         protected internal void RegisterGraph(NodeGraph graph)
         {
-            graphs.Add(graph);
+            if(!graphs.Contains(graph))
+                graphs.Add(graph);
         }
     }
 }

@@ -30,19 +30,19 @@ namespace Ou.Support.NodeSupport
             sideOffset = offset;
             bodyNode.Knobs.Add(this);
         }
+        protected virtual void CheckColor()
+        {
+            
+        }
         public virtual void Draw()
         {
             rect = GetGUIKnob();
             NodeEditor.RectConverting(ref rect);
-            Check();
+            if(texture2D==null)
+                CheckColor();
             GUI.DrawTexture(rect, texture2D);
         }
 
-        void Check()
-        {
-            if (texture2D == null)
-                texture2D = OuUIUtility.ColorToTex(1, Color.red);
-        }
         private Rect GetGUIKnob()
         {
             Vector2 pos = Body.rect.position;

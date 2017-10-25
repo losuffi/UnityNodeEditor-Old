@@ -23,7 +23,11 @@ namespace Ou.Support.NodeSupport
             nodeBody.outputKnobs.Add(output);
             return output;
         }
-
+        protected override void CheckColor()
+        {
+            base.CheckColor();
+            texture2D = OuUIUtility.ColorToTex(1, Color.black);
+        }
         public void DrawConnections()
         {
             foreach (NodeInput connection in connections)

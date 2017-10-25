@@ -13,14 +13,10 @@ namespace Ou.Support.Runtime
         private string logString = string.Empty;
         private SettingType setType = SettingType.填充;
 
-        [SerializeField]
-
-        private PopupStructer popupStructer;
-
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (curGraph.CheckKey(popupStructer.value))
+            if (setType== SettingType.全局变量&& curGraph.CheckKey(popupStructer.value))
             {
                 Debug.Log(curGraph.ReadGlobalVariable(popupStructer.value).obj.ToString());
             }
@@ -32,11 +28,11 @@ namespace Ou.Support.Runtime
 
         protected internal override void NodeGUI()
         {
-            //Inspector
-            //GUILayout.Label("打印内容");
-            //logString = GUILayout.TextArea(logString);
-            setType = (SettingType)EditorGUILayout.EnumPopup("值设置类型", setType);
-            OuUIUtility.FormatSetType(setType, ref logString, ref popupStructer);
+            setType = (SettingType)EditorGUILayout.EnumPopup(setType);
+            if (!popupStructer.Equals(default(PopupStructer)))
+            {
+                OuUIUtility.FormatSetType(setType, ref logString, ref popupStructer);
+            }
         }
 
         public override Node Create(Vector2 pos)
@@ -44,7 +40,8 @@ namespace Ou.Support.Runtime
             Node node = CreateInstance<TreelogNode>();
             node.Title = "打印";
             node.rect = new Rect(pos, new Vector2(100, 80));
-            node.CreateNodeInput("Input 1", "Workstate");
+            node.CreateNodeInput("Input 1", "工作状态");
+            node.CreateNodeOutput("Output 0", "工作状态");
             return node;
         }
 

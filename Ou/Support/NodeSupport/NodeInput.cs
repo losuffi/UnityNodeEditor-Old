@@ -21,6 +21,13 @@ namespace Ou.Support.NodeSupport
             nodeBody.inputKnobs.Add(input);
             return input;
         }
+
+        protected override void CheckColor()
+        {
+            base.CheckColor();
+            texture2D = OuUIUtility.ColorToTex(1, Color.red);
+        }
+
         public void DrawConnections()
         {
             if(connection!=null)

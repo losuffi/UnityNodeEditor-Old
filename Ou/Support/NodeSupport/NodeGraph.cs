@@ -11,7 +11,7 @@ namespace Ou.Support.NodeSupport
     {
         //TODO:NodeCanvas Configue
         public List<Node> nodes=new List<Node>();
-        public List<KeyValuePair<string,GlobalVariable>> globalVariables=new List<KeyValuePair<string, GlobalVariable>>();
+        public List<GlobalVariable> globalVariables=new List<GlobalVariable>();
 
         public void Clear()
         {
@@ -106,6 +106,10 @@ namespace Ou.Support.NodeSupport
         }
 
 
+        public void AddGlobalVariable(GlobalVariable globalVariable)
+        {
+            globalVariables.Add(globalVariable);
+        }
         public string[] selectorVariable(params string[] id)
         {
             List<string> res=new List<string>();
@@ -113,9 +117,9 @@ namespace Ou.Support.NodeSupport
             {
                 foreach (string s in id)
                 {
-                    if (globalVariables[j].Value.identity.Equals(s))
+                    if (globalVariables[j].identity.Equals(s))
                     {
-                        res.Add(globalVariables[j].Key);
+                        res.Add(globalVariables[j].name);
                         break;
                     }
                 }
@@ -126,21 +130,32 @@ namespace Ou.Support.NodeSupport
         public GlobalVariable ReadGlobalVariable(string key)
         {
             if (CheckKey(key))
-                return globalVariables.Find(z => z.Key.Equals(key)).Value;
+            {
+                
+                return globalVariables.Find(z => z.name.Equals(key));
+            }
             return null;
+        }
+
+        public void UpdateGlobalVarible(string key,object obj)
+        {
+            if (CheckKey(key))
+            {
+                globalVariables.Find(z => z.name.Equals(key)).obj = obj;
+            }
         }
         public bool CheckKey(string key)
         {
             for (int i = 0; i < globalVariables.Count; i++)
             {
-                if (globalVariables[i].Key.Equals(key))
+                if (globalVariables[i].name.Equals(key))
                 {
                     return true;
                 }
             }
             return false;
         }
-        //Work :需要搭建， Test Vision；
+        //Work :需要搭建， Test Vision
         public void TreeRun()
         {
             foreach (TreeNode node in nodes)
