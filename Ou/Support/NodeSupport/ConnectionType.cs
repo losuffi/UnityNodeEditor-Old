@@ -89,8 +89,10 @@ namespace Ou.Support.NodeSupport
 
         public void GUIFill(ref object obj)
         {
-            if (obj == null)
+            if (!obj.GetType().IsAssignableFrom(typeof(string)))
+            {
                 obj = string.Empty;
+            }
             obj = GUILayout.TextArea((string)obj);
         }
 
@@ -129,7 +131,13 @@ namespace Ou.Support.NodeSupport
 
         public object stringtoobj(string str)
         {
-            return int.Parse(str);
+            int res;
+
+            if (int.TryParse(str, out res))
+            {
+                return res;
+            }
+            return null;
         }
     }
     public class RealValueType : IConnectionDecorator
@@ -157,7 +165,12 @@ namespace Ou.Support.NodeSupport
 
         public object stringtoobj(string str)
         {
-            return float.Parse(str);
+            float res;
+            if (float.TryParse(str, out res))
+            {
+                return res;
+            }
+            return null;
         }
     }
     public class WorkstateType : IConnectionDecorator

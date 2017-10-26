@@ -45,8 +45,8 @@ namespace Ou.Support.Runtime
             Node node = CreateInstance<TreeInputNode>();
             node.Title = "字符串输入";
             node.rect = new Rect(pos, new Vector2(100,120));
-            node.CreateNodeInput("Input 1", "工作状态");
-            node.CreateNodeOutput("Output 0", "工作状态");
+            node.CreateNodeInput("PreIn", "工作状态");
+            node.CreateNodeOutput("Nextout", "工作状态");
             return node;
         }
         private const string nodeId = "TestNode1";

@@ -11,15 +11,26 @@ namespace Ou.Support.NodeSupport
     {
         public string InputType;
         public NodeOutput connection;
-        public static NodeInput Create(Node nodeBody, string inputName, string inputType,Side sd= Side.Left,float offset = 0) 
+        public Node node;
+        public static NodeInput Create(Node nodeBody, string inputName, string inputType,Side sd= Side.Top,float offset = 0) 
         {
             NodeInput input = CreateInstance<NodeInput>();
             input.InputType = inputType;
             offset += 20;
             input.Init(nodeBody, inputName, sd, offset);
-            input.texture2D = OuUIUtility.ColorToTex(1, Color.red);
+            SetKnobUI(input);
             nodeBody.inputKnobs.Add(input);
+            input.node = nodeBody;
             return input;
+        }
+
+
+        static void SetKnobUI(NodeInput input)
+        {
+            if (input.Name.Contains("PreIn"))
+            {
+                input.texture2D = OuUIUtility.ColorToTex(1, Color.red);
+            }
         }
 
         protected override void CheckColor()

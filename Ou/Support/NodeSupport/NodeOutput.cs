@@ -13,16 +13,27 @@ namespace Ou.Support.NodeSupport
         public List<NodeInput> connections = new List<NodeInput>();
         public ConnectionTypeData ctd;
         public object Value = null;
-        public static NodeOutput Create(Node nodeBody, string outputName, string outputType, Side sd = Side.Left, float offset = 0)
+        public Node node;
+        public static NodeOutput Create(Node nodeBody, string outputName, string outputType,Side sd= Side.Bottom, float offset = 0)
         {
             NodeOutput output = CreateInstance<NodeOutput>();
             output.outputType = outputType;
             offset = offset + 20;
             output.Init(nodeBody, outputName, sd, offset);
-            output.texture2D = OuUIUtility.ColorToTex(1, Color.black);
+            SetKnobUI(output);
             nodeBody.outputKnobs.Add(output);
+            output.node = nodeBody;
             return output;
         }
+
+        private static void SetKnobUI(NodeOutput output)
+        {
+            if (output.Name.Contains("Nextout"))
+            {
+                output.texture2D = OuUIUtility.ColorToTex(1, Color.black);
+            }
+        }
+
         protected override void CheckColor()
         {
             base.CheckColor();

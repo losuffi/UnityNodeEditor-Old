@@ -121,7 +121,7 @@ namespace Ou.Support.NodeSupport
         }
         public NodeOutput CreateNodeOutput(string outputName, string outputType)
         {
-            return NodeOutput.Create(this, outputName, outputType, Side.Right);
+            return NodeOutput.Create(this, outputName, outputType);
         }
         public NodeOutput CreateNodeOutput(string outputName, string outputType, Side sd)
         {

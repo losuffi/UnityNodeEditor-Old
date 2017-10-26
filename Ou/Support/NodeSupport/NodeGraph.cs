@@ -103,6 +103,8 @@ namespace Ou.Support.NodeSupport
             {
                 AssetDatabase.AddObjectToAsset(nodeOutputKnob, node);
             }
+            node.curGraph = this;
+            node.Start();
         }
 
 
@@ -134,7 +136,7 @@ namespace Ou.Support.NodeSupport
                 
                 return globalVariables.Find(z => z.name.Equals(key));
             }
-            return null;
+            return new GlobalVariable(typeof(string), string.Empty, "字符串", "none");
         }
 
         public void UpdateGlobalVarible(string key,object obj)

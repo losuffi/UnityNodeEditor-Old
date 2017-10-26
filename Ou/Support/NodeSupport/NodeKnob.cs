@@ -17,7 +17,7 @@ namespace Ou.Support.NodeSupport
     public class NodeKnob:ScriptableObject
     {
         protected Node Body;
-        protected string Name;
+        protected internal string Name;
         protected Side side;
         protected float sideOffset;
         protected Texture2D texture2D;

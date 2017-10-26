@@ -56,8 +56,8 @@ namespace Ou.Support.NodeSupport
 
         public static void DrawLine(Vector3 startPos, Vector3 endPos)
         {
-            Vector3 startTan = startPos + Vector3.right * 50;
-            Vector3 endTan = endPos + Vector3.left * 50;
+            Vector3 startTan = startPos + Vector3.up * 50;
+            Vector3 endTan = endPos + Vector3.down * 50;
             Handles.DrawBezier(startPos, endPos, startTan, endTan, Color.white, null, 5);
         }
 
@@ -79,6 +79,16 @@ namespace Ou.Support.NodeSupport
             }
         }
 
+        public static void FormatVariableType(ref GlobalVariable obj,ref int index)
+        {
+            index = EditorGUILayout.Popup(index, ConnectionType.identitys);
+            var icd = ConnectionType.types[ConnectionType.identitys[index]];
+            obj.type = icd.type;
+            obj.identity = icd.identity;
+            obj.Update();
+            ConnectionType.types[ConnectionType.identitys[index]].GUILayout(ref obj.obj);
+
+        }
         public static void FormatTextfield(ref string str)
         {
             str = GUILayout.TextField(str);

@@ -33,6 +33,7 @@ namespace Ou.Support.Runtime
             {
                 OuUIUtility.FormatSetType(setType, ref logString, ref popupStructer);
             }
+
         }
 
         public override Node Create(Vector2 pos)
@@ -40,8 +41,8 @@ namespace Ou.Support.Runtime
             Node node = CreateInstance<TreelogNode>();
             node.Title = "打印";
             node.rect = new Rect(pos, new Vector2(100, 80));
-            node.CreateNodeInput("Input 1", "工作状态");
-            node.CreateNodeOutput("Output 0", "工作状态");
+            node.CreateNodeInput("PreIn", "工作状态");
+            node.CreateNodeOutput("Nextout", "工作状态");
             return node;
         }
 

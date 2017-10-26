@@ -12,6 +12,29 @@ namespace Ou.Support.NodeSupport
     [Node(false,"树型","EditorType")]
     public class TreeNode:Node
     {
+        protected internal TreeNodeResult nextIsCompleted
+        {
+            get
+            {
+                TreeNodeResult determineComplete = TreeNodeResult.Done;
+                foreach (NodeOutput output in outputKnobs)
+                {
+                    foreach (NodeInput input in output.connections)
+                    {
+                        if ((input.node as TreeNode).OnUpdate() == TreeNodeResult.Failed)
+                        {
+                            determineComplete = TreeNodeResult.Failed;
+                            return TreeNodeResult.Failed;
+                        }
+                        else if((input.node as TreeNode).OnUpdate()!= TreeNodeResult.Done)
+                        {
+                            determineComplete = TreeNodeResult.Running;
+                        }
+                    }
+                }
+                return determineComplete;
+            }
+        }
 
         [SerializeField]
 
@@ -22,20 +45,41 @@ namespace Ou.Support.NodeSupport
             return TreeNodeResult.Idle;
         }
 
+        protected enum GotoType
+        {
+            Single,
+            All,
+        }
+
+        protected void Goto(GotoType type = GotoType.All, string des ="")
+        {
+            if (type == GotoType.All)
+            {
+                if (outputKnobs.Any())
+                {
+                    foreach (var output in outputKnobs.FindAll(T => T.outputType.Equals("工作状态")))
+                    {
+                        output.SetValue<TreeNodeResult>(TreeNodeResult.Running);
+                    }
+
+                }
+            }
+            else if(type== GotoType.Single)
+            {
+                if (outputKnobs.Any())
+                {
+                    var output = outputKnobs.Find(T => T.Name.Equals(des));
+                    output.SetValue<TreeNodeResult>(TreeNodeResult.Running);
+                }
+            }
+        }
         protected internal virtual void OnStart()
         {
             
         }
         protected internal override void Evaluator()
         {
-            if (outputKnobs.Any())
-            {
-                foreach (var output in outputKnobs.FindAll(T => T.outputType.Equals("工作状态")))
-                {
-                    output.SetValue<TreeNodeResult>(TreeNodeResult.Running);
-                }
-                
-            }
+            Goto();
         }
 
         protected internal virtual bool OnCheckCompelete()
@@ -120,13 +164,23 @@ namespace Ou.Support.NodeSupport
 
         }
 
+        public void Update()
+        {
+            flag = false;
+        }
         public void OnBeforeSerialize()
         {
             TriggerEditorUtility.CheckInit();
             if (!flag)
             {
-                objMessage = ConnectionType.types[this.identity].ObjtoString(this.obj);
-                flag = true;
+                if (this.identity != null)
+                {
+                    if (ConnectionType.types.ContainsKey(this.identity))
+                    {
+                        objMessage = ConnectionType.types[this.identity].ObjtoString(this.obj);
+                        flag = true;
+                    }
+                }
             }
         }
 
@@ -136,7 +190,12 @@ namespace Ou.Support.NodeSupport
             {
                 TriggerEditorUtility.TrigInit += () =>
                 {
+                    if (name.Equals(string.Empty))
+                    {
+                        Debug.Log(this.identity);
+                    }
                     this.obj = ConnectionType.types[this.identity].StringtoObj(this.objMessage);
+                    this.type = this.obj.GetType();
                 };
                 flag = true;
             }
