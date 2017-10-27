@@ -12,27 +12,52 @@ namespace Ou.Support.NodeSupport
     [Node(false,"树型","EditorType")]
     public class TreeNode:Node
     {
-        protected internal TreeNodeResult nextIsCompleted
+        protected internal TreeNodeResult CheckResult(string outputName)
         {
-            get
+            var output = outputKnobs.Find(T => T.Name.Equals(outputName));
+            var res = TreeNodeResult.Done;
+            if (output == null||!output.connections.Any())
             {
-                TreeNodeResult determineComplete = TreeNodeResult.Done;
-                foreach (NodeOutput output in outputKnobs)
+                return res;
+            }
+            foreach (NodeInput input in output.connections)
+            {
+                var nextnode = input.Body as TreeNode;
+                if (nextnode.state == TreeNodeResult.Failed)
                 {
-                    foreach (NodeInput input in output.connections)
-                    {
-                        if ((input.node as TreeNode).OnUpdate() == TreeNodeResult.Failed)
-                        {
-                            determineComplete = TreeNodeResult.Failed;
-                            return TreeNodeResult.Failed;
-                        }
-                        else if((input.node as TreeNode).OnUpdate()!= TreeNodeResult.Done)
-                        {
-                            determineComplete = TreeNodeResult.Running;
-                        }
-                    }
+                    res = TreeNodeResult.Failed;
+                    return res;
                 }
-                return determineComplete;
+                else if (nextnode.state == TreeNodeResult.Break)
+                {
+                    res = TreeNodeResult.Break;
+                    return res;
+                }
+                else if (nextnode.state != TreeNodeResult.Done)
+                {
+                    res = TreeNodeResult.Running;
+                    return res;
+                }
+                else
+                {
+                    res = nextnode.CheckResult("Nextout");
+                }
+            }
+            return res;
+        }
+
+        protected internal void StateReset(string outputName)
+        {
+            var output = outputKnobs.Find(T => T.Name.Equals(outputName));
+
+            if (output == null||!output.connections.Any())
+            {
+                return;
+            }
+            foreach (NodeInput input in output.connections)
+            {
+                (input.Body as TreeNode).state = TreeNodeResult.Idle;
+                (input.Body as TreeNode).StateReset("Nextout");
             }
         }
 
@@ -117,7 +142,6 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void NodeGUI()
         {
-            throw new NotImplementedException();
         }
 
         public override Node Create(Vector2 pos)
@@ -135,6 +159,7 @@ namespace Ou.Support.NodeSupport
         Done,
         Failed,
         Running,
+        Break,
     }
 
     public enum SettingType
@@ -155,6 +180,7 @@ namespace Ou.Support.NodeSupport
         [SerializeField] private string objMessage;
 
         private bool flag = false;
+        public bool isFromGlobaldatas = false;
         public GlobalVariable(Type type, object obj,string id,string name)
         {
             this.type = type;
@@ -162,6 +188,14 @@ namespace Ou.Support.NodeSupport
             this.identity = id;
             this.name = name;
 
+        }
+
+        public GlobalVariable()
+        {
+            this.type = typeof(string);
+            this.obj = string.Empty;
+            this.identity = "字符串";
+            this.name = string.Empty;
         }
 
         public void Update()

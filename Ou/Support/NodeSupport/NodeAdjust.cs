@@ -30,11 +30,8 @@ namespace Ou.Support.NodeSupport
         public static Dictionary<string, SelectedTypeData> nodeTypeDatas = new Dictionary<string, SelectedTypeData>();
         public static string selectedNodeTypeName = string.Empty;
 
-        private static string updateVariableName = string.Empty;
-        private static string typeName = string.Empty;
-        private static int updateVariableIndex = 0;
-        private static string[] VariableTypeName = null;
-        private static object updateObject = null;
+        private static int FillIndex = 0;
+        private static GlobalVariable obj = new GlobalVariable(typeof(string), string.Empty, "字符串", string.Empty);
 
         public static void Draw(GUISkin skin)
         {
@@ -193,13 +190,9 @@ namespace Ou.Support.NodeSupport
             }
             GUILayout.Label("---添加变量---", skin.GetStyle("adjustBodyLabel"));
             GUILayout.Label("变量名：");
-            OuUIUtility.FormatTextfield(ref updateVariableName);
+            OuUIUtility.FormatTextfield(ref obj.name);
             GUILayout.Label("变量种类：");
-            VariableTypeName = VariableTypeName ?? ConnectionType.identitys;
-            updateVariableIndex =
-                EditorGUILayout.Popup(updateVariableIndex, VariableTypeName);
-            typeName= VariableTypeName[updateVariableIndex];
-            ConnectionType.types[typeName].GUILayout(ref updateObject);
+            OuUIUtility.FormatSetVariable_SelectedType(ref obj, ref FillIndex);
             OuUIUtility.FormatButton("添加",AddVariable);
 
 
@@ -209,11 +202,9 @@ namespace Ou.Support.NodeSupport
 
         private static void AddVariable()
         {
-            typeName = VariableTypeName[updateVariableIndex];
-            var iconType = ConnectionType.types[typeName];
-            NodeEditor.curNodeGraph.AddGlobalVariable(new GlobalVariable(iconType.type, updateObject, iconType.identity,
-                updateVariableName));
+            NodeEditor.curNodeGraph.AddGlobalVariable(obj);
             NodeEditor.curNodeGraph.nodes.ForEach(z=>z.Start());
+            obj=new GlobalVariable(typeof(string),string.Empty,"字符串",string.Empty);
         }
         #endregion
     }

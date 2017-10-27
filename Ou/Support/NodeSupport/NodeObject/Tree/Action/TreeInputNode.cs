@@ -8,37 +8,43 @@ using UnityEngine;
 
 namespace Ou.Support.Runtime
 {
-    [Node(false, "字符输入","Node")]
+    [Node(false, "设置值","Node")]
     public class TreeInputNode : TreeNodeAction
     {
-        private string fillValue = string.Empty;
-        private string Value=string.Empty;
+        [SerializeField]
+        private GlobalVariable obj1;
+
+        private int FillVariableTypeIndex1;
         private SettingType setType = SettingType.全局变量;
+        private string nouseful;
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (curGraph.CheckKey(popupStructer.value))
+            if (curGraph.CheckKey(obj1.name))
             {
-                curGraph.UpdateGlobalVarible(popupStructer.value, Value);
+                curGraph.UpdateGlobalVarible(obj1.name, obj1.obj);
             }
         }
 
         protected internal override void Start()
         {
             base.Start();
-            popupStructer = new PopupStructer(curGraph.selectorVariable("字符串"));
+            popupStructer = new PopupStructer(curGraph.selectorVariable("字符串", "真值", "实值"),curGraph);
+            FillVariableTypeIndex1 = 0;
+            obj1 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
+            nouseful = string.Empty;
         }
 
         protected internal override void NodeGUI()
         {
-            GUILayout.Label("设置值");
-            Value = GUILayout.TextField(Value);
-            setType = (SettingType)EditorGUILayout.EnumPopup(setType);
-            if (!popupStructer.Equals(default(PopupStructer)))
+            GUILayout.Label("设置值");            
+            if (popupStructer!=null)
             {
-                OuUIUtility.FormatSetType(setType, ref fillValue, ref popupStructer);
+                OuUIUtility.FormatSelectedVariable_TypeFit(ref obj1, ref FillVariableTypeIndex1, popupStructer);
+                OuUIUtility.FormatSetVariable_SelectedType(ref obj1, ref FillVariableTypeIndex1);
             }
         }
+
 
         public override Node Create(Vector2 pos)
         {

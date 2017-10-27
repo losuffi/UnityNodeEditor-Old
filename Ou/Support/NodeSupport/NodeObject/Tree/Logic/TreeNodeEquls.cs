@@ -30,37 +30,35 @@ namespace Ou.Support.NodeSupport
         {
             if (result)
             {
-                Goto(GotoType.Single, "NextOut-T");
+                Goto(GotoType.Single, "Nextout");
             }
             else
             {
-                Goto(GotoType.Single, "NextOut-F");
+                Goto(GotoType.Single, "Nextout");
             }
         }
 
         protected internal override void NodeGUI()
         {
-            if (!popupStructer.Equals(default(PopupStructer)))
+            if (popupStructer!=null)
             {
                 setType1 = (SettingType)EditorGUILayout.EnumPopup(setType1);
                 if (setType1 == SettingType.填充)
                 {
-                    OuUIUtility.FormatVariableType(ref obj1, ref FillVariableTypeIndex1);
+                    OuUIUtility.FormatSetVariable_SelectedType(ref obj1, ref FillVariableTypeIndex1);
                 }
                 else
                 {
-                    OuUIUtility.FormatSetType(SettingType.全局变量, ref Nonuseful, ref popupStructer);
-                    obj1 = curGraph.ReadGlobalVariable(popupStructer.value);
+                    OuUIUtility.FormatSelectedVariable_TypeFit(ref obj1, ref FillVariableTypeIndex1,popupStructer);
                 }
                 setType2 = (SettingType)EditorGUILayout.EnumPopup(setType2);
                 if (setType2 == SettingType.填充)
                 {
-                    OuUIUtility.FormatVariableType(ref obj2, ref FillVariableTypeIndex2);
+                    OuUIUtility.FormatSetVariable_SelectedType(ref obj2, ref FillVariableTypeIndex2);
                 }
                 else
                 {
-                    OuUIUtility.FormatSetType(SettingType.全局变量, ref Nonuseful, ref popupStructer);
-                    obj2 = curGraph.ReadGlobalVariable(popupStructer.value);
+                    OuUIUtility.FormatSelectedVariable_TypeFit(ref obj2, ref FillVariableTypeIndex2, popupStructer);
                 }
             }
             GUILayout.BeginHorizontal();
@@ -75,8 +73,8 @@ namespace Ou.Support.NodeSupport
             node.Title = "是否相等";
             node.rect = new Rect(pos, new Vector2(100, 180));
             node.CreateNodeInput("PreIn", "工作状态");
-            node.CreateNodeOutput("NextOut-T", "工作状态", Side.Bottom);
-            node.CreateNodeOutput("NextOut-F", "工作状态", Side.Bottom, 50);
+            node.CreateNodeOutput("Nextout", "工作状态", Side.Bottom);
+            node.CreateNodeOutput("Nextout", "工作状态", Side.Bottom, 50);
             return node;
         }
 
@@ -101,7 +99,7 @@ namespace Ou.Support.NodeSupport
         protected internal override void Start()
         {
             base.Start();
-            popupStructer=new PopupStructer(curGraph.selectorVariable("字符串", "实值", "真值"));
+            popupStructer=new PopupStructer(curGraph.selectorVariable("字符串", "实值", "真值"),curGraph);
             result = false;
             FillVariableTypeIndex1 = 0;
             obj1 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");

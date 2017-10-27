@@ -8,20 +8,17 @@ using UnityEngine;
 namespace Ou.Support.NodeSupport
 {
     [Serializable]
-    public struct PopupStructer
+    public class PopupStructer
     {
         [HideInInspector]
         public string[] datas;
         [HideInInspector]
-        public int selectionIndex;
-        [HideInInspector]
-        public string value;
+        public NodeGraph graph;
 
-        public PopupStructer(string[] datas)
+        public PopupStructer(string[] datas,NodeGraph graph)
         {
             this.datas = datas;
-            this.selectionIndex = 0;
-            this.value = datas.Length > 0 ? datas[0] : string.Empty;
+            this.graph = graph;
         }
 
     }
@@ -61,25 +58,19 @@ namespace Ou.Support.NodeSupport
             Handles.DrawBezier(startPos, endPos, startTan, endTan, Color.white, null, 5);
         }
 
-        public static void FormatSetType(SettingType type,ref string fill,ref PopupStructer popupStructer)
+
+        public static void FormatSelectedVariable_TypeFit(ref GlobalVariable obj,ref int index,PopupStructer popupStructer)
         {
-            if (type == SettingType.填充)
-            {
-                GUILayout.Label("填充所需变量");
-                fill = GUILayout.TextField(fill);
-            }
-            else
-            {
-                GUILayout.Label("选择全局变量");
-                popupStructer.selectionIndex =
-                    EditorGUILayout.Popup(popupStructer.selectionIndex, popupStructer.datas);
-                popupStructer.value = popupStructer.datas.Length > 0
-                    ? popupStructer.datas[popupStructer.selectionIndex]
-                    : string.Empty;
-            }
+            index = EditorGUILayout.Popup(index, popupStructer.datas);
+            var res= popupStructer.datas.Length > 0
+                ? popupStructer.datas[index]
+                : string.Empty;
+            obj = popupStructer.graph.ReadGlobalVariable(res);
+            obj.isFromGlobaldatas = false;
         }
 
-        public static void FormatVariableType(ref GlobalVariable obj,ref int index)
+
+        public static void FormatSetVariable_SelectedType(ref GlobalVariable obj,ref int index)
         {
             index = EditorGUILayout.Popup(index, ConnectionType.identitys);
             var icd = ConnectionType.types[ConnectionType.identitys[index]];
@@ -87,7 +78,7 @@ namespace Ou.Support.NodeSupport
             obj.identity = icd.identity;
             obj.Update();
             ConnectionType.types[ConnectionType.identitys[index]].GUILayout(ref obj.obj);
-
+            obj.isFromGlobaldatas = true;
         }
         public static void FormatTextfield(ref string str)
         {

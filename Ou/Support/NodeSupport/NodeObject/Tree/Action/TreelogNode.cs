@@ -13,12 +13,15 @@ namespace Ou.Support.Runtime
         private string logString = string.Empty;
         private SettingType setType = SettingType.填充;
 
+        [SerializeField]
+        private GlobalVariable obj;
+        private int fillIndex;
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (setType== SettingType.全局变量&& curGraph.CheckKey(popupStructer.value))
+            if (setType== SettingType.全局变量&& curGraph.CheckKey(obj.name))
             {
-                Debug.Log(curGraph.ReadGlobalVariable(popupStructer.value).obj.ToString());
+                Debug.Log(curGraph.ReadGlobalVariable(obj.name).obj);
             }
             else
             {
@@ -29,11 +32,17 @@ namespace Ou.Support.Runtime
         protected internal override void NodeGUI()
         {
             setType = (SettingType)EditorGUILayout.EnumPopup(setType);
-            if (!popupStructer.Equals(default(PopupStructer)))
+            if (popupStructer != null)
             {
-                OuUIUtility.FormatSetType(setType, ref logString, ref popupStructer);
+                if (setType == SettingType.填充)
+                {
+                    logString = GUILayout.TextField(logString);
+                }
+                else
+                {
+                    OuUIUtility.FormatSelectedVariable_TypeFit(ref obj, ref fillIndex, popupStructer);
+                }
             }
-
         }
 
         public override Node Create(Vector2 pos)
@@ -55,7 +64,9 @@ namespace Ou.Support.Runtime
         protected internal override void Start()
         {
             base.Start();
-            popupStructer = new PopupStructer(curGraph.selectorVariable("字符串", "实值", "真值"));
+            popupStructer = new PopupStructer(curGraph.selectorVariable("字符串", "实值", "真值"),curGraph);
+            obj=new GlobalVariable();
+            fillIndex = 0;
         }
 
         protected internal override void OnStart()

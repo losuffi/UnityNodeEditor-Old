@@ -40,7 +40,10 @@ namespace Ou.Support.NodeSupport
         }
         protected internal virtual void Draw()
         {
-            //TODO:DrawNode
+            if (NodeSkin == null)
+            {
+                Init();
+            }
             nodeRect = rect;
             NodeEditor.RectConverting(ref nodeRect);
             Vector2 contentOffset = new Vector2(0, 20);
@@ -48,7 +51,7 @@ namespace Ou.Support.NodeSupport
             Rect nodeBody = new Rect(nodeRect.x, nodeRect.y + contentOffset.y, nodeRect.width,
                 nodeRect.height - contentOffset.y);
             GUI.Label(nodeHead, Title,
-                NodeEditor.curNodeEditorState.SelectedNode == this
+                (NodeEditor.curNodeEditorState.SelectedNode == this)
                     ? NodeSkin.GetStyle("nodeHeadSelected")
                     : NodeSkin.GetStyle("nodeHead"));
             GUI.BeginGroup(nodeBody);

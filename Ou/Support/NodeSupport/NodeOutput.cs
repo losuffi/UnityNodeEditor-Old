@@ -13,7 +13,6 @@ namespace Ou.Support.NodeSupport
         public List<NodeInput> connections = new List<NodeInput>();
         public ConnectionTypeData ctd;
         public object Value = null;
-        public Node node;
         public static NodeOutput Create(Node nodeBody, string outputName, string outputType,Side sd= Side.Bottom, float offset = 0)
         {
             NodeOutput output = CreateInstance<NodeOutput>();
@@ -22,7 +21,7 @@ namespace Ou.Support.NodeSupport
             output.Init(nodeBody, outputName, sd, offset);
             SetKnobUI(output);
             nodeBody.outputKnobs.Add(output);
-            output.node = nodeBody;
+            output.Body = nodeBody;
             return output;
         }
 
@@ -32,12 +31,20 @@ namespace Ou.Support.NodeSupport
             {
                 output.texture2D = OuUIUtility.ColorToTex(1, Color.black);
             }
+            if (output.Name.Contains("Forout"))
+            {
+                output.texture2D = OuUIUtility.ColorToTex(1, Color.blue);
+            }
+            if (output.Name.Contains("Setout"))
+            {
+                output.texture2D = OuUIUtility.ColorToTex(1, Color.yellow);
+            }
         }
 
         protected override void CheckColor()
         {
             base.CheckColor();
-            texture2D = OuUIUtility.ColorToTex(1, Color.black);
+            SetKnobUI(this);
         }
         public void DrawConnections()
         {

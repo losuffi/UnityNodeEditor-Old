@@ -11,7 +11,6 @@ namespace Ou.Support.NodeSupport
     {
         public string InputType;
         public NodeOutput connection;
-        public Node node;
         public static NodeInput Create(Node nodeBody, string inputName, string inputType,Side sd= Side.Top,float offset = 0) 
         {
             NodeInput input = CreateInstance<NodeInput>();
@@ -20,7 +19,7 @@ namespace Ou.Support.NodeSupport
             input.Init(nodeBody, inputName, sd, offset);
             SetKnobUI(input);
             nodeBody.inputKnobs.Add(input);
-            input.node = nodeBody;
+            input.Body = nodeBody;
             return input;
         }
 
@@ -36,7 +35,7 @@ namespace Ou.Support.NodeSupport
         protected override void CheckColor()
         {
             base.CheckColor();
-            texture2D = OuUIUtility.ColorToTex(1, Color.red);
+            SetKnobUI(this);
         }
 
         public void DrawConnections()

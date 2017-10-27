@@ -143,7 +143,8 @@ namespace Ou.Support.NodeSupport
         {
             if (CheckKey(key))
             {
-                globalVariables.Find(z => z.name.Equals(key)).obj = obj;
+                var tar = globalVariables.Find(z => z.name.Equals(key));
+                tar.obj = obj;
             }
         }
         public bool CheckKey(string key)

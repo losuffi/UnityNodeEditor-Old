@@ -19,7 +19,7 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void NodeGUI()
         {
-            base.NodeGUI();
+
         }
 
         public override Node Create(Vector2 pos)
@@ -36,7 +36,25 @@ namespace Ou.Support.NodeSupport
 
         protected internal override TreeNodeResult OnUpdate()
         {
-            return base.OnUpdate();
+            var res = CheckResult("Forout");
+            Evaluator();
+            if (res == TreeNodeResult.Break)
+            {
+                return TreeNodeResult.Done;
+            }
+            else if(res == TreeNodeResult.Running)
+            {
+                return TreeNodeResult.Running;
+            }else if (res == TreeNodeResult.Done)
+            {
+                StateReset("Forout");
+                Goto(GotoType.Single, "Forout");
+                return TreeNodeResult.Running;
+            }
+            else
+            {
+                return TreeNodeResult.Failed;
+            }
         }
 
         protected internal override void OnStart()

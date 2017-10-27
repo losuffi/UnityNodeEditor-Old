@@ -16,7 +16,8 @@ namespace Ou.Support.NodeSupport
     }
     public class NodeKnob:ScriptableObject
     {
-        protected Node Body;
+        [SerializeField]
+        protected internal Node Body;
         protected internal string Name;
         protected Side side;
         protected float sideOffset;

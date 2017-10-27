@@ -37,7 +37,11 @@ namespace Ou.Support.NodeSupport
             }
             for (int nodeCnt = 0; nodeCnt < curNodeGraph.nodes.Count; nodeCnt++)
             {
+                #if UNITY_EDITOR
+                
                 curNodeGraph.nodes[nodeCnt].Draw();
+
+                #endif
             }
 
             if (CurNodeInputInfo == null || CurNodeInputInfo.EdState == null) 
