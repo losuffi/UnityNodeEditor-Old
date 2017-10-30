@@ -32,7 +32,7 @@ namespace Ou.Support.NodeSupport
 
         private static int FillIndex = 0;
         private static GlobalVariable obj = new GlobalVariable(typeof(string), string.Empty, "字符串", string.Empty);
-
+        private static string objname = string.Empty;
         public static void Draw(GUISkin skin)
         {
             NodeAdjust.skin = skin;
@@ -178,21 +178,21 @@ namespace Ou.Support.NodeSupport
         private static void DrawTreeNodeVariable()
         {
             GUILayout.Label("---全局变量库---", skin.GetStyle("adjustBodyLabel"));
-            for (int i=0;i<NodeEditor.curNodeGraph.globalVariables.Count;i++)
+            for (int i=0;i<NodeEditor.curNodeGraph.GlobalVariablesCount;i++)
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(NodeEditor.curNodeGraph.globalVariables[i].name);
+                GUILayout.Label(NodeEditor.curNodeGraph.ReadGlobalVariable(i).name);
                 //GUILayout.Label(NodeEditor.curNodeGraph.globalVariables[i].Value.obj.ToString());
-                OuUIUtility.FormatButton("-", () => { NodeEditor.curNodeGraph.globalVariables.RemoveAt(i);
+                OuUIUtility.FormatButton("-", () => { NodeEditor.curNodeGraph.RemoveGlobalVariable(i);
                     i--;
                 });
                 GUILayout.EndHorizontal();
             }
             GUILayout.Label("---添加变量---", skin.GetStyle("adjustBodyLabel"));
             GUILayout.Label("变量名：");
-            OuUIUtility.FormatTextfield(ref obj.name);
+            OuUIUtility.FormatTextfield(ref objname);
             GUILayout.Label("变量种类：");
-            OuUIUtility.FormatSetVariable_SelectedType(ref obj, ref FillIndex);
+            OuUIUtility.FormatSetVariable_SelectedType(ref obj, ref FillIndex, objname,true);
             OuUIUtility.FormatButton("添加",AddVariable);
 
 

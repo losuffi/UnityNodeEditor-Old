@@ -19,9 +19,9 @@ namespace Ou.Support.Runtime
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (setType== SettingType.全局变量&& curGraph.CheckKey(obj.name))
+            if (setType== SettingType.全局变量&& curGraph.CheckKey(obj.name, DataModel.Runtime))
             {
-                Debug.Log(curGraph.ReadGlobalVariable(obj.name).obj);
+                Debug.Log(curGraph.ReadGlobalVariable(obj.name, DataModel.Runtime).obj);
             }
             else
             {

@@ -33,7 +33,7 @@ namespace Ou.Support.NodeSupport
                     res = TreeNodeResult.Break;
                     return res;
                 }
-                else if (nextnode.state != TreeNodeResult.Done)
+                else if (nextnode.state == TreeNodeResult.Running)
                 {
                     res = TreeNodeResult.Running;
                     return res;
@@ -48,16 +48,21 @@ namespace Ou.Support.NodeSupport
 
         protected internal void StateReset(string outputName)
         {
-            var output = outputKnobs.Find(T => T.Name.Equals(outputName));
-
-            if (output == null||!output.connections.Any())
+            var outputs = outputKnobs.FindAll(T => T.Name.Equals(outputName));
+            ClearKnobMessage();
+            if (!outputs.Any())
             {
                 return;
             }
-            foreach (NodeInput input in output.connections)
+            foreach (NodeOutput output in outputs)
             {
-                (input.Body as TreeNode).state = TreeNodeResult.Idle;
-                (input.Body as TreeNode).StateReset("Nextout");
+                if(!output.connections.Any())
+                    continue;
+                foreach (NodeInput input in output.connections)
+                {
+                    (input.Body as TreeNode).state = TreeNodeResult.Idle;
+                    (input.Body as TreeNode).StateReset("Nextout");
+                }
             }
         }
 
@@ -84,7 +89,7 @@ namespace Ou.Support.NodeSupport
                 {
                     foreach (var output in outputKnobs.FindAll(T => T.outputType.Equals("工作状态")))
                     {
-                        output.SetValue<TreeNodeResult>(TreeNodeResult.Running);
+                        output.SetValue<TreeNodeResult>(TreeNodeResult.Start);
                     }
 
                 }
@@ -94,9 +99,15 @@ namespace Ou.Support.NodeSupport
                 if (outputKnobs.Any())
                 {
                     var output = outputKnobs.Find(T => T.Name.Equals(des));
-                    output.SetValue<TreeNodeResult>(TreeNodeResult.Running);
+                    output.SetValue<TreeNodeResult>(TreeNodeResult.Start);
                 }
             }
+        }
+
+        protected void Goto(int index)
+        {
+            var output = outputKnobs[index];
+            output.SetValue<TreeNodeResult>(TreeNodeResult.Running);
         }
         protected internal virtual void OnStart()
         {
@@ -119,9 +130,10 @@ namespace Ou.Support.NodeSupport
                 {
                     state = input.GetValue<TreeNodeResult>();
                 }
-                if (state == TreeNodeResult.Running)
+                if (state == TreeNodeResult.Start)
                 {
                     OnStart();
+                    state = TreeNodeResult.Running;
                 }
             }
             return false;
@@ -144,6 +156,14 @@ namespace Ou.Support.NodeSupport
         {
         }
 
+        protected internal void ClearKnobMessage()
+        {
+            foreach (NodeOutput knob in outputKnobs)
+            {
+                knob.SetValue<TreeNodeResult>(TreeNodeResult.Idle);
+            }
+        }
+
         public override Node Create(Vector2 pos)
         {
             throw new NotImplementedException();
@@ -156,6 +176,7 @@ namespace Ou.Support.NodeSupport
     public enum TreeNodeResult
     {
         Idle,
+        Start,
         Done,
         Failed,
         Running,
@@ -168,18 +189,25 @@ namespace Ou.Support.NodeSupport
         全局变量,
     }
 
+    public enum DataModel
+    {
+        Editor,
+        Runtime,
+    }
+
     [Serializable]
     public class GlobalVariable:ISerializationCallbackReceiver
-    {
+    { 
+
+
         public Type type;
         public object obj;
         public string identity;
         public string name;
 
         // [SerializeField] private string objMessage;
-        [SerializeField] private string objMessage;
+        [SerializeField] public string objMessage;
 
-        private bool flag = false;
         public bool isFromGlobaldatas = false;
         public GlobalVariable(Type type, object obj,string id,string name)
         {
@@ -190,6 +218,15 @@ namespace Ou.Support.NodeSupport
 
         }
 
+        public GlobalVariable(GlobalVariable variable)
+        {
+            type = variable.type;
+            obj = variable.obj;
+            identity = variable.identity;
+            name = variable.name;
+            objMessage = variable.objMessage;
+        }
+
         public GlobalVariable()
         {
             this.type = typeof(string);
@@ -198,41 +235,32 @@ namespace Ou.Support.NodeSupport
             this.name = string.Empty;
         }
 
-        public void Update()
+        public void ConvertString()
         {
-            flag = false;
+            objMessage = ConnectionType.types[this.identity].ObjtoString(this.obj);
         }
+
+        public void ConvertObject()
+        {
+            obj = ConnectionType.types[this.identity].StringtoObj(objMessage);
+        }
+
         public void OnBeforeSerialize()
         {
-            TriggerEditorUtility.CheckInit();
-            if (!flag)
-            {
-                if (this.identity != null)
-                {
-                    if (ConnectionType.types.ContainsKey(this.identity))
-                    {
-                        objMessage = ConnectionType.types[this.identity].ObjtoString(this.obj);
-                        flag = true;
-                    }
-                }
-            }
+            if(this.obj==null||this.obj.Equals(string.Empty))
+                return;
+            objMessage= ConnectionType.types[this.identity].ObjtoString(this.obj);
         }
 
         public void OnAfterDeserialize()
         {
-            if (flag && objMessage.Length > 0)
+            if(objMessage.Equals(string.Empty))
+                return;
+            TriggerEditorUtility.TrigInit += delegate
             {
-                TriggerEditorUtility.TrigInit += () =>
-                {
-                    if (name.Equals(string.Empty))
-                    {
-                        Debug.Log(this.identity);
-                    }
-                    this.obj = ConnectionType.types[this.identity].StringtoObj(this.objMessage);
-                    this.type = this.obj.GetType();
-                };
-                flag = true;
-            }
+                obj = ConnectionType.types[this.identity].StringtoObj(this.objMessage);
+            };
         }
     }
+
 }

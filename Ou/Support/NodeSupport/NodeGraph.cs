@@ -11,8 +11,15 @@ namespace Ou.Support.NodeSupport
     {
         //TODO:NodeCanvas Configue
         public List<Node> nodes=new List<Node>();
-        public List<GlobalVariable> globalVariables=new List<GlobalVariable>();
 
+        [SerializeField]
+        private List<GlobalVariable> globalVariables =new List<GlobalVariable>();
+        private List<GlobalVariable> globalVariablesRuntime=new List<GlobalVariable>();
+
+
+        #region Node
+
+       
         public void Clear()
         {
             if (nodes.Any())
@@ -36,6 +43,8 @@ namespace Ou.Support.NodeSupport
                 return;
             }
             nodes.Remove(node);
+            node.RemoveLink(typeof(NodeOutput));
+            node.RemoveLink(typeof(NodeInput));
             foreach (NodeKnob nodeKnob in node.Knobs)
             {
                 DestroyImmediate(nodeKnob, true);
@@ -108,6 +117,13 @@ namespace Ou.Support.NodeSupport
         }
 
 
+        #endregion
+
+
+
+
+        #region Variable
+
         public void AddGlobalVariable(GlobalVariable globalVariable)
         {
             globalVariables.Add(globalVariable);
@@ -129,51 +145,77 @@ namespace Ou.Support.NodeSupport
             return res.ToArray();
         }
 
-        public GlobalVariable ReadGlobalVariable(string key)
+        public GlobalVariable ReadGlobalVariable(string key,DataModel typeModel= DataModel.Editor)
         {
-            if (CheckKey(key))
+            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
+            if (CheckKey(key, typeModel))
             {
-                
-                return globalVariables.Find(z => z.name.Equals(key));
+                var tar = gvs.Find(z => z.name.Equals(key));
+                return tar;
             }
             return new GlobalVariable(typeof(string), string.Empty, "字符串", "none");
         }
-
-        public void UpdateGlobalVarible(string key,object obj)
+        public GlobalVariable ReadGlobalVariable(int index, DataModel typeModel = DataModel.Editor)
         {
-            if (CheckKey(key))
+            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
+            if (gvs.Count>index)
             {
-                var tar = globalVariables.Find(z => z.name.Equals(key));
+                var tar = gvs[index];
+                return tar;
+            }
+            return new GlobalVariable(typeof(string), string.Empty, "字符串", "none");
+        }
+        public void UpdateGlobalVarible(string key,object obj,DataModel typeModel= DataModel.Editor)
+        {
+            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
+            if (CheckKey(key, typeModel))
+            {
+                var tar = gvs.Find(z => z.name.Equals(key));
                 tar.obj = obj;
+                tar.ConvertString();
             }
         }
-        public bool CheckKey(string key)
+        public void RemoveGlobalVariable(int index, DataModel typeModel = DataModel.Editor)
         {
-            for (int i = 0; i < globalVariables.Count; i++)
+            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
+            gvs.RemoveAt(index);
+        }
+        public bool CheckKey(string key,DataModel typeModel)
+        {
+            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
+            for (int i = 0; i < gvs.Count; i++)
             {
-                if (globalVariables[i].name.Equals(key))
+                if (gvs[i].name.Equals(key))
                 {
                     return true;
                 }
             }
             return false;
         }
-        //Work :需要搭建， Test Vision
-        public void TreeRun()
+
+        public void VariableTypeCheck(ref GlobalVariable obj,DataModel typeModel)
         {
-            foreach (TreeNode node in nodes)
+            obj = obj.isFromGlobaldatas ? ReadGlobalVariable(obj.name, typeModel) : obj;
+        }
+
+        public int GlobalVariablesCount
+        {
+            get { return globalVariables.Count; }
+        }
+
+        public void InitialzationVariable()
+        {
+            globalVariablesRuntime.Clear();
+            for (int gvCount = 0; gvCount < globalVariables.Count; gvCount++)
             {
-                if(node.OnCheckCompelete())
-                    continue;
-                if (node.state == TreeNodeResult.Running)
-                {
-                    node.state = node.OnUpdate();
-                }
-                if (node.IsCompelete)
-                {
-                    node.Evaluator();
-                }
+                var tar = new GlobalVariable(globalVariables[gvCount]);
+                tar.ConvertObject();
+                globalVariablesRuntime.Add(tar);
             }
         }
+
+
+        #endregion
+        //Work :需要搭建， Test Vision
     }
 }

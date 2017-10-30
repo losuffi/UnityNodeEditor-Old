@@ -39,7 +39,8 @@ namespace Ou.Editor.Windows
                 if(e.type==EventType.Repaint&&!IsPaintDone)
                     return;
                 //Draw SubWindows
-                DrawViews(e);
+                if(!Application.isPlaying)
+                    DrawViews(e);
                 if (!IsPaintDone && e.type == EventType.Layout)
                 {
                     IsPaintDone = true;

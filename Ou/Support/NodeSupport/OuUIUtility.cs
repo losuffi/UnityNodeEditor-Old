@@ -65,20 +65,25 @@ namespace Ou.Support.NodeSupport
             var res= popupStructer.datas.Length > 0
                 ? popupStructer.datas[index]
                 : string.Empty;
-            obj = popupStructer.graph.ReadGlobalVariable(res);
-            obj.isFromGlobaldatas = false;
+            var duplicate  = popupStructer.graph.ReadGlobalVariable(res);
+            obj.identity = duplicate.identity;
+            obj.name = duplicate.name;
+            obj.isFromGlobaldatas = duplicate.isFromGlobaldatas;
+            obj.type = duplicate.type;
+            obj.obj = duplicate.obj;
+            obj.objMessage = duplicate.objMessage;
         }
 
 
-        public static void FormatSetVariable_SelectedType(ref GlobalVariable obj,ref int index)
+        public static void FormatSetVariable_SelectedType(ref GlobalVariable obj,ref int index,string name="temporary",bool isGlobal=false)
         {
             index = EditorGUILayout.Popup(index, ConnectionType.identitys);
             var icd = ConnectionType.types[ConnectionType.identitys[index]];
+            obj.name = name;
             obj.type = icd.type;
             obj.identity = icd.identity;
-            obj.Update();
             ConnectionType.types[ConnectionType.identitys[index]].GUILayout(ref obj.obj);
-            obj.isFromGlobaldatas = true;
+            obj.isFromGlobaldatas = isGlobal;
         }
         public static void FormatTextfield(ref string str)
         {

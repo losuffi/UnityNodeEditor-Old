@@ -42,19 +42,11 @@ namespace Ou.Support.NodeSupport
         protected internal override void Evaluator()
         {
             base.Evaluator();
-
-            if (!obj2.isFromGlobaldatas)
-            {
-                obj2 = curGraph.ReadGlobalVariable(obj2.name);
-            }
-            if (!obj3.isFromGlobaldatas)
-            {
-                obj3 = curGraph.ReadGlobalVariable(obj3.name);
-            }
-            obj1 = curGraph.ReadGlobalVariable(obj1.name);
+            obj1 = curGraph.ReadGlobalVariable(obj1.name, DataModel.Runtime);
+            curGraph.VariableTypeCheck(ref obj2, DataModel.Runtime);
+            curGraph.VariableTypeCheck(ref obj3, DataModel.Runtime);
             float val_1 = obj2.identity.Equals("真值") ? (int) obj2.obj * 1.0f : (float) obj2.obj;
             float val_2 = obj3.identity.Equals("真值") ? (int) obj3.obj * 1.0f : (float) obj3.obj;
-
             float res = obj1.identity.Equals("真值") ? (int) obj1.obj * 1.0f : (float) obj1.obj;
             switch (cType)
             {
@@ -73,12 +65,12 @@ namespace Ou.Support.NodeSupport
             }
             if (obj1.identity.Equals("真值"))
             {
-                curGraph.UpdateGlobalVarible(obj1.name, Mathf.RoundToInt(res));
+                curGraph.UpdateGlobalVarible(obj1.name, Mathf.RoundToInt(res), DataModel.Runtime);
 
             }
             else
             {
-                curGraph.UpdateGlobalVarible(obj1.name, res);
+                curGraph.UpdateGlobalVarible(obj1.name, res, DataModel.Runtime);
             }
         }
 
@@ -138,7 +130,7 @@ namespace Ou.Support.NodeSupport
         {
             base.Start();
             popupStructer = new PopupStructer(curGraph.selectorVariable("实值", "真值"), curGraph);
-            FillVariableTypeIndex2 = 1;
+            FillVariableTypeIndex1 = 0;
             obj1 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
             FillVariableTypeIndex2 = 0;
             obj2 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");

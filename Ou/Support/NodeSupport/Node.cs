@@ -79,6 +79,34 @@ namespace Ou.Support.NodeSupport
             }
         }
 
+        protected internal void RemoveLink(Type type)
+        {
+            if (type == typeof(NodeOutput))
+            {
+                foreach (NodeOutput knob in outputKnobs)
+                {
+                    foreach (NodeInput knobConnection in knob.connections)
+                    {
+                        if (knobConnection != null)
+                        {
+                            knobConnection.connection = null;
+                        }
+                    }
+                    knob.connections.Clear();
+                }
+            }
+            else if(type==typeof(NodeInput))
+            {
+                foreach (NodeInput nodeInputKnob in inputKnobs)
+                {
+                    if (nodeInputKnob.connection != null)
+                    {
+                        nodeInputKnob.connection.connections.Remove(nodeInputKnob);
+                        nodeInputKnob.connection = null;
+                    }
+                }
+            }
+        }
         protected internal virtual void DrawConnections()
         {
             CheckKnobMigration();

@@ -13,16 +13,19 @@ namespace Ou.Support.Runtime
     {
         [SerializeField]
         private GlobalVariable obj1;
-
         private int FillVariableTypeIndex1;
+
+        [SerializeField] private GlobalVariable obj2;
+        private int FillVariableTypeIndex2;
+
         private SettingType setType = SettingType.全局变量;
         private string nouseful;
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (curGraph.CheckKey(obj1.name))
+            if (curGraph.CheckKey(obj1.name, DataModel.Runtime))
             {
-                curGraph.UpdateGlobalVarible(obj1.name, obj1.obj);
+                curGraph.UpdateGlobalVarible(obj1.name, obj2.obj, DataModel.Runtime);
             }
         }
 
@@ -31,7 +34,9 @@ namespace Ou.Support.Runtime
             base.Start();
             popupStructer = new PopupStructer(curGraph.selectorVariable("字符串", "真值", "实值"),curGraph);
             FillVariableTypeIndex1 = 0;
+            FillVariableTypeIndex2 = 0;
             obj1 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
+            obj2 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
             nouseful = string.Empty;
         }
 
@@ -41,7 +46,7 @@ namespace Ou.Support.Runtime
             if (popupStructer!=null)
             {
                 OuUIUtility.FormatSelectedVariable_TypeFit(ref obj1, ref FillVariableTypeIndex1, popupStructer);
-                OuUIUtility.FormatSetVariable_SelectedType(ref obj1, ref FillVariableTypeIndex1);
+                OuUIUtility.FormatSetVariable_SelectedType(ref obj2, ref FillVariableTypeIndex2);
             }
         }
 

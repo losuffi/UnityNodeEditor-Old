@@ -136,28 +136,12 @@ namespace Ou.Support.NodeSupport
             }else if (obj.ToString().Equals("RemovInputLine"))
             {
                 var node = curNodeEditorState.SelectedNode;
-                foreach (NodeInput nodeInputKnob in node.inputKnobs)
-                {
-                    if (nodeInputKnob.connection != null)
-                    {
-                        nodeInputKnob.connection = null;
-                    }
-                }
+                node.RemoveLink(typeof(NodeInput));
             }
             else if(obj.ToString().Equals("RemovOutputLine"))
             {
                 var node = curNodeEditorState.SelectedNode;
-                foreach (NodeOutput knob in node.outputKnobs)
-                {
-                    foreach (NodeInput knobConnection in knob.connections)
-                    {
-                        if (knobConnection != null)
-                        {
-                            knobConnection.connection = null;
-                        }
-                    }
-                    knob.connections.Clear();
-                }
+                node.RemoveLink(typeof(NodeOutput));
             }
         }
 

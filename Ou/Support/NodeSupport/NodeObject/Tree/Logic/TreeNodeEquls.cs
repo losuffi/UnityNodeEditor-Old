@@ -30,11 +30,11 @@ namespace Ou.Support.NodeSupport
         {
             if (result)
             {
-                Goto(GotoType.Single, "Nextout");
+                Goto(0);
             }
             else
             {
-                Goto(GotoType.Single, "Nextout");
+                Goto(1);
             }
         }
 
@@ -80,6 +80,8 @@ namespace Ou.Support.NodeSupport
 
         protected internal override TreeNodeResult OnUpdate()
         {
+            curGraph.VariableTypeCheck(ref obj1, DataModel.Runtime);
+            curGraph.VariableTypeCheck(ref obj2, DataModel.Runtime);
             if (obj1.type != obj2.type)
             {
                 result = false;

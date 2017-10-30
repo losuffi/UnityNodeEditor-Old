@@ -18,9 +18,13 @@ namespace Ou.Support.NodeSupport
     {
         [SerializeField]
         protected internal Node Body;
+        [SerializeField]
         protected internal string Name;
+        [SerializeField]
         protected Side side;
+        [SerializeField]
         protected float sideOffset;
+        [SerializeField]
         protected Texture2D texture2D;
         public Rect rect;
         protected void Init(Node bodyNode, string knobName, Side sd,float offset)
