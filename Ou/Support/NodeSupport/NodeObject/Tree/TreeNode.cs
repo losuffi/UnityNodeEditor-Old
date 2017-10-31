@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -12,44 +11,40 @@ namespace Ou.Support.NodeSupport
     [Node(false,"树型","EditorType")]
     public class TreeNode:Node
     {
-        protected internal TreeNodeResult CheckResult(string outputName)
+        protected internal virtual  void FeedBack()
         {
-            var output = outputKnobs.Find(T => T.Name.Equals(outputName));
-            var res = TreeNodeResult.Done;
-            if (output == null||!output.connections.Any())
+            foreach (NodeInput input in inputKnobs)
             {
-                return res;
+                var parent = input.connection.Body as TreeNode;
+                parent.feedback = feedback;
+                parent.FeedBack();
             }
-            foreach (NodeInput input in output.connections)
+        }
+
+        protected internal void CallFeedBack()
+        {
+            if (!outputKnobs.Any())
             {
-                var nextnode = input.Body as TreeNode;
-                if (nextnode.state == TreeNodeResult.Failed)
-                {
-                    res = TreeNodeResult.Failed;
-                    return res;
-                }
-                else if (nextnode.state == TreeNodeResult.Break)
-                {
-                    res = TreeNodeResult.Break;
-                    return res;
-                }
-                else if (nextnode.state == TreeNodeResult.Running)
-                {
-                    res = TreeNodeResult.Running;
-                    return res;
-                }
-                else
-                {
-                    res = nextnode.CheckResult("Nextout");
-                }
+                feedback = state;
+                FeedBack();
             }
-            return res;
+            else 
+            {
+                foreach (NodeOutput output in outputKnobs)
+                {
+                    if(output.connections.Any())
+                        return;
+                }
+                feedback = state;
+                FeedBack();
+            }
         }
 
         protected internal void StateReset(string outputName)
         {
             var outputs = outputKnobs.FindAll(T => T.Name.Equals(outputName));
             ClearKnobMessage();
+            feedback = TreeNodeResult.Idle;
             if (!outputs.Any())
             {
                 return;
@@ -115,15 +110,18 @@ namespace Ou.Support.NodeSupport
         }
         protected internal override void Evaluator()
         {
+            CallFeedBack();
             Goto();
         }
 
-        protected internal virtual bool OnCheckCompelete()
+        protected internal void SetEnd()
         {
-            if (IsCompelete)
-            {
-                return true;
-            }
+            state = TreeNodeResult.End;
+        }
+        protected internal virtual void CheckStart()
+        {
+            if(state==TreeNodeResult.Running)
+                return;
             if (inputKnobs.Any())
             {
                 foreach (var input in inputKnobs.FindAll(T => T.InputType.Equals("工作状态")))
@@ -136,14 +134,13 @@ namespace Ou.Support.NodeSupport
                     state = TreeNodeResult.Running;
                 }
             }
-            return false;
         }
 
         protected internal virtual bool IsCompelete
         {
             get
             {
-                if (state == TreeNodeResult.Done || state == TreeNodeResult.Failed)
+                if (state == TreeNodeResult.Done || state == TreeNodeResult.Failed||state== TreeNodeResult.Break)
                 {
 
                     return true;
@@ -151,6 +148,19 @@ namespace Ou.Support.NodeSupport
                 return false;
             }
         }
+        protected internal virtual bool FeedIsCompelete
+        {
+            get
+            {
+                if (feedback == TreeNodeResult.Done || feedback == TreeNodeResult.Failed || feedback == TreeNodeResult.Break)
+                {
+
+                    return true;
+                }
+                return false;
+            }
+        }
+
 
         protected internal override void NodeGUI()
         {
@@ -170,6 +180,8 @@ namespace Ou.Support.NodeSupport
         }
         [SerializeField]
         protected internal TreeNodeResult state = TreeNodeResult.Idle;
+        [SerializeField]
+        protected internal TreeNodeResult feedback = TreeNodeResult.Idle;
         private const string nodeId = "树型";
         public override string GetId { get { return nodeId; } }
     }
@@ -181,6 +193,7 @@ namespace Ou.Support.NodeSupport
         Failed,
         Running,
         Break,
+        End,
     }
 
     public enum SettingType

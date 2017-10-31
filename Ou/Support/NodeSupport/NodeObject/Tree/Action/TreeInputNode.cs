@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.NodeSupport;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ou.Support.Runtime
+namespace Ou.Support.NodeSupport
 {
     [Node(false, "设置值","Node")]
     public class TreeInputNode : TreeNodeAction

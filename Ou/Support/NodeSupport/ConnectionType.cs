@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Ou.Support.NodeSupport
 {
@@ -192,6 +193,30 @@ namespace Ou.Support.NodeSupport
         public object stringtoobj(string str)
         {
             return null;
+        }
+    }
+
+    public class UGUITextType : IConnectionDecorator
+    {
+        public string identity { get { return "TextUI"; } }
+        public Type type { get { return typeof(string); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+
+
+        public void GUIFill(ref object obj)
+        {
+            obj = EditorGUILayout.ObjectField((Text) obj, typeof(Text), true);
+        }
+
+        public string objTostring(object obj)
+        {
+            return ((Text) obj).name;
+        }
+
+        public object stringtoobj(string str)
+        {
+            return GameObject.Find(str).GetComponent<Text>();
         }
     }
 }

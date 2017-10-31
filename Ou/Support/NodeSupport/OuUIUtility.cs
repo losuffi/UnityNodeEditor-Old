@@ -89,6 +89,10 @@ namespace Ou.Support.NodeSupport
         {
             str = GUILayout.TextField(str);
         }
+        public static void FormatTextArea(ref string str)
+        {
+            str = GUILayout.TextArea(str);
+        }
         public static void FormatTextfield(ref string str,GUIStyle style)
         {
             str = GUILayout.TextField(str, style);

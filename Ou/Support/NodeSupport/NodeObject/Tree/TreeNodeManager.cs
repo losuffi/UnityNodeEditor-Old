@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.Runtime;
 using UnityEngine;
 
 namespace Ou.Support.NodeSupport
@@ -31,6 +30,7 @@ namespace Ou.Support.NodeSupport
                 graphs[i].nodes.ForEach(z =>
                 {
                     ((TreeNode) z).state = TreeNodeResult.Idle;
+                    ((TreeNode) z).feedback = TreeNodeResult.Idle;
                     ((TreeNode) z).ClearKnobMessage();
                 }); //重置状态
                 TreeNode initNode = graphs[i].nodes.Find(res => res.GetId.Equals("初始化")) as TreeNode;
@@ -64,8 +64,9 @@ namespace Ou.Support.NodeSupport
         {
             foreach (TreeNode node in graph.nodes)
             {
-                if (node.OnCheckCompelete())
+                if(node.state== TreeNodeResult.End)
                     continue;
+                node.CheckStart();
                 if (node.state == TreeNodeResult.Running)
                 {
                     node.state = node.OnUpdate();
@@ -73,6 +74,7 @@ namespace Ou.Support.NodeSupport
                 if (node.IsCompelete)
                 {
                     node.Evaluator();
+                    node.SetEnd();
                 }
             }
         }

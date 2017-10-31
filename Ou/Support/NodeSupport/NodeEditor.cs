@@ -17,6 +17,7 @@ namespace Ou.Support.NodeSupport
         public static NodeInputInfo CurNodeInputInfo;
         public static NodeManager NodeManager;
         public static TreeNodeManager TreeNodeManager;
+        public static TreeNodeGUIManager TreeNodeGUIManager;
         public static string Path = @"Assets/Ou/Property/Node/Default.asset";
         public static void Clear()
         {
@@ -260,6 +261,7 @@ namespace Ou.Support.NodeSupport
             {
                 obj = new GameObject("_nodeTreeManager");
                 TreeNodeManager = obj.AddComponent<TreeNodeManager>();
+                TreeNodeGUIManager = obj.AddComponent<TreeNodeGUIManager>();
             }
         }
 

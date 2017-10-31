@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.NodeSupport;
 using UnityEditor;
 using UnityEngine;
-namespace Ou.Support.Runtime
+namespace Ou.Support.NodeSupport
 {
     [Node(false, "日志打印","Node")]
     public class TreelogNode:TreeNodeAction

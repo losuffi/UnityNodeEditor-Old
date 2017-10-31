@@ -5,36 +5,37 @@ using System.Text;
 using UnityEngine;
 
 namespace Ou.Support.NodeSupport
-{
-    [Node(false, "支路中断", "Node")]
-    public class TreeNodeBreak:TreeNodeLogic
+{ 
+    [Node(false,"点击事件-A","Node")]
+    public class TreeNodeClick:TreeNodeEvent
     {
-        public override string GetId { get { return "支路中断"; } }
-
         protected internal override void Evaluator()
         {
-            state = TreeNodeResult.Break;
             base.Evaluator();
         }
 
         protected internal override void NodeGUI()
         {
-
+            base.NodeGUI();
         }
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreeNodeBreak>();
-            node.Title = "支路中断";
+            Node node = CreateInstance<TreeNodeClick>();
+            node.Title = "点击事件";
             node.rect = new Rect(pos, new Vector2(60, 60));
             node.CreateNodeInput("PreIn", "工作状态");
+            node.CreateNodeOutput("Nextout", "工作状态");
             return node;
-
         }
 
         protected internal override TreeNodeResult OnUpdate()
         {
-            return TreeNodeResult.Done;
+            if (Input.GetMouseButton(0))
+            {
+                return TreeNodeResult.Done;
+            }
+            return TreeNodeResult.Running;
         }
 
         protected internal override void OnStart()
@@ -42,6 +43,7 @@ namespace Ou.Support.NodeSupport
             base.OnStart();
         }
 
+        public override string GetId { get { return "点击事件-A"; } }
         protected internal override void Start()
         {
             base.Start();

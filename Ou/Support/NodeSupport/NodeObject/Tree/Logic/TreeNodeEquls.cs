@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.Runtime;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,13 +12,15 @@ namespace Ou.Support.NodeSupport
     {
         private const string nodeId = "判断相等";
         private bool result;
+        [SerializeField]
         private SettingType setType1 = SettingType.填充;
+        [SerializeField]
         private SettingType setType2 = SettingType.全局变量;
-
+        [SerializeField]
         private int FillVariableTypeIndex1;
         [SerializeField]
         private GlobalVariable obj1;
-
+        [SerializeField]
         private int FillVariableTypeIndex2;
         [SerializeField]
         private GlobalVariable obj2;
@@ -28,6 +29,7 @@ namespace Ou.Support.NodeSupport
         public override string GetId { get { return nodeId; } }
         protected internal override void Evaluator()
         {
+            CallFeedBack();
             if (result)
             {
                 Goto(0);

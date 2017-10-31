@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ou.Support.Runtime;
 using UnityEngine;
 
 namespace Ou.Support.NodeSupport
@@ -36,13 +35,15 @@ namespace Ou.Support.NodeSupport
 
         protected internal override TreeNodeResult OnUpdate()
         {
-            var res = CheckResult("Forout");
+            var res = feedback;
             Evaluator();
             if (res == TreeNodeResult.Break)
             {
+                feedback = TreeNodeResult.Done;
+                FeedBack();
                 return TreeNodeResult.Done;
             }
-            else if(res == TreeNodeResult.Running)
+            else if(res == TreeNodeResult.Running||res== TreeNodeResult.Idle)
             {
                 return TreeNodeResult.Running;
             }else if (res == TreeNodeResult.Done)

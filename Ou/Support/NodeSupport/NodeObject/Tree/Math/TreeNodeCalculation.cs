@@ -21,20 +21,24 @@ namespace Ou.Support.NodeSupport
         public override string GetId { get { return "算术计算"; } }
 
         private string Nonuseful;
-
+        [SerializeField]
         private SettingType setType1 = SettingType.全局变量;
+        [SerializeField]
         private SettingType setType2 = SettingType.填充;
+        [SerializeField]
         private SettingType setType3 = SettingType.填充;
+        [SerializeField]
         private CalcuType cType=CalcuType.加;
 
         [SerializeField]
         private GlobalVariable obj1;
+        [SerializeField]
         private int FillVariableTypeIndex1;
-
+        [SerializeField]
         private int FillVariableTypeIndex2;
         [SerializeField]
         private GlobalVariable obj2;
-
+        [SerializeField]
         private int FillVariableTypeIndex3;
         [SerializeField]
         private GlobalVariable obj3;
