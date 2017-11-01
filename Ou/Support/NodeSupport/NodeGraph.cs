@@ -104,13 +104,18 @@ namespace Ou.Support.NodeSupport
             node.Init();
             nodes.Add(node);
             AssetDatabase.AddObjectToAsset(node, this);
-            foreach (NodeInput input in node.inputKnobs)
+            foreach (NodeKnob c in node.Knobs)
             {
-                AssetDatabase.AddObjectToAsset(input, node);
-            }
-            foreach (NodeOutput nodeOutputKnob in node.outputKnobs)
-            {
-                AssetDatabase.AddObjectToAsset(nodeOutputKnob, node);
+                if (c.GetType() == typeof(NodeInput))
+                {
+                    var input = c as NodeInput;
+                    AssetDatabase.AddObjectToAsset(input, node);
+                }
+                else
+                {
+                    var output = c as NodeOutput;
+                    AssetDatabase.AddObjectToAsset(output, node);
+                }                   
             }
             node.curGraph = this;
             node.Start();

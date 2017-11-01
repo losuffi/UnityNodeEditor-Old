@@ -39,6 +39,10 @@ namespace Ou.Support.NodeSupport
             {
                 output.texture2D = OuUIUtility.ColorToTex(1, Color.yellow);
             }
+            if (output.Name.Contains("Btns"))
+            {
+                output.texture2D = OuUIUtility.ColorToTex(1, Color.yellow);
+            }
         }
 
         protected override void CheckColor()

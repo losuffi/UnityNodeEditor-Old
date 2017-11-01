@@ -13,7 +13,7 @@ namespace Ou.Support.NodeSupport
         public Rect nodeRect;
         public NodeGraph curGraph;
         protected internal abstract void Evaluator();
-        [NonSerialized] public List<NodeKnob> Knobs = new List<NodeKnob>();
+        [SerializeField] internal List<NodeKnob> Knobs = new List<NodeKnob>();
         [SerializeField]
         internal List<NodeInput> inputKnobs=new List<NodeInput>();
         [SerializeField]
@@ -69,13 +69,9 @@ namespace Ou.Support.NodeSupport
         protected internal virtual void DrawKnob()
         {
             CheckKnobMigration();
-            foreach (var input in inputKnobs)
+            foreach (var res in Knobs)
             {
-                input.Draw();
-            }
-            foreach (var output in outputKnobs)
-            {
-                output.Draw();
+                res.Draw();
             }
         }
 

@@ -10,53 +10,40 @@ namespace Ou.Support.NodeSupport
     [Node(false, "设置值","Node")]
     public class TreeInputNode : TreeNodeAction
     {
-        [SerializeField]
-        private GlobalVariable obj1;
-        private int FillVariableTypeIndex1;
-
-        [SerializeField] private GlobalVariable obj2;
-        private int FillVariableTypeIndex2;
-
-        private SettingType setType = SettingType.全局变量;
-        private string nouseful;
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (curGraph.CheckKey(obj1.name, DataModel.Runtime))
+            if (curGraph.CheckKey(variables[0].name, DataModel.Runtime))
             {
-                curGraph.UpdateGlobalVarible(obj1.name, obj2.obj, DataModel.Runtime);
+                curGraph.UpdateGlobalVarible(variables[0].name, variables[1].obj, DataModel.Runtime);
             }
         }
 
         protected internal override void Start()
         {
             base.Start();
-            popupStructer = new PopupStructer(curGraph.selectorVariable("字符串", "真值", "实值"),curGraph);
-            FillVariableTypeIndex1 = 0;
-            FillVariableTypeIndex2 = 0;
-            obj1 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
-            obj2 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
-            nouseful = string.Empty;
+            variables[0].setRangeType(this, "字符串", "真值", "实值");
+            variables[1].setRangeType(this, "字符串", "真值", "实值");
         }
 
         protected internal override void NodeGUI()
         {
             GUILayout.Label("设置值");            
-            if (popupStructer!=null)
-            {
-                OuUIUtility.FormatSelectedVariable_TypeFit(ref obj1, ref FillVariableTypeIndex1, popupStructer);
-                OuUIUtility.FormatSetVariable_SelectedType(ref obj2, ref FillVariableTypeIndex2);
-            }
+            DrawFillsLayout(variables[0]);
+            DrawFillsLayout(variables[1]);
         }
 
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreeInputNode>();
+            TreeNode node = CreateInstance<TreeInputNode>();
             node.Title = "字符串输入";
             node.rect = new Rect(pos, new Vector2(100,120));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateVariable();         
+            node.CreateVariable();
+
             return node;
         }
         private const string nodeId = "TestNode1";

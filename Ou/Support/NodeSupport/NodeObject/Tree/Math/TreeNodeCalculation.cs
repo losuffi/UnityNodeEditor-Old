@@ -19,39 +19,20 @@ namespace Ou.Support.NodeSupport
         }
 
         public override string GetId { get { return "算术计算"; } }
-
-        private string Nonuseful;
-        [SerializeField]
-        private SettingType setType1 = SettingType.全局变量;
-        [SerializeField]
-        private SettingType setType2 = SettingType.填充;
-        [SerializeField]
-        private SettingType setType3 = SettingType.填充;
         [SerializeField]
         private CalcuType cType=CalcuType.加;
-
-        [SerializeField]
-        private GlobalVariable obj1;
-        [SerializeField]
-        private int FillVariableTypeIndex1;
-        [SerializeField]
-        private int FillVariableTypeIndex2;
-        [SerializeField]
-        private GlobalVariable obj2;
-        [SerializeField]
-        private int FillVariableTypeIndex3;
-        [SerializeField]
-        private GlobalVariable obj3;
 
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            obj1 = curGraph.ReadGlobalVariable(obj1.name, DataModel.Runtime);
+            var obj2 = variables[1];
+            var obj3 = variables[2];
+            variables[0] = curGraph.ReadGlobalVariable(variables[0].name, DataModel.Runtime);
             curGraph.VariableTypeCheck(ref obj2, DataModel.Runtime);
             curGraph.VariableTypeCheck(ref obj3, DataModel.Runtime);
             float val_1 = obj2.identity.Equals("真值") ? (int) obj2.obj * 1.0f : (float) obj2.obj;
             float val_2 = obj3.identity.Equals("真值") ? (int) obj3.obj * 1.0f : (float) obj3.obj;
-            float res = obj1.identity.Equals("真值") ? (int) obj1.obj * 1.0f : (float) obj1.obj;
+            float res = variables[1].identity.Equals("真值") ? (int)variables[1].obj * 1.0f : (float)variables[1].obj;
             switch (cType)
             {
                 case CalcuType.加:
@@ -67,14 +48,14 @@ namespace Ou.Support.NodeSupport
                     res = val_1 / val_2;
                     break;
             }
-            if (obj1.identity.Equals("真值"))
+            if (variables[1].identity.Equals("真值"))
             {
-                curGraph.UpdateGlobalVarible(obj1.name, Mathf.RoundToInt(res), DataModel.Runtime);
+                curGraph.UpdateGlobalVarible(variables[1].name, Mathf.RoundToInt(res), DataModel.Runtime);
 
             }
             else
             {
-                curGraph.UpdateGlobalVarible(obj1.name, res, DataModel.Runtime);
+                curGraph.UpdateGlobalVarible(variables[1].name, res, DataModel.Runtime);
             }
         }
 
@@ -82,40 +63,26 @@ namespace Ou.Support.NodeSupport
         protected internal override void NodeGUI()
         {
 
-            if (popupStructer!=null)
-            {
-                GUILayout.Label("结果：");
-                OuUIUtility.FormatSelectedVariable_TypeFit(ref obj1, ref FillVariableTypeIndex1, popupStructer);
-
-                setType2 = (SettingType)EditorGUILayout.EnumPopup(setType2);
-                if (setType2 == SettingType.填充)
-                {
-                    OuUIUtility.FormatSetVariable_SelectedType(ref obj2, ref FillVariableTypeIndex2);
-                }
-                else
-                {
-                    OuUIUtility.FormatSelectedVariable_TypeFit(ref obj2, ref FillVariableTypeIndex2, popupStructer);
-                }
-                cType = (CalcuType)EditorGUILayout.EnumPopup(cType);
-                setType3 = (SettingType)EditorGUILayout.EnumPopup(setType3);
-                if (setType3 == SettingType.填充)
-                {
-                    OuUIUtility.FormatSetVariable_SelectedType(ref obj3, ref FillVariableTypeIndex3);
-                }
-                else
-                {
-                    OuUIUtility.FormatSelectedVariable_TypeFit(ref obj3, ref FillVariableTypeIndex3, popupStructer);
-                }
-            }
+            GUILayout.Label("结果：");
+            DrawFillsLayout(variables[0]);
+            DrawFillsLayout(variables[1]);
+            cType = (CalcuType)EditorGUILayout.EnumPopup(cType);
+            DrawFillsLayout(variables[2]);
         }
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreeNodeCalculation>();
+            TreeNode node = CreateInstance<TreeNodeCalculation>();
             node.Title = "算术计算";
             node.rect = new Rect(pos, new Vector2(100, 220));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateVariable();
+
+            node.CreateVariable();
+
+            node.CreateVariable();
+
             return node;
 
         }
@@ -133,14 +100,9 @@ namespace Ou.Support.NodeSupport
         protected internal override void Start()
         {
             base.Start();
-            popupStructer = new PopupStructer(curGraph.selectorVariable("实值", "真值"), curGraph);
-            FillVariableTypeIndex1 = 0;
-            obj1 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
-            FillVariableTypeIndex2 = 0;
-            obj2 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
-            FillVariableTypeIndex3 = 0;
-            obj3 = new GlobalVariable(typeof(string), string.Empty, "字符串", "temporary");
-            Nonuseful = string.Empty;
+            variables[0].setRangeType(this, "真值", "实值");
+            variables[1].setRangeType(this, "真值", "实值");
+            variables[2].setRangeType(this, "真值", "实值");
         }
     }
 }

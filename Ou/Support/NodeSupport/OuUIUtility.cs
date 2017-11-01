@@ -15,10 +15,18 @@ namespace Ou.Support.NodeSupport
         [HideInInspector]
         public NodeGraph graph;
 
-        public PopupStructer(string[] datas,NodeGraph graph)
+        [HideInInspector] public string[] typeRange;
+
+        public PopupStructer(string[] range,NodeGraph graph)
         {
-            this.datas = datas;
+            this.datas = graph.selectorVariable(range);
             this.graph = graph;
+            if(range.Length!=0)
+                this.typeRange = range;
+            else
+            {
+                this.typeRange = ConnectionType.identitys;
+            }
         }
 
     }
@@ -77,24 +85,40 @@ namespace Ou.Support.NodeSupport
 
         public static void FormatSetVariable_SelectedType(ref GlobalVariable obj,ref int index,string name="temporary",bool isGlobal=false)
         {
-            index = EditorGUILayout.Popup(index, ConnectionType.identitys);
-            var icd = ConnectionType.types[ConnectionType.identitys[index]];
+            index = EditorGUILayout.Popup(index, obj.structerTypeRange.typeRange);
+            var icd = ConnectionType.types[obj.structerTypeRange.typeRange[index]];
             obj.name = name;
             obj.type = icd.type;
             obj.identity = icd.identity;
-            ConnectionType.types[ConnectionType.identitys[index]].GUILayout(ref obj.obj);
+            ConnectionType.types[obj.structerTypeRange.typeRange[index]].GUILayout(ref obj.obj);
             obj.isFromGlobaldatas = isGlobal;
         }
         public static void FormatTextfield(ref string str)
         {
+            if (GUILayout.Button("粘贴", GUILayout.Width(40)))
+            {
+                str = EditorGUIUtility.systemCopyBuffer;
+            }
             str = GUILayout.TextField(str);
+        }
+        public static void FormatIntfield(ref int val)
+        {
+            val = EditorGUILayout.IntField(val);
         }
         public static void FormatTextArea(ref string str)
         {
+            if (GUILayout.Button("粘贴", GUILayout.Width(40)))
+            {
+                str = EditorGUIUtility.systemCopyBuffer;
+            }
             str = GUILayout.TextArea(str);
         }
         public static void FormatTextfield(ref string str,GUIStyle style)
         {
+            if (GUILayout.Button("粘贴", GUILayout.Width(40)))
+            {
+                str = EditorGUIUtility.systemCopyBuffer;
+            }
             str = GUILayout.TextField(str, style);
         }
 

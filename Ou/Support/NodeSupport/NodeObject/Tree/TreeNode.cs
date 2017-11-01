@@ -61,10 +61,6 @@ namespace Ou.Support.NodeSupport
             }
         }
 
-        [SerializeField]
-
-        protected PopupStructer popupStructer;
-
         protected internal virtual TreeNodeResult OnUpdate()
         {
             return TreeNodeResult.Idle;
@@ -174,6 +170,42 @@ namespace Ou.Support.NodeSupport
             }
         }
 
+        protected internal GlobalVariable CreateVariable()
+        {
+            var gv=new GlobalVariable();
+            variables.Add(gv);
+            return gv;
+        }
+
+        protected internal GlobalVariable CreateVariable(Type type, object obj, string id, string name)
+        {
+            var gv = new GlobalVariable(type, obj, id, name);
+            variables.Add(gv);
+            return gv;
+        }
+
+        protected internal PopupStructer SetVariableTypeRange(params string[] str)
+        {
+            return new PopupStructer(str, curGraph);
+        }
+
+        protected internal void DrawFillsLayout(GlobalVariable gv)
+        {
+            if(gv.structerTypeRange==null)
+                return;
+
+            isSetVariable = GUILayout.Toggle(isSetVariable, "全局变量？");
+            if (isSetVariable)
+            {
+                OuUIUtility.FormatSelectedVariable_TypeFit(ref gv, ref gv.FillIndex, gv.structerTypeRange);
+            }
+            else
+            {
+                OuUIUtility.FormatSetVariable_SelectedType(ref gv, ref gv.FillIndex);
+            }
+        }
+
+
         public override Node Create(Vector2 pos)
         {
             throw new NotImplementedException();
@@ -182,6 +214,10 @@ namespace Ou.Support.NodeSupport
         protected internal TreeNodeResult state = TreeNodeResult.Idle;
         [SerializeField]
         protected internal TreeNodeResult feedback = TreeNodeResult.Idle;
+        [SerializeField]
+        protected internal List<GlobalVariable> variables=new List<GlobalVariable>();
+
+        [SerializeField] protected internal bool isSetVariable = false;
         private const string nodeId = "树型";
         public override string GetId { get { return nodeId; } }
     }
@@ -217,7 +253,10 @@ namespace Ou.Support.NodeSupport
         public object obj;
         public string identity;
         public string name;
+        [NonSerialized]
+        public int FillIndex=0;
 
+        public PopupStructer structerTypeRange = null;
         // [SerializeField] private string objMessage;
         [SerializeField] public string objMessage;
 
@@ -228,7 +267,7 @@ namespace Ou.Support.NodeSupport
             this.obj = obj;
             this.identity = id;
             this.name = name;
-
+            FillIndex = 0;
         }
 
         public GlobalVariable(GlobalVariable variable)
@@ -238,6 +277,7 @@ namespace Ou.Support.NodeSupport
             identity = variable.identity;
             name = variable.name;
             objMessage = variable.objMessage;
+            FillIndex = variable.FillIndex;
         }
 
         public GlobalVariable()
@@ -246,6 +286,12 @@ namespace Ou.Support.NodeSupport
             this.obj = string.Empty;
             this.identity = "字符串";
             this.name = string.Empty;
+            FillIndex = 0;
+        }
+
+        public void setRangeType(TreeNode node,params string[] strs)
+        {
+            structerTypeRange = node.SetVariableTypeRange(strs);
         }
 
         public void ConvertString()

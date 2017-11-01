@@ -9,48 +9,32 @@ namespace Ou.Support.NodeSupport
     [Node(false, "日志打印","Node")]
     public class TreelogNode:TreeNodeAction
     {
-        private string logString = string.Empty;
-        private SettingType setType = SettingType.填充;
-
-        [SerializeField]
-        private GlobalVariable obj;
-        private int fillIndex;
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (setType== SettingType.全局变量&& curGraph.CheckKey(obj.name, DataModel.Runtime))
+            if (curGraph.CheckKey(variables[0].name, DataModel.Runtime))
             {
-                Debug.Log(curGraph.ReadGlobalVariable(obj.name, DataModel.Runtime).obj);
+                Debug.Log(curGraph.ReadGlobalVariable(variables[0].name, DataModel.Runtime).obj);
             }
             else
             {
-                Debug.Log(logString);
+                Debug.Log(variables[0].obj);
             }
         }
 
         protected internal override void NodeGUI()
         {
-            setType = (SettingType)EditorGUILayout.EnumPopup(setType);
-            if (popupStructer != null)
-            {
-                if (setType == SettingType.填充)
-                {
-                    logString = GUILayout.TextField(logString);
-                }
-                else
-                {
-                    OuUIUtility.FormatSelectedVariable_TypeFit(ref obj, ref fillIndex, popupStructer);
-                }
-            }
+            DrawFillsLayout(variables[0]);
         }
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreelogNode>();
+            TreeNode node = CreateInstance<TreelogNode>();
             node.Title = "打印";
             node.rect = new Rect(pos, new Vector2(100, 80));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateVariable();
             return node;
         }
 
@@ -63,9 +47,7 @@ namespace Ou.Support.NodeSupport
         protected internal override void Start()
         {
             base.Start();
-            popupStructer = new PopupStructer(curGraph.selectorVariable("字符串", "实值", "真值"),curGraph);
-            obj=new GlobalVariable();
-            fillIndex = 0;
+            variables[0].setRangeType(this);
         }
 
         protected internal override void OnStart()

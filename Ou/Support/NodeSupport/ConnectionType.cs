@@ -78,7 +78,10 @@ namespace Ou.Support.NodeSupport
         void GUIFill(ref object obj);
         string objTostring(object obj);
         object stringtoobj(string str);
+        string _Class { get; }
     }
+
+    #region Normal
 
     public class StringType : IConnectionDecorator
     {
@@ -86,13 +89,17 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(string); } }
         public Color color { get{return Color.cyan;} }
         public bool isGlobalType { get { return true; } }
-
+        public string _Class { get { return "Normal"; } }
 
         public void GUIFill(ref object obj)
         {
-            if (!obj.GetType().IsAssignableFrom(typeof(string)))
+            if (obj==null||!obj.GetType().IsAssignableFrom(typeof(string)))
             {
                 obj = string.Empty;
+            }
+            if (GUILayout.Button("粘贴", GUILayout.Width(40)))
+            {
+                obj = EditorGUIUtility.systemCopyBuffer;
             }
             obj = GUILayout.TextArea((string)obj);
         }
@@ -113,11 +120,11 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(int); } }
         public Color color { get { return Color.cyan; } }
         public bool isGlobalType { get { return true; } }
-
+        public string _Class { get { return "Normal"; } }
 
         public void GUIFill(ref object obj)
         {
-            if (!obj.GetType().IsAssignableFrom(typeof(int)))
+            if (obj == null || !obj.GetType().IsAssignableFrom(typeof(int)))
             {
                 obj=new int();
                 obj = 0;
@@ -147,11 +154,11 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(float); } }
         public Color color { get { return Color.cyan; } }
         public bool isGlobalType { get { return true; } }
-
+        public string _Class { get { return "Normal"; } }
 
         public void GUIFill(ref object obj)
         {
-            if (!obj.GetType().IsAssignableFrom(typeof(float)))
+            if (obj == null || !obj.GetType().IsAssignableFrom(typeof(float)))
             {
                 obj = new float();
                 obj = 0.1f;
@@ -180,6 +187,7 @@ namespace Ou.Support.NodeSupport
         public Type type { get { return typeof(TreeNodeResult);  }}
         public Color color { get { return Color.cyan; } }
         public bool isGlobalType { get { return false; } }
+        public string _Class { get { return "Normal"; } }
         public void GUIFill(ref object obj)
         {
             obj = null;
@@ -196,27 +204,188 @@ namespace Ou.Support.NodeSupport
         }
     }
 
+
+
+    #endregion
+
+
+
+    #region UGUI
     public class UGUITextType : IConnectionDecorator
     {
         public string identity { get { return "TextUI"; } }
         public Type type { get { return typeof(string); } }
         public Color color { get { return Color.cyan; } }
         public bool isGlobalType { get { return true; } }
-
+        public string _Class { get { return "UGUI"; } }
 
         public void GUIFill(ref object obj)
         {
-            obj = EditorGUILayout.ObjectField((Text) obj, typeof(Text), true);
+            try
+            {
+                obj = EditorGUILayout.ObjectField((Text)obj, typeof(Text), true);
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
         }
 
         public string objTostring(object obj)
         {
+            if (obj == null)
+                return string.Empty;
             return ((Text) obj).name;
         }
 
         public object stringtoobj(string str)
         {
+            var gobj = GameObject.Find(str);
+            if (gobj == null)
+                return null;
             return GameObject.Find(str).GetComponent<Text>();
         }
     }
+
+    public class UGUIButtonGroup : IConnectionDecorator
+    {
+        public string identity { get { return "ButtonGroupUI"; } }
+        public Type type { get { return typeof(ButtonGroup); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+        public string _Class { get { return "UGUI"; } }
+
+        public void GUIFill(ref object obj)
+        {
+            try
+            {
+                obj = EditorGUILayout.ObjectField((ButtonGroup)obj, typeof(ButtonGroup), true);
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
+        }
+
+        public string objTostring(object obj)
+        {
+            return ((ButtonGroup)obj).name;
+        }
+
+        public object stringtoobj(string str)
+        {
+            var gobj = GameObject.Find(str);
+            if (gobj == null)
+                return null;
+            return GameObject.Find(str).GetComponent<ButtonGroup>();
+        }
+    }
+
+    public class UGUIButtonType : IConnectionDecorator
+    {
+        public string identity { get { return "ButtonUI"; } }
+        public Type type { get { return typeof(Button); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+        public string _Class { get { return "UGUI"; } }
+
+        public void GUIFill(ref object obj)
+        {
+            try
+            {
+                obj = EditorGUILayout.ObjectField((Button)obj, typeof(Button), true);
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
+        }
+
+        public string objTostring(object obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            return ((Button)obj).name;
+        }
+
+        public object stringtoobj(string str)
+        {
+            var gobj = GameObject.Find(str);
+            if (gobj == null)
+                return null;
+            return GameObject.Find(str).GetComponent<Button>();
+        }
+    }
+
+    public class UGUIObjectType : IConnectionDecorator
+    {
+        public string identity { get { return "ObjectUI"; } }
+        public Type type { get { return typeof(GameObject); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+        public string _Class { get { return "UGUI"; } }
+
+        public void GUIFill(ref object obj)
+        {
+            try
+            {
+                obj = EditorGUILayout.ObjectField((GameObject)obj, typeof(GameObject), true);
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
+        }
+
+        public string objTostring(object obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            return ((GameObject)obj).name;
+        }
+
+        public object stringtoobj(string str)
+        {
+            var gobj = GameObject.Find(str);
+            if (gobj == null)
+                return null;
+            return gobj;
+        }
+    }
+    public class UGUIImageType : IConnectionDecorator
+    {
+        public string identity { get { return "ImageUI"; } }
+        public Type type { get { return typeof(Image); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+        public string _Class { get { return "UGUI"; } }
+
+        public void GUIFill(ref object obj)
+        {
+            try
+            {
+                obj = EditorGUILayout.ObjectField((Image)obj, typeof(Image), true);
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
+        }
+
+        public string objTostring(object obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            return ((Image)obj).name;
+        }
+
+        public object stringtoobj(string str)
+        {
+            var gobj = GameObject.Find(str);
+            if (gobj == null)
+                return null;
+            return GameObject.Find(str).GetComponent<Image>();
+        }
+    }
+    #endregion
 }

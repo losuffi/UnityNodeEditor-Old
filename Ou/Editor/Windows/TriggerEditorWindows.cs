@@ -34,21 +34,39 @@ namespace Ou.Editor.Windows
             {
                 return;
             }
+            CopyandPaste(Event.current);
             Event e= Event.current;
             {
                 if(e.type==EventType.Repaint&&!IsPaintDone)
                     return;
-                //Draw SubWindows
-                if(!Application.isPlaying)
-                    DrawViews(e);
+                //Draw SubWindow
+                if (!Application.isPlaying)
+                {
+                    try
+                    {
+                        DrawViews(e);
+                    }
+                    catch (ArgumentException exception)
+                    {
+                        Debug.Log(exception);
+                    }
+                }
                 if (!IsPaintDone && e.type == EventType.Layout)
                 {
                     IsPaintDone = true;
                 }
             }
-           Repaint();
+            Repaint();
         }
 
+        void CopyandPaste(Event e)
+        {
+            var textEditor = EditorGUIUtility.GetStateObject(typeof(TextEditor), EditorGUIUtility.keyboardControl) as TextEditor;
+            if (e.Equals(Event.KeyboardEvent("f1")))
+            {
+               var str=  EditorGUIUtility.systemCopyBuffer;               
+            }
+        }
         private void DrawViews(Event e)
         {
             CanvasView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
