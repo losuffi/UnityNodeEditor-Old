@@ -17,10 +17,10 @@ namespace Ou.Editor.Windows
         private bool IsPaintDone;
         public static void Init()
         {
-            Instance = GetWindow<TriggerEditorWindows>();
+            Instance = GetWindow<TriggerEditorWindows>(true);
             Instance.titleContent = new GUIContent("TriggerEditor");
-            Instance.maxSize = new Vector2(2000, 1600);
-            Instance.minSize = new Vector2(1280, 800);
+            Instance.maxSize = new Vector2(1400, 860);
+            Instance.minSize = new Vector2(1400, 860);
             NodeEditor.InitAssetData();
         }
 
@@ -34,7 +34,6 @@ namespace Ou.Editor.Windows
             {
                 return;
             }
-            CopyandPaste(Event.current);
             Event e= Event.current;
             {
                 if(e.type==EventType.Repaint&&!IsPaintDone)
@@ -59,24 +58,16 @@ namespace Ou.Editor.Windows
             Repaint();
         }
 
-        void CopyandPaste(Event e)
-        {
-            var textEditor = EditorGUIUtility.GetStateObject(typeof(TextEditor), EditorGUIUtility.keyboardControl) as TextEditor;
-            if (e.Equals(Event.KeyboardEvent("f1")))
-            {
-               var str=  EditorGUIUtility.systemCopyBuffer;               
-            }
-        }
         private void DrawViews(Event e)
         {
             CanvasView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                new Rect(0.201f, 0.1f, 0.799f, 0.901f),
+                new Rect(0.201f, 0.05f, 0.799f, 0.951f),
                 e);
             AdjustView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                new Rect(0, 0.1f, 0.2f, 0.901f),
+                new Rect(0, 0.05f, 0.2f, 0.951f),
                 e);
             ToolBarView.UpdateView(position,
-                new Rect(0, 0, 1, 0.099f),
+                new Rect(0, 0, 1, 0.049f),
                 e);
         }
         bool CheckView()

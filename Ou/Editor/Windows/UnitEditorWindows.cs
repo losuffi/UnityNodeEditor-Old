@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Ou.Editor.Views;
+using Ou.Support.UnitSupport;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,29 +10,23 @@ namespace Ou.Editor.Windows
 {
     public class UnitEditorWindows:EditorWindow
     {
-        public UnitEditorClassView ClassView;
-        public UnitEditorUnitView UnitView;
-        public UnitEditorFieldsView FieldsView;
+        public UnitEditorToolBarView ToolBarView;
+        public UnitEditorFieldView FieldsView;
         public static UnitEditorWindows Instance;
 
-        public  UnitPool unitPool;
-        public bool IsInit;
-        public UnitBase SelectedUnit;
+        public bool IsPaintDone;
         public static void Init()
         {
-            Instance = GetWindow<UnitEditorWindows>();
+            Instance = GetWindow<UnitEditorWindows>(true);
+            Instance.maxSize = new Vector2(300, 1000);
+            Instance.minSize = new Vector2(300, 1000);
             Instance.titleContent = new GUIContent("UnitEditor");
         }
 
         void OnEnable()
         {
-            SelectedUnit = null;
-            unitPool = AssetDatabase.LoadAssetAtPath<UnitPool>(@"Assets/Ou/Property/Unit.asset");
-            IsInit = unitPool != null;
-            if (!IsInit)
-            {
-                unitPool = ScriptableObject.CreateInstance<UnitPool>();
-            }
+            IsPaintDone = false;
+            UnitEditor.StartInterrupted();
         }
 
         void OnGUI()
@@ -40,24 +35,39 @@ namespace Ou.Editor.Windows
             {
                 return;
             }
-            Event e=Event.current;
-            ClassView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                new Rect(0, 0, 0.2f, 0.35f),
-                e);
-            UnitView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                new Rect(0, 0.36f, 0.2f, 0.65f),
-                e);
-            FieldsView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
-                new Rect(0.21f, 0.01f, 0.78f, 0.98f),
-                e);
+            Event e = Event.current;
+            {
+                if (e.type == EventType.Repaint && !IsPaintDone)
+                    return;
+                //Draw SubWindow
+                if (!Application.isPlaying)
+                {
+                    try
+                    {
+                        DrawViews(e);
+                    }
+                    catch (ArgumentException exception)
+                    {
+                        Debug.Log(exception);
+                    }
+                }
+                if (!IsPaintDone && e.type == EventType.Layout)
+                {
+                    IsPaintDone = true;
+                }
+            }
             Repaint();
         }
 
-        private void ViewsConnecttion()
+        void DrawViews(Event e)
         {
-
+            ToolBarView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
+                new Rect(0, 0, 1, 0.039f),
+                e);
+            FieldsView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
+                new Rect(0, 0.04f, 1, 0.96f),
+                e);
         }
-
         private bool CheckView()
         {
             if (Instance == null)
@@ -65,20 +75,14 @@ namespace Ou.Editor.Windows
                 Init();
                 return false;
             }
-            if (ClassView == null)
+            if (ToolBarView == null)
             {
-                Instance.ClassView = new UnitEditorClassView("Class View");
-                Instance.ClassView.SetPool(unitPool);
-            }
-            if (UnitView == null)
-            {
-                Instance.UnitView = new UnitEditorUnitView("Unit View");
+                Instance.ToolBarView = new UnitEditorToolBarView("ToolBar View");
             }
             if (FieldsView == null)
             {
-                Instance.FieldsView=new UnitEditorFieldsView("Fields View");
+                Instance.FieldsView=new UnitEditorFieldView("Fields View");
             }
-            ViewsConnecttion();
             return true;
         }
     }

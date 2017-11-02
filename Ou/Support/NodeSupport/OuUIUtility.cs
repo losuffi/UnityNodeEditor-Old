@@ -56,6 +56,39 @@ namespace Ou.Support.NodeSupport
 
         #endregion
 
+        #region GlobalVariable
+        public static void FormatSelectedVariable_TypeFit(ref GlobalVariable obj, ref int index, PopupStructer popupStructer)
+        {
+            FormatPopup(ref index, popupStructer.datas);
+            var res = popupStructer.datas.Length > 0
+                ? popupStructer.datas[index]
+                : string.Empty;
+            var duplicate = popupStructer.graph.ReadGlobalVariable(res);
+            obj.identity = duplicate.identity;
+            obj.name = duplicate.name;
+            obj.isFromGlobaldatas = duplicate.isFromGlobaldatas;
+            obj.type = duplicate.type;
+            obj.obj = duplicate.obj;
+            obj.objMessage = duplicate.objMessage;
+        }
+        public static void FormatSetVariable_SelectedType(ref GlobalVariable obj, ref int index, string name = "temporary", bool isGlobal = false)
+        {
+            FormatPopup(ref index, obj.structerTypeRange.typeRange);
+            var icd = ConnectionType.types[obj.structerTypeRange.typeRange[index]];
+            obj.name = name;
+            obj.type = icd.type;
+            obj.identity = icd.identity;
+            ConnectionType.types[obj.structerTypeRange.typeRange[index]].GUILayout(ref obj.obj);
+            obj.isFromGlobaldatas = isGlobal;
+        }
+
+        public static void FormatShowVariable_Exits(ref GlobalVariable obj,GUIStyle style)
+        {
+            OuUIUtility.FormatLabel(obj.name,style);
+            OuUIUtility.FormatLabel(obj.identity,style);
+            ConnectionType.types[obj.identity].GUILayout(ref obj.obj);
+        }
+        #endregion
         #region FunctionalUI
 
 
@@ -67,20 +100,6 @@ namespace Ou.Support.NodeSupport
         }
 
 
-        public static void FormatSelectedVariable_TypeFit(ref GlobalVariable obj,ref int index,PopupStructer popupStructer)
-        {
-            FormatPopup(ref index, popupStructer.datas);
-            var res= popupStructer.datas.Length > 0
-                ? popupStructer.datas[index]
-                : string.Empty;
-            var duplicate  = popupStructer.graph.ReadGlobalVariable(res);
-            obj.identity = duplicate.identity;
-            obj.name = duplicate.name;
-            obj.isFromGlobaldatas = duplicate.isFromGlobaldatas;
-            obj.type = duplicate.type;
-            obj.obj = duplicate.obj;
-            obj.objMessage = duplicate.objMessage;
-        }
 
         public static void FormatPopup(ref int index, params string[] strs)
         {
@@ -94,16 +113,16 @@ namespace Ou.Support.NodeSupport
             }
         }
 
-        public static void FormatSetVariable_SelectedType(ref GlobalVariable obj,ref int index,string name="temporary",bool isGlobal=false)
+
+        public static void FormatLabel(string str)
         {
-            FormatPopup(ref index, obj.structerTypeRange.typeRange);
-            var icd = ConnectionType.types[obj.structerTypeRange.typeRange[index]];
-            obj.name = name;
-            obj.type = icd.type;
-            obj.identity = icd.identity;
-            ConnectionType.types[obj.structerTypeRange.typeRange[index]].GUILayout(ref obj.obj);
-            obj.isFromGlobaldatas = isGlobal;
+            GUILayout.Label(str);
         }
+        public static void FormatLabel(string str,GUIStyle style)
+        {
+            GUILayout.Label(str,style);
+        }
+
         public static void FormatTextfield(ref string str)
         {
             if (GUILayout.Button("粘贴", GUILayout.Width(40)))
@@ -112,6 +131,16 @@ namespace Ou.Support.NodeSupport
             }
             str = GUILayout.TextField(str);
         }
+
+        public static void FormatTextfield(ref string str, GUIStyle style)
+        {
+            if (GUILayout.Button("粘贴", GUILayout.Width(40)))
+            {
+                str = EditorGUIUtility.systemCopyBuffer;
+            }
+            str = GUILayout.TextField(str,style);
+        }
+
         public static void FormatIntfield(ref int val)
         {
             val = EditorGUILayout.IntField(val);
@@ -123,14 +152,6 @@ namespace Ou.Support.NodeSupport
                 str = EditorGUIUtility.systemCopyBuffer;
             }
             str = GUILayout.TextArea(str);
-        }
-        public static void FormatTextfield(ref string str,GUIStyle style)
-        {
-            if (GUILayout.Button("粘贴", GUILayout.Width(40)))
-            {
-                str = EditorGUIUtility.systemCopyBuffer;
-            }
-            str = GUILayout.TextField(str, style);
         }
 
         public static void FormatButton(string label, Action method,GUIStyle style=null)

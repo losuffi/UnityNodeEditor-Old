@@ -8,11 +8,13 @@ namespace Ou.Support.NodeSupport
 {
     public static class NodeToolBar
     {
-        public static void DrawToolBar(Rect rect)
+        public static void DrawToolBar(Rect rect,GUISkin skin)
         {
-            OuUIUtility.FormatButton("Save", NodeEditor.SaveCurrentCanvas, new Vector2(rect.height, rect.height));
-            OuUIUtility.FormatButton("Load", NodeEditor.LoadCanvas, new Vector2(rect.height, rect.height));
-            OuUIUtility.FormatButton("New", NodeEditor.NewCanvas, new Vector2(rect.height, rect.height));
+            GUILayout.BeginHorizontal();
+            OuUIUtility.FormatButton("保存", NodeEditor.SaveCurrentCanvas,skin.GetStyle("ToolBarButton"));
+            OuUIUtility.FormatButton("加载", NodeEditor.LoadCanvas, skin.GetStyle("ToolBarButton"));
+            OuUIUtility.FormatButton("新建", NodeEditor.NewCanvas, skin.GetStyle("ToolBarButton"));
+            GUILayout.EndHorizontal();
             GUILayout.Space(10);
         }
     }

@@ -194,7 +194,6 @@ namespace Ou.Support.NodeSupport
         {
             string path = EditorUtility.OpenFilePanel("Load Canvas", Application.dataPath + "/Ou/Property/Node", "asset");
             path = Regex.Replace(path, @"^.+/Assets", "Assets");
-            Debug.Log(path);
             TriggerEditorUtility.Init();
             NodeEditorState state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(path);
             NodeGraph graph = null;
@@ -281,7 +280,5 @@ namespace Ou.Support.NodeSupport
             TreeNodeManager.RegisterGraph(curNodeGraph);
         }
         #endregion
-
-
     }
 }
