@@ -24,6 +24,10 @@ namespace Ou.Support.NodeSupport
             curNodeGraph.Clear();
         }
 
+        public static void Refresh()
+        {
+            
+        }
         #region GUIDraw
         public static void DrawCanvas()
         {
@@ -38,11 +42,8 @@ namespace Ou.Support.NodeSupport
             }
             for (int nodeCnt = 0; nodeCnt < curNodeGraph.nodes.Count; nodeCnt++)
             {
-                #if UNITY_EDITOR
                 
                 curNodeGraph.nodes[nodeCnt].Draw();
-
-                #endif
             }
 
             if (CurNodeInputInfo == null || CurNodeInputInfo.EdState == null) 
@@ -151,7 +152,7 @@ namespace Ou.Support.NodeSupport
             TreeInitNode initNode = ScriptableObject.CreateInstance<TreeInitNode>();
             curNodeGraph.InitNode(initNode,Vector2.zero);
         }
-        #endregion
+        #endregion 
         #region DataSave
 
         public static void SaveCurrentCanvas()

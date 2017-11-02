@@ -388,4 +388,46 @@ namespace Ou.Support.NodeSupport
         }
     }
     #endregion
+
+    #region Data
+
+    public class DataCSV : IConnectionDecorator
+    {
+        public string identity { get { return "CSV"; } }
+        public Type type { get { return typeof(string); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+        public string _Class { get { return "Data"; } }
+
+        public void GUIFill(ref object obj)
+        {
+            try
+            {
+                obj = EditorGUILayout.ObjectField((TextAsset)obj, typeof(TextAsset), true);
+                if (!objTostring(obj).Contains(".csv"))
+                {
+                    obj = null;
+                }
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
+        }
+
+        public string objTostring(object obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            return AssetDatabase.GetAssetPath(((TextAsset) obj));
+        }
+
+        public object stringtoobj(string str)
+        {
+            var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(str);
+            return obj;
+        }
+    }
+
+    #endregion
 }

@@ -188,6 +188,7 @@ namespace Ou.Support.NodeSupport
                 });
                 GUILayout.EndHorizontal();
             }
+            obj.setRangeType(NodeEditor.curNodeGraph);
             GUILayout.Label("---添加变量---", skin.GetStyle("adjustBodyLabel"));
             GUILayout.Label("变量名：");
             OuUIUtility.FormatTextfield(ref objname);

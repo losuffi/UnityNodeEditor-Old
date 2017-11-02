@@ -69,7 +69,7 @@ namespace Ou.Support.NodeSupport
 
         public static void FormatSelectedVariable_TypeFit(ref GlobalVariable obj,ref int index,PopupStructer popupStructer)
         {
-            index = EditorGUILayout.Popup(index, popupStructer.datas);
+            FormatPopup(ref index, popupStructer.datas);
             var res= popupStructer.datas.Length > 0
                 ? popupStructer.datas[index]
                 : string.Empty;
@@ -82,10 +82,21 @@ namespace Ou.Support.NodeSupport
             obj.objMessage = duplicate.objMessage;
         }
 
+        public static void FormatPopup(ref int index, params string[] strs)
+        {
+            if (strs == null)
+            {
+                EditorGUILayout.Popup(index, new string[0]);
+            }
+            else
+            {
+                index = EditorGUILayout.Popup(index, strs);
+            }
+        }
 
         public static void FormatSetVariable_SelectedType(ref GlobalVariable obj,ref int index,string name="temporary",bool isGlobal=false)
         {
-            index = EditorGUILayout.Popup(index, obj.structerTypeRange.typeRange);
+            FormatPopup(ref index, obj.structerTypeRange.typeRange);
             var icd = ConnectionType.types[obj.structerTypeRange.typeRange[index]];
             obj.name = name;
             obj.type = icd.type;

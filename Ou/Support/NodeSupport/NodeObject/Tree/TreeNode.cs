@@ -194,8 +194,8 @@ namespace Ou.Support.NodeSupport
             if(gv.structerTypeRange==null)
                 return;
 
-            isSetVariable = GUILayout.Toggle(isSetVariable, "全局变量？");
-            if (isSetVariable)
+            gv.isSetVariable = GUILayout.Toggle(gv.isSetVariable, "全局变量？");
+            if (gv.isSetVariable)
             {
                 OuUIUtility.FormatSelectedVariable_TypeFit(ref gv, ref gv.FillIndex, gv.structerTypeRange);
             }
@@ -205,7 +205,19 @@ namespace Ou.Support.NodeSupport
             }
         }
 
+        protected internal void DrawLocalLayout(GlobalVariable gv)
+        {
+            if (gv.structerTypeRange == null)
+                return;
+            OuUIUtility.FormatSetVariable_SelectedType(ref gv, ref gv.FillIndex);
+        }
 
+        protected internal void DrawGlobalLayout(GlobalVariable gv)
+        {
+            if (gv.structerTypeRange == null)
+                return;
+            OuUIUtility.FormatSelectedVariable_TypeFit(ref gv, ref gv.FillIndex, gv.structerTypeRange);
+        }
         public override Node Create(Vector2 pos)
         {
             throw new NotImplementedException();
@@ -216,8 +228,6 @@ namespace Ou.Support.NodeSupport
         protected internal TreeNodeResult feedback = TreeNodeResult.Idle;
         [SerializeField]
         protected internal List<GlobalVariable> variables=new List<GlobalVariable>();
-
-        [SerializeField] protected internal bool isSetVariable = false;
         private const string nodeId = "树型";
         public override string GetId { get { return nodeId; } }
     }
@@ -256,6 +266,7 @@ namespace Ou.Support.NodeSupport
         [NonSerialized]
         public int FillIndex=0;
 
+        public bool isSetVariable = false;
         public PopupStructer structerTypeRange = null;
         // [SerializeField] private string objMessage;
         [SerializeField] public string objMessage;
@@ -263,6 +274,7 @@ namespace Ou.Support.NodeSupport
         public bool isFromGlobaldatas = false;
         public GlobalVariable(Type type, object obj,string id,string name)
         {
+            isSetVariable = false;
             this.type = type;
             this.obj = obj;
             this.identity = id;
@@ -272,6 +284,7 @@ namespace Ou.Support.NodeSupport
 
         public GlobalVariable(GlobalVariable variable)
         {
+            isSetVariable = false;
             type = variable.type;
             obj = variable.obj;
             identity = variable.identity;
@@ -282,6 +295,7 @@ namespace Ou.Support.NodeSupport
 
         public GlobalVariable()
         {
+            isSetVariable = false;
             this.type = typeof(string);
             this.obj = string.Empty;
             this.identity = "字符串";
@@ -293,7 +307,10 @@ namespace Ou.Support.NodeSupport
         {
             structerTypeRange = node.SetVariableTypeRange(strs);
         }
-
+        public void setRangeType(NodeGraph graph, params string[] strs)
+        {
+            structerTypeRange = new PopupStructer(strs, graph);
+        }
         public void ConvertString()
         {
             objMessage = ConnectionType.types[this.identity].ObjtoString(this.obj);
