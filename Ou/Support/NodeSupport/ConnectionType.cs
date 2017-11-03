@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Ou.Support.UnitSupport;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,6 @@ namespace Ou.Support.NodeSupport
     public static class ConnectionType
     {
         public static Dictionary<string, ConnectionTypeData> types;
-
         public static void Fetch()
         {
             types=new Dictionary<string, ConnectionTypeData>();
@@ -428,6 +428,41 @@ namespace Ou.Support.NodeSupport
             return obj;
         }
     }
+    public class DataUnit : IConnectionDecorator
+    {
+        public string identity { get { return "Unit"; } }
+        public Type type { get { return typeof(string); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+        public string _Class { get { return "Data"; } }
 
+        public void GUIFill(ref object obj)
+        {
+            try
+            {
+                obj = EditorGUILayout.ObjectField((UnitBase)obj, typeof(UnitBase), true);
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
+        }
+
+        public string objTostring(object obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            var tar = obj as UnitBase;
+            return tar.Name;
+        }
+
+        public object stringtoobj(string str)
+        {
+            var manager = GameObject.Find("_unitManager").GetComponent<UnitManager>();
+            if (manager == null)
+                return null;
+            return manager.GetUnit(str);
+        }
+    }
     #endregion
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Ou.Support.NodeSupport;
 using Ou.Support.UnitSupport;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +17,8 @@ namespace Ou.Support.UnitSupport
 
         public static void StartInterrupted()
         {
-            //ReStart
+            //Init
+            TriggerEditorUtility.Init();
         }
 
         #region NewOne
@@ -29,6 +31,7 @@ namespace Ou.Support.UnitSupport
         public static void BuildNewUnit()
         {
             curInfo.curUnit = UnitBase.CreateInstance<UnitBase>();
+            curInfo.curUnit.Name = curInfo.unitName;
             Save();
         }
 
@@ -47,6 +50,11 @@ namespace Ou.Support.UnitSupport
                 path = Regex.Replace(path, @"^.+/Assets", "Assets");
                 AssetDatabase.CreateAsset(curInfo.curUnit, path);
                 UnitField.stateIdentity = "showField";
+            }
+            else
+            {
+                EditorUtility.SetDirty(curInfo.curUnit);
+                AssetDatabase.SaveAssets();
             }
         }
 
@@ -77,6 +85,29 @@ namespace Ou.Support.UnitSupport
             return true;
         }
 
+        #endregion
+
+        #region App
+
+        public static void CreateManager()
+        {
+            var obj = GameObject.Find("_unitManager");
+            if (obj == null)
+            {
+                obj = new GameObject("_unitManager");
+                obj.AddComponent<UnitManager>();
+            }
+        }
+        public static void RegisterUnitManager()
+        {
+            if (GameObject.Find("_nodeTreeManager") == null)
+            {
+                CreateManager();
+            }
+            if(curInfo.curUnit==null)
+                return;
+            GameObject.Find("_unitManager").GetComponent<UnitManager>().registerManager(curInfo.curUnit);
+        }
         #endregion
     }
 }

@@ -25,14 +25,13 @@ namespace Ou.Editor.Views
             GUI.Box(ViewRect, Title, ViewSkin.GetStyle("TriggerEditorCanvas"));
             GUILayout.BeginArea(ViewRect);
             {
-                NodeEditor.curNodeEditorState.CurGraphRect = ViewRect;
                 if (e.button == 1 && e.type == EventType.mouseDown)
                 {
                     menu = NodeEditor.GetGenericMenu();//需要修改 装入InputControls中
                     menu.ShowAsContext();
                 }
                 if(TriggerEditorUtility.CheckInit())
-                    NodeEditor.DrawCanvas();
+                    NodeEditor.DrawCanvas(ViewRect);
             }
             GUILayout.EndArea();
         }

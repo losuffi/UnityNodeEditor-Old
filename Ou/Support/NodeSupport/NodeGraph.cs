@@ -13,7 +13,7 @@ namespace Ou.Support.NodeSupport
         public List<Node> nodes=new List<Node>();
 
         [SerializeField]
-        private List<GlobalVariable> globalVariables =new List<GlobalVariable>();
+        protected internal List<GlobalVariable> globalVariables =new List<GlobalVariable>();
         private List<GlobalVariable> globalVariablesRuntime=new List<GlobalVariable>();
 
 
@@ -150,47 +150,42 @@ namespace Ou.Support.NodeSupport
             return res.ToArray();
         }
 
-        public GlobalVariable ReadGlobalVariable(string key,DataModel typeModel= DataModel.Editor)
+        public GlobalVariable ReadGlobalVariable(string key)
         {
-            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
-            if (CheckKey(key, typeModel))
+            if (CheckKey(key))
             {
-                var tar = gvs.Find(z => z.name.Equals(key));
+                var tar = globalVariables.Find(z => z.name.Equals(key));
                 return tar;
             }
             return new GlobalVariable(typeof(string), string.Empty, "字符串", "none");
         }
-        public GlobalVariable ReadGlobalVariable(int index, DataModel typeModel = DataModel.Editor)
+        public GlobalVariable ReadGlobalVariable(int index)
         {
-            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
-            if (gvs.Count>index)
+            if (globalVariables.Count>index)
             {
-                var tar = gvs[index];
+                var tar = globalVariables[index];
                 return tar;
             }
             return new GlobalVariable(typeof(string), string.Empty, "字符串", "none");
         }
-        public void UpdateGlobalVarible(string key,object obj,DataModel typeModel= DataModel.Editor)
+        public void UpdateGlobalVarible(string key,object obj)
         {
-            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
-            if (CheckKey(key, typeModel))
+            if (CheckKey(key))
             {
-                var tar = gvs.Find(z => z.name.Equals(key));
+                var tar = globalVariables.Find(z => z.name.Equals(key));
                 tar.obj = obj;
                 tar.ConvertString();
             }
         }
-        public void RemoveGlobalVariable(int index, DataModel typeModel = DataModel.Editor)
+        public void RemoveGlobalVariable(int index)
         {
-            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
-            gvs.RemoveAt(index);
+            globalVariables.RemoveAt(index);
         }
-        public bool CheckKey(string key,DataModel typeModel)
+        public bool CheckKey(string key)
         {
-            List<GlobalVariable> gvs = typeModel == DataModel.Editor ? globalVariables : globalVariablesRuntime;
-            for (int i = 0; i < gvs.Count; i++)
+            for (int i = 0; i < globalVariables.Count; i++)
             {
-                if (gvs[i].name.Equals(key))
+                if (globalVariables[i].name.Equals(key))
                 {
                     return true;
                 }
@@ -198,9 +193,9 @@ namespace Ou.Support.NodeSupport
             return false;
         }
 
-        public void VariableTypeCheck(ref GlobalVariable obj,DataModel typeModel)
+        public void VariableTypeCheck(ref GlobalVariable obj)
         {
-            obj = obj.isFromGlobaldatas ? ReadGlobalVariable(obj.name, typeModel) : obj;
+            obj = obj.isFromGlobaldatas ? ReadGlobalVariable(obj.name) : obj;
         }
 
         public int GlobalVariablesCount
@@ -218,7 +213,19 @@ namespace Ou.Support.NodeSupport
                 globalVariablesRuntime.Add(tar);
             }
         }
-
+        public void EndRuntimeVariable()
+        {
+            if (!globalVariablesRuntime.Any())
+            {
+                return;
+            }
+            globalVariables.Clear();
+            for (int gvCount = 0; gvCount < globalVariablesRuntime.Count; gvCount++)
+            {
+                globalVariables.Add(globalVariablesRuntime[gvCount]);
+            }
+            globalVariablesRuntime.Clear();
+        }
 
         #endregion
         //Work :需要搭建， Test Vision

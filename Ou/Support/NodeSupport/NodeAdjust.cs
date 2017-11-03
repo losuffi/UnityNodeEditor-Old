@@ -193,7 +193,7 @@ namespace Ou.Support.NodeSupport
             GUILayout.Label("变量名：");
             OuUIUtility.FormatTextfield(ref objname);
             GUILayout.Label("变量种类：");
-            OuUIUtility.FormatSetVariable_SelectedType(ref obj, ref FillIndex, objname,true);
+            OuUIUtility.FormatFillVariable_SelectedType(ref obj, ref FillIndex, objname,true);
             OuUIUtility.FormatButton("添加",AddVariable);
 
 

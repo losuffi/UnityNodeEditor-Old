@@ -53,8 +53,8 @@ namespace Ou.Support.NodeSupport
         {
             var obj1 = variables[0];
             var obj2 = variables[1];
-            curGraph.VariableTypeCheck(ref obj1, DataModel.Runtime);
-            curGraph.VariableTypeCheck(ref obj2, DataModel.Runtime);
+            curGraph.VariableTypeCheck(ref obj1);
+            curGraph.VariableTypeCheck(ref obj2);
             if (obj1.type != obj2.type)
             {
                 result = false;

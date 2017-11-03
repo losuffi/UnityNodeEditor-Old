@@ -41,7 +41,13 @@ namespace Ou.Support.NodeSupport
             }
             StartCoroutine(OnUpdate());
         }
-
+        void OnApplicationQuit()
+        {
+            for (int i = 0; i < graphs.Count; i++)
+            {
+                graphs[i].EndRuntimeVariable();
+            }
+        }
         IEnumerator OnUpdate()
         {
             while (true)

@@ -46,7 +46,7 @@ namespace Ou.Support.UnitSupport
                 {
                     GUILayout.BeginHorizontal();
                     var variable = curUnit.fields[i];
-                    OuUIUtility.FormatShowVariable_Exits(ref variable, skin.GetStyle("UnitEditorFieldLabel"));
+                    OuUIUtility.FormatShowVariable_Exits(ref variable,skin.GetStyle("UnitEditorUnitField"),skin.GetStyle("UnitEditorFieldLabel"));
                     OuUIUtility.FormatButton("-", () => { curUnit.fields.Remove(variable);
                         i--;
                     });
@@ -60,7 +60,8 @@ namespace Ou.Support.UnitSupport
         static void AddField()
         {
             GlobalVariable obj=new GlobalVariable();
-            //TODO:增加GV 的Draw
+            obj.setRangeType(curUnit);
+            curUnit.fields.Add(obj);
         }
     }
 }

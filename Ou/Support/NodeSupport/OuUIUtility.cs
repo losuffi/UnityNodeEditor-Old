@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ou.Support.UnitSupport;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,19 +15,60 @@ namespace Ou.Support.NodeSupport
         public string[] datas;
         [HideInInspector]
         public NodeGraph graph;
+        [HideInInspector]
+        public UnitBase unit;
 
         [HideInInspector] public string[] typeRange;
 
         public PopupStructer(string[] range,NodeGraph graph)
         {
-            this.datas = graph.selectorVariable(range);
-            this.graph = graph;
-            if(range.Length!=0)
+            if (range.Length != 0)
                 this.typeRange = range;
             else
             {
                 this.typeRange = ConnectionType.identitys;
             }
+            this.datas = graph.selectorVariable(typeRange);
+            this.graph = graph;
+            unit = null;
+        }
+
+        public PopupStructer(string[] range)
+        {
+            this.datas = null;
+            this.graph = null;
+            unit = null;
+            if (range.Length != 0)
+                this.typeRange = range;
+            else
+            {
+                this.typeRange = ConnectionType.identitys;
+            }
+        }
+        public PopupStructer(UnitBase unit,string[] range)
+        {
+            if (range.Length != 0)
+                this.typeRange = range;
+            else
+            {
+                this.typeRange = ConnectionType.identitys;
+            }
+            this.unit = unit;
+            this.datas = unit.selectorVariable(typeRange);
+            this.graph = null;            
+        }
+
+        public void Update(UnitBase unit, string[] range)
+        {
+            if (range.Length != 0)
+                this.typeRange = range;
+            else
+            {
+                this.typeRange = ConnectionType.identitys;
+            }
+            this.unit = unit;
+            this.datas = unit.selectorVariable(typeRange);
+            this.graph = null;
         }
 
     }
@@ -71,7 +113,21 @@ namespace Ou.Support.NodeSupport
             obj.obj = duplicate.obj;
             obj.objMessage = duplicate.objMessage;
         }
-        public static void FormatSetVariable_SelectedType(ref GlobalVariable obj, ref int index, string name = "temporary", bool isGlobal = false)
+        public static void FormatSelectedVariableUnit_TypeFit(ref GlobalVariable obj,PopupStructer popupStructer)
+        {
+            FormatPopup(ref obj.FillIndex, popupStructer.datas);
+            var res = popupStructer.datas.Length > 0
+                ? popupStructer.datas[obj.FillIndex]
+                : string.Empty;
+            var duplicate = popupStructer.unit.ReadGlobalVariable(res);
+            obj.identity = duplicate.identity;
+            obj.name = duplicate.name;
+            obj.isFromGlobaldatas = duplicate.isFromGlobaldatas;
+            obj.type = duplicate.type;
+            obj.obj = duplicate.obj;
+            obj.objMessage = duplicate.objMessage;
+        }
+        public static void FormatFillVariable_SelectedType(ref GlobalVariable obj, ref int index, string name = "temporary", bool isGlobal = false)
         {
             FormatPopup(ref index, obj.structerTypeRange.typeRange);
             var icd = ConnectionType.types[obj.structerTypeRange.typeRange[index]];
@@ -84,9 +140,21 @@ namespace Ou.Support.NodeSupport
 
         public static void FormatShowVariable_Exits(ref GlobalVariable obj,GUIStyle style)
         {
-            OuUIUtility.FormatLabel(obj.name,style);
-            OuUIUtility.FormatLabel(obj.identity,style);
-            ConnectionType.types[obj.identity].GUILayout(ref obj.obj);
+            OuUIUtility.FormatTextfield(ref obj.name,style);
+            OuUIUtility.FormatLabel(obj.identity);
+            OuUIUtility.FormatFillVariable_SelectedType(ref obj, ref obj.FillIndex, obj.name, true);
+        }
+        public static void FormatShowVariable_Exits(ref GlobalVariable obj, GUIStyle style,GUIStyle style2)
+        {
+            OuUIUtility.FormatLabel("属性名", style2);
+            OuUIUtility.FormatTextfield(ref obj.name, style);
+            OuUIUtility.FormatFillVariable_SelectedType(ref obj, ref obj.FillIndex, obj.name, true);
+        }
+        public static void FormatShowVariable_Exits(ref GlobalVariable obj)
+        {
+            OuUIUtility.FormatTextfield(ref obj.name);
+            OuUIUtility.FormatLabel(obj.identity);
+            OuUIUtility.FormatFillVariable_SelectedType(ref obj, ref obj.FillIndex, obj.name, true);
         }
         #endregion
         #region FunctionalUI
@@ -105,11 +173,11 @@ namespace Ou.Support.NodeSupport
         {
             if (strs == null)
             {
-                EditorGUILayout.Popup(index, new string[0]);
+                EditorGUILayout.Popup(index, new string[0],GUILayout.Width(60));
             }
             else
             {
-                index = EditorGUILayout.Popup(index, strs);
+                index = EditorGUILayout.Popup(index, strs, GUILayout.Width(60));
             }
         }
 
@@ -223,6 +291,7 @@ namespace Ou.Support.NodeSupport
             NodeInputSystem.Fetch();
             ConnectionType.Fetch();
             NodeEditor.CreateManager();
+            UnitEditor.CreateManager();
             IsInit = true;
             if (TrigInit != null)
                 TrigInit();

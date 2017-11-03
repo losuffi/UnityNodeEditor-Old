@@ -21,11 +21,13 @@ namespace Ou.Editor.Windows
             Instance.titleContent = new GUIContent("TriggerEditor");
             Instance.maxSize = new Vector2(1400, 860);
             Instance.minSize = new Vector2(1400, 860);
-            NodeEditor.InitAssetData();
+            NodeEditor.Refresh();
         }
 
         private void OnEnable()
         {
+            if(NodeEditor.curNodeGraph==null)
+                NodeEditor.Refresh();
             IsPaintDone = false;
         }
         private void OnGUI()
@@ -39,16 +41,13 @@ namespace Ou.Editor.Windows
                 if(e.type==EventType.Repaint&&!IsPaintDone)
                     return;
                 //Draw SubWindow
-                if (!Application.isPlaying)
+                try
                 {
-                    try
-                    {
-                        DrawViews(e);
-                    }
-                    catch (ArgumentException exception)
-                    {
-                        Debug.Log(exception);
-                    }
+                    DrawViews(e);
+                }
+                catch (ArgumentException exception)
+                {
+                    Debug.Log(exception);
                 }
                 if (!IsPaintDone && e.type == EventType.Layout)
                 {

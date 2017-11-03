@@ -27,9 +27,9 @@ namespace Ou.Support.NodeSupport
             base.Evaluator();
             var obj2 = variables[1];
             var obj3 = variables[2];
-            variables[0] = curGraph.ReadGlobalVariable(variables[0].name, DataModel.Runtime);
-            curGraph.VariableTypeCheck(ref obj2, DataModel.Runtime);
-            curGraph.VariableTypeCheck(ref obj3, DataModel.Runtime);
+            variables[0] = curGraph.ReadGlobalVariable(variables[0].name);
+            curGraph.VariableTypeCheck(ref obj2);
+            curGraph.VariableTypeCheck(ref obj3);
             float val_1 = obj2.identity.Equals("真值") ? (int) obj2.obj * 1.0f : (float) obj2.obj;
             float val_2 = obj3.identity.Equals("真值") ? (int) obj3.obj * 1.0f : (float) obj3.obj;
             float res = variables[1].identity.Equals("真值") ? (int)variables[1].obj * 1.0f : (float)variables[1].obj;
@@ -50,12 +50,12 @@ namespace Ou.Support.NodeSupport
             }
             if (variables[1].identity.Equals("真值"))
             {
-                curGraph.UpdateGlobalVarible(variables[1].name, Mathf.RoundToInt(res), DataModel.Runtime);
+                curGraph.UpdateGlobalVarible(variables[1].name, Mathf.RoundToInt(res));
 
             }
             else
             {
-                curGraph.UpdateGlobalVarible(variables[1].name, res, DataModel.Runtime);
+                curGraph.UpdateGlobalVarible(variables[1].name, res);
             }
         }
 

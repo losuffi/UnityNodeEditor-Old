@@ -12,9 +12,9 @@ namespace Ou.Support.NodeSupport
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (curGraph.CheckKey(variables[0].name, DataModel.Runtime))
+            if (curGraph.CheckKey(variables[0].name))
             {
-                Debug.Log(curGraph.ReadGlobalVariable(variables[0].name, DataModel.Runtime).obj);
+                Debug.Log(curGraph.ReadGlobalVariable(variables[0].name).obj);
             }
             else
             {
@@ -24,6 +24,7 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void NodeGUI()
         {
+            GUILayout.Label(variables[0].structerTypeRange.typeRange.Length.ToString());
             DrawFillsLayout(variables[0]);
         }
 

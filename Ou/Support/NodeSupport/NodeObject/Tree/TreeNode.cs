@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Ou.Support.UnitSupport;
 using UnityEditor;
 using UnityEngine;
 
@@ -136,6 +137,7 @@ namespace Ou.Support.NodeSupport
         {
             get
             {
+                stateWithDraw = state;
                 if (state == TreeNodeResult.Done || state == TreeNodeResult.Failed||state== TreeNodeResult.Break)
                 {
 
@@ -201,7 +203,7 @@ namespace Ou.Support.NodeSupport
             }
             else
             {
-                OuUIUtility.FormatSetVariable_SelectedType(ref gv, ref gv.FillIndex);
+                OuUIUtility.FormatFillVariable_SelectedType(ref gv, ref gv.FillIndex);
             }
         }
 
@@ -209,7 +211,7 @@ namespace Ou.Support.NodeSupport
         {
             if (gv.structerTypeRange == null)
                 return;
-            OuUIUtility.FormatSetVariable_SelectedType(ref gv, ref gv.FillIndex);
+            OuUIUtility.FormatFillVariable_SelectedType(ref gv, ref gv.FillIndex);
         }
 
         protected internal void DrawGlobalLayout(GlobalVariable gv)
@@ -218,6 +220,14 @@ namespace Ou.Support.NodeSupport
                 return;
             OuUIUtility.FormatSelectedVariable_TypeFit(ref gv, ref gv.FillIndex, gv.structerTypeRange);
         }
+        protected internal void DrawUnitLayout(GlobalVariable gv)
+        {
+            if (gv.structerTypeRange == null)
+                return;
+            OuUIUtility.FormatSelectedVariableUnit_TypeFit(ref gv, gv.structerTypeRange);
+        }
+
+
         public override Node Create(Vector2 pos)
         {
             throw new NotImplementedException();
@@ -229,7 +239,40 @@ namespace Ou.Support.NodeSupport
         [SerializeField]
         protected internal List<GlobalVariable> variables=new List<GlobalVariable>();
         private const string nodeId = "树型";
+        protected internal TreeNodeResult stateWithDraw = TreeNodeResult.Done;
         public override string GetId { get { return nodeId; } }
+        protected internal override void Draw()
+        {
+            base.Draw();
+            DrawState();
+        }
+
+        void DrawState()
+        {
+            if(!EditorApplication.isPlaying)
+                return;
+            if (stateWithDraw == TreeNodeResult.Failed)
+            {
+                Handles.color = Color.yellow;
+            }
+            else if(stateWithDraw == TreeNodeResult.Running)
+            {
+                Handles.color=Color.green;
+            }
+            else if(stateWithDraw == TreeNodeResult.Break|| stateWithDraw == TreeNodeResult.Done)
+            {
+                Handles.color= Color.black;
+            }
+            else
+            {
+                Handles.color = Color.gray;
+            }
+            Handles.DrawAAPolyLine(6,new Vector3(nodeRect.x, nodeRect.y, 0),
+                new Vector3(nodeRect.x + nodeRect.width, nodeRect.y, 0),
+                new Vector3(nodeRect.x + nodeRect.width, nodeRect.y + nodeRect.height, 0),
+                new Vector3(nodeRect.x, nodeRect.y + nodeRect.height, 0),
+                new Vector3(nodeRect.x, nodeRect.y, 0));
+        }
     }
     public enum TreeNodeResult
     {
@@ -291,6 +334,7 @@ namespace Ou.Support.NodeSupport
             name = variable.name;
             objMessage = variable.objMessage;
             FillIndex = variable.FillIndex;
+            structerTypeRange = variable.structerTypeRange;
         }
 
         public GlobalVariable()
@@ -311,6 +355,22 @@ namespace Ou.Support.NodeSupport
         {
             structerTypeRange = new PopupStructer(strs, graph);
         }
+        public void setRangeType(params string[] strs)
+        {
+            structerTypeRange = new PopupStructer(strs);
+        }
+        public void setRangeType(UnitBase unit, params string[] strs)
+        {
+            if (structerTypeRange != null)
+            {
+                structerTypeRange.Update(unit, strs);
+            }
+            else
+            {
+                structerTypeRange = new PopupStructer(unit, strs);
+            }
+        }
+
         public void ConvertString()
         {
             objMessage = ConnectionType.types[this.identity].ObjtoString(this.obj);

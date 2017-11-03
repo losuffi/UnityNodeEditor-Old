@@ -26,16 +26,17 @@ namespace Ou.Support.NodeSupport
 
         public static void Refresh()
         {
-            
+            GetCache();
         }
         #region GUIDraw
-        public static void DrawCanvas()
+        public static void DrawCanvas(Rect viewRect)
         {
             DrawBackground();
             if (curNodeGraph == null || curNodeEditorState == null)
             {
                 return;
             }
+            curNodeEditorState.CurGraphRect = viewRect;
             if (!curNodeGraph.nodes.Exists(res => res.GetId.Equals("初始化")))
             {
                 InitGraphNode();
@@ -190,6 +191,22 @@ namespace Ou.Support.NodeSupport
             curNodeEditorState = state;
         }
 
+        static void CreateCache(string canvasPath)
+        {
+            if (EditorPrefs.HasKey("Path"))
+            {
+                EditorPrefs.DeleteKey("Path");
+            }
+            EditorPrefs.SetString("Path", canvasPath);
+        }
+
+        static void GetCache()
+        {
+            if (EditorPrefs.HasKey("Path"))
+            {
+                LoadCanvas(EditorPrefs.GetString("Path"));
+            }
+        }
         public static void LoadCanvas()
         {
             string path = EditorUtility.OpenFilePanel("Load Canvas", Application.dataPath + "/Ou/Property/Node", "asset");
@@ -204,6 +221,7 @@ namespace Ou.Support.NodeSupport
             CurNodeInputInfo = null;
             curNodeGraph = graph;
             curNodeEditorState = state;
+            CreateCache(path);
         }
 
         public static void LoadCanvas(string path)
@@ -218,6 +236,7 @@ namespace Ou.Support.NodeSupport
             CurNodeInputInfo = null;
             curNodeGraph = graph;
             curNodeEditorState = state;
+            CreateCache(path);
         }
         public static void NewCanvas()
         {
@@ -249,6 +268,7 @@ namespace Ou.Support.NodeSupport
             CurNodeInputInfo = null;
             curNodeGraph = graph;
             curNodeEditorState = state;
+            CreateCache(Path);
         }
         #endregion
 

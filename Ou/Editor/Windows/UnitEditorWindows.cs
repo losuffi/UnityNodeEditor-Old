@@ -18,8 +18,8 @@ namespace Ou.Editor.Windows
         public static void Init()
         {
             Instance = GetWindow<UnitEditorWindows>(true);
-            Instance.maxSize = new Vector2(300, 1000);
-            Instance.minSize = new Vector2(300, 1000);
+            Instance.maxSize = new Vector2(400, 1000);
+            Instance.minSize = new Vector2(400, 1000);
             Instance.titleContent = new GUIContent("UnitEditor");
         }
 
@@ -40,16 +40,13 @@ namespace Ou.Editor.Windows
                 if (e.type == EventType.Repaint && !IsPaintDone)
                     return;
                 //Draw SubWindow
-                if (!Application.isPlaying)
+                try
                 {
-                    try
-                    {
-                        DrawViews(e);
-                    }
-                    catch (ArgumentException exception)
-                    {
-                        Debug.Log(exception);
-                    }
+                    DrawViews(e);
+                }
+                catch (ArgumentException exception)
+                {
+                    Debug.Log(exception);
                 }
                 if (!IsPaintDone && e.type == EventType.Layout)
                 {

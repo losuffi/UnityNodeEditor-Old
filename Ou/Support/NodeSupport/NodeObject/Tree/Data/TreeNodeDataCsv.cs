@@ -19,9 +19,9 @@ namespace Ou.Support.NodeSupport
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (curGraph.CheckKey(variables[1].name, DataModel.Runtime))
+            if (curGraph.CheckKey(variables[1].name))
             {
-                curGraph.UpdateGlobalVarible(variables[1].name, variables[2].obj, DataModel.Runtime);
+                curGraph.UpdateGlobalVarible(variables[1].name, variables[2].obj);
             }
         }
 
