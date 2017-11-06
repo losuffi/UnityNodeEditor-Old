@@ -43,6 +43,50 @@ namespace Ou.Support.NodeSupport
                 return strs;
             }
         }
+
+        public static string UnityObjectToString<T>(T obj) where T:Component
+        {
+            if (obj == null)
+                return string.Empty;
+            StringBuilder path = new StringBuilder();
+            Transform vobj = obj.transform;
+            while (true)
+            {
+                if (vobj.parent == null)
+                {
+                    path.Insert(0, vobj.name);
+                    break;
+                }
+                else
+                {
+                    path.Insert(0, "/" + vobj.name);
+                }
+                vobj = vobj.parent;
+            }
+            return path.ToString();
+        }
+
+        public static string UnityObjectToString(GameObject obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            StringBuilder path = new StringBuilder();
+            Transform vobj = obj.transform;
+            while (true)
+            {
+                if (vobj.parent == null)
+                {
+                    path.Insert(0, vobj.name);
+                    break;
+                }
+                else
+                {
+                    path.Insert(0, "/" + vobj.name);
+                }
+                vobj = vobj.parent;
+            }
+            return path.ToString();
+        }
     }
 
     public class ConnectionTypeData
@@ -211,6 +255,7 @@ namespace Ou.Support.NodeSupport
 
 
     #region UGUI
+    
     public class UGUITextType : IConnectionDecorator
     {
         public string identity { get { return "TextUI"; } }
@@ -235,7 +280,7 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ((Text) obj).name;
+            return ConnectionType.UnityObjectToString<Text>((Text)obj);
         }
 
         public object stringtoobj(string str)
@@ -269,7 +314,9 @@ namespace Ou.Support.NodeSupport
 
         public string objTostring(object obj)
         {
-            return ((ButtonGroup)obj).name;
+            if (obj == null)
+                return string.Empty;
+            return ConnectionType.UnityObjectToString<ButtonGroup>((ButtonGroup)obj);
         }
 
         public object stringtoobj(string str)
@@ -305,7 +352,7 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ((Button)obj).name;
+            return ConnectionType.UnityObjectToString<Button>((Button)obj);
         }
 
         public object stringtoobj(string str)
@@ -341,7 +388,7 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ((GameObject)obj).name;
+            return ConnectionType.UnityObjectToString((GameObject)obj);
         }
 
         public object stringtoobj(string str)
@@ -376,7 +423,7 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ((Image)obj).name;
+            return ConnectionType.UnityObjectToString<Image>((Image)obj);
         }
 
         public object stringtoobj(string str)

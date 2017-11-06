@@ -82,9 +82,9 @@ namespace Ou.Support.NodeSupport {
             Vector2 scalePos = state.ZoomPos;
             float Scale = 0.01f * inputInfo.InputEvent.delta.y;
             state.GraphZoom += Scale;
-            if (state.GraphZoom <= 0.8f)
+            if (state.GraphZoom <= 0.5f)
             {
-                state.GraphZoom = 0.8f;
+                state.GraphZoom = 0.5f;
                 return;
             }
             Vector2 scalePosCurrent = scalePos * state.GraphZoom;
@@ -222,6 +222,50 @@ namespace Ou.Support.NodeSupport {
             }
         }
 
+        #endregion
+
+        #region SelectedNodes
+
+        [Handle(EventType.MouseDown)]
+        private static void SelectedPanelMouseDown(NodeInputInfo inputInfo)
+        {
+            NodeEditorState state = inputInfo.EdState;
+            if(inputInfo.InputEvent.modifiers== EventModifiers.Alt)
+            {
+                state.IsSelectedPanelNodes = true;
+                state.SelectedNodes.Clear();
+                state.selectedPanelNodesStartPos = inputInfo.InputPos;
+            }
+        }
+
+        [Handle(EventType.MouseDrag)]
+        private static void SelectedPanelMouseDrag(NodeInputInfo inputInfo)
+        {
+            NodeEditorState state = inputInfo.EdState;
+            if (inputInfo.InputEvent.modifiers == EventModifiers.Alt)
+            {
+                state.selectedPanelNodesEndPos = inputInfo.InputPos;
+            }
+        }
+        [Handle(EventType.MouseUp)]
+        private static void SelectedPanelMouseUp(NodeInputInfo inputInfo)
+        {
+            NodeEditorState state = inputInfo.EdState;
+            if (inputInfo.InputEvent.modifiers == EventModifiers.Alt)
+            {
+                state.selectedPanelNodesEndPos = inputInfo.InputPos;
+                state.IsSelectedPanelNodes = false;
+            }
+        }
+        [Handle(EventType.MouseDrag)]
+        private static void SelectedPanelMouseDragCheck(NodeInputInfo inputInfo)
+        {
+            NodeEditorState state = inputInfo.EdState;
+            if (inputInfo.InputEvent.modifiers != EventModifiers.Alt)
+            {
+                state.IsSelectedPanelNodes = false;
+            }
+        }
         #endregion
     }
 }

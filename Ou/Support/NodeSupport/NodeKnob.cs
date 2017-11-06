@@ -51,7 +51,7 @@ namespace Ou.Support.NodeSupport
         private Rect GetGUIKnob()
         {
             Vector2 pos = Body.rect.position;
-            Vector2 size=new Vector2(15,15);
+            Vector2 size=new Vector2(10,10);
             if (side == Side.Left)
             {
                 pos = new Vector2(pos.x - size.x, pos.y + sideOffset);

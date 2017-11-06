@@ -37,9 +37,7 @@ namespace Ou.Support.NodeSupport
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
             node.CreateVariable(typeof(Text), null, "TextUI", "text");
-            variables[0].setRangeType(node,"TextUI");
             node.CreateVariable();
-            variables[1].setRangeType(node, "字符串");
             return node;
 
         }
@@ -56,7 +54,9 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void Start()
         {
-          //  ext = new GlobalVariable(typeof(Text), null, "TextUI", "text");
+            //  ext = new GlobalVariable(typeof(Text), null, "TextUI", "text");
+            variables[0].setRangeType(this, "TextUI");
+            variables[1].setRangeType(this,"字符串");
             base.Start();
         }
     }

@@ -16,6 +16,8 @@ namespace Ou.Support.NodeSupport
         {
             foreach (NodeInput input in inputKnobs)
             {
+                if(input.connection==null)
+                    continue;
                 var parent = input.connection.Body as TreeNode;
                 parent.feedback = feedback;
                 parent.FeedBack();
@@ -124,11 +126,12 @@ namespace Ou.Support.NodeSupport
                 foreach (var input in inputKnobs.FindAll(T => T.InputType.Equals("工作状态")))
                 {
                     state = input.GetValue<TreeNodeResult>();
-                }
-                if (state == TreeNodeResult.Start)
-                {
-                    OnStart();
-                    state = TreeNodeResult.Running;
+                    if (state == TreeNodeResult.Start)
+                    {
+                        OnStart();
+                        state = TreeNodeResult.Running;
+                        break;
+                    }
                 }
             }
         }
@@ -188,7 +191,7 @@ namespace Ou.Support.NodeSupport
 
         protected internal PopupStructer SetVariableTypeRange(params string[] str)
         {
-            return new PopupStructer(str, curGraph);
+            return new PopupStructer(curGraph,str);
         }
 
         protected internal void DrawFillsLayout(GlobalVariable gv)
@@ -251,6 +254,7 @@ namespace Ou.Support.NodeSupport
         {
             if(!EditorApplication.isPlaying)
                 return;
+            Color normalColor = Handles.color;
             if (stateWithDraw == TreeNodeResult.Failed)
             {
                 Handles.color = Color.yellow;
@@ -272,6 +276,7 @@ namespace Ou.Support.NodeSupport
                 new Vector3(nodeRect.x + nodeRect.width, nodeRect.y + nodeRect.height, 0),
                 new Vector3(nodeRect.x, nodeRect.y + nodeRect.height, 0),
                 new Vector3(nodeRect.x, nodeRect.y, 0));
+            Handles.color = normalColor;
         }
     }
     public enum TreeNodeResult
@@ -353,7 +358,7 @@ namespace Ou.Support.NodeSupport
         }
         public void setRangeType(NodeGraph graph, params string[] strs)
         {
-            structerTypeRange = new PopupStructer(strs, graph);
+            structerTypeRange = new PopupStructer(graph,strs);
         }
         public void setRangeType(params string[] strs)
         {

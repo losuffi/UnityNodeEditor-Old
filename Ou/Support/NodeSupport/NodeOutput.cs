@@ -29,19 +29,19 @@ namespace Ou.Support.NodeSupport
         {
             if (output.Name.Contains("Nextout"))
             {
-                output.texture2D = OuUIUtility.ColorToTex(1, Color.black);
+                output.texture2D = OuUIUtility.Tex(Color.black);
             }
             if (output.Name.Contains("Forout"))
             {
-                output.texture2D = OuUIUtility.ColorToTex(1, Color.blue);
+                output.texture2D = OuUIUtility.Tex(Color.blue);
             }
             if (output.Name.Contains("Setout"))
             {
-                output.texture2D = OuUIUtility.ColorToTex(1, Color.yellow);
+                output.texture2D = OuUIUtility.Tex(Color.green);
             }
             if (output.Name.Contains("Btns"))
             {
-                output.texture2D = OuUIUtility.ColorToTex(1, Color.yellow);
+                output.texture2D = OuUIUtility.Tex(Color.green);
             }
         }
 

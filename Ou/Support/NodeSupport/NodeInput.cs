@@ -28,7 +28,7 @@ namespace Ou.Support.NodeSupport
         {
             if (input.Name.Contains("PreIn"))
             {
-                input.texture2D = OuUIUtility.ColorToTex(1, Color.red);
+                input.texture2D = OuUIUtility.Tex(Color.red);
             }
         }
 
@@ -41,7 +41,7 @@ namespace Ou.Support.NodeSupport
         public void DrawConnections()
         {
             if(connection!=null)
-                OuUIUtility.DrawLine(connection.rect.center, this.rect.center);
+                OuUIUtility.DrawLineA(connection.rect.center, this.rect.center);
         }
 
         public T GetValue<T>()

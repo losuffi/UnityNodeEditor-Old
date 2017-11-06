@@ -64,7 +64,7 @@ namespace Ou.Support.NodeSupport
         {
 
             GUILayout.Label("结果：");
-            DrawFillsLayout(variables[0]);
+            DrawGlobalLayout(variables[0]);
             DrawFillsLayout(variables[1]);
             cType = (CalcuType)EditorGUILayout.EnumPopup(cType);
             DrawFillsLayout(variables[2]);

@@ -43,8 +43,16 @@ namespace Ou.Support.NodeSupport
             }
             for (int nodeCnt = 0; nodeCnt < curNodeGraph.nodes.Count; nodeCnt++)
             {
-                
-                curNodeGraph.nodes[nodeCnt].Draw();
+                try
+                {
+                    curNodeGraph.nodes[nodeCnt].Draw();
+                }
+                catch (NullReferenceException e)
+                {
+                    curNodeEditorState = null;
+                    curNodeGraph = null;
+                    return;
+                }
             }
 
             if (CurNodeInputInfo == null || CurNodeInputInfo.EdState == null) 
@@ -59,7 +67,7 @@ namespace Ou.Support.NodeSupport
         {
             if (texture2D == null)
             {
-                texture2D = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Ou/OuSource/background.png");
+                texture2D = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Ou/OuSource/backgroundC.png");
                 return;
             }
             float offsetX = curNodeEditorState.PanOffset.x % texture2D.width;
@@ -89,7 +97,7 @@ namespace Ou.Support.NodeSupport
                 Vector3 startPos = new Vector3(curNodeEditorState.SelectedKnob.rect.center.x,
                     curNodeEditorState.SelectedKnob.rect.center.y, 0);
                 Vector3 endPos = new Vector3(CurNodeInputInfo.InputPos.x, CurNodeInputInfo.InputPos.y, 0);
-                OuUIUtility.DrawLine(startPos, endPos);
+                OuUIUtility.DrawLineA(startPos, endPos);
             }
         }
 

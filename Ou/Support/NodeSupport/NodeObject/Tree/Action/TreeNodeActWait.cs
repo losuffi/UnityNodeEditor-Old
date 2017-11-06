@@ -2,24 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
+
 namespace Ou.Support.NodeSupport
 {
-    [Node(false, "日志打印","Node")]
-    public class TreelogNode:TreeNodeAction
+    [Node(false, "等待时间", "Node")]
+    public class TreeNodeActWait : TreeNodeAction
     {
+        private float initTime;
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            if (curGraph.CheckKey(variables[0].name))
-            {
-                Debug.Log(curGraph.ReadGlobalVariable(variables[0].name).obj);
-            }
-            else
-            {
-                Debug.Log(variables[0].obj);
-            }
         }
 
         protected internal override void NodeGUI()
@@ -29,29 +22,34 @@ namespace Ou.Support.NodeSupport
 
         public override Node Create(Vector2 pos)
         {
-            TreeNode node = CreateInstance<TreelogNode>();
-            node.Title = "打印";
-            node.rect = new Rect(pos, new Vector2(100, 80));
+            TreeNode node = CreateInstance<TreeNodeActWait>();
+            node.Title = "等待时间";
+            node.rect = new Rect(pos, new Vector2(100, 100));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
             node.CreateVariable();
             return node;
         }
 
-        private const string nodeId = "日志打印";
+        private const string nodeId = "等待时间";
         protected internal override TreeNodeResult OnUpdate()
         {
-            return TreeNodeResult.Done;
+            if (Time.time - initTime > (float) variables[0].obj)
+            {
+                return TreeNodeResult.Done;
+            }
+            return TreeNodeResult.Running;
         }
 
         protected internal override void Start()
         {
             base.Start();
-            variables[0].setRangeType(this);
+            variables[0].setRangeType(this,"实值");
         }
 
         protected internal override void OnStart()
         {
+            initTime = Time.time;
         }
 
         public override string GetId { get { return nodeId; } }

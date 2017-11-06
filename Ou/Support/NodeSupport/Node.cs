@@ -47,19 +47,20 @@ namespace Ou.Support.NodeSupport
             nodeRect = rect;
             NodeEditor.RectConverting(ref nodeRect);
             Vector2 contentOffset = new Vector2(0, 20);
-            Rect nodeHead = new Rect(nodeRect.x, nodeRect.y, nodeRect.width, contentOffset.y);
-            Rect nodeBody = new Rect(nodeRect.x, nodeRect.y + contentOffset.y, nodeRect.width,
-                nodeRect.height - contentOffset.y);
-            GUI.Label(nodeHead, Title,
-                (NodeEditor.curNodeEditorState.SelectedNode == this)
-                    ? NodeSkin.GetStyle("nodeHeadSelected")
-                    : NodeSkin.GetStyle("nodeHead"));
+            Rect nodeHead = new Rect(0, 0, nodeRect.width, contentOffset.y);
+            Rect nodeBody = new Rect(nodeRect.x, nodeRect.y, nodeRect.width,
+                nodeRect.height);
             GUI.BeginGroup(nodeBody);
             nodeBody.position = Vector2.zero;
             GUILayout.BeginArea(nodeBody, NodeEditor.curNodeEditorState.SelectedNode == this
                 ? NodeSkin.GetStyle("nodeBodySelected")
                 : NodeSkin.GetStyle("nodeBody"));
-            NodeGUI();
+            GUI.Label(nodeHead,Title, NodeSkin.GetStyle("nodeHead"));
+            GUILayout.Space(contentOffset.y);
+            if (NodeEditor.curNodeEditorState.GraphZoom >= 1)
+            {
+                NodeGUI();
+            }
             GUILayout.EndArea();
             GUI.EndGroup();
             DrawKnob();

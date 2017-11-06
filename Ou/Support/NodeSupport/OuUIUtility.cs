@@ -20,7 +20,7 @@ namespace Ou.Support.NodeSupport
 
         [HideInInspector] public string[] typeRange;
 
-        public PopupStructer(string[] range,NodeGraph graph)
+        public PopupStructer(NodeGraph graph, string[] range)
         {
             if (range.Length != 0)
                 this.typeRange = range;
@@ -96,6 +96,27 @@ namespace Ou.Support.NodeSupport
             return tex;
         }
 
+        public static Texture2D Tex(Color col)
+        {
+            if (col == Color.black)
+            {
+                return AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Ou/OuSource/黑.png");
+            }
+            else if(col == Color.blue)
+            {
+                return AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Ou/OuSource/蓝.png");
+            }
+            else if (col == Color.red)
+            {
+                return AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Ou/OuSource/红.png");
+            }
+            else if (col == Color.green)
+            {
+                return AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Ou/OuSource/绿.png");
+            }
+            return ColorToTex(5, Color.clear);
+        }
+
         #endregion
 
         #region GlobalVariable
@@ -153,7 +174,7 @@ namespace Ou.Support.NodeSupport
         public static void FormatShowVariable_Exits(ref GlobalVariable obj)
         {
             OuUIUtility.FormatTextfield(ref obj.name);
-            OuUIUtility.FormatLabel(obj.identity);
+           // OuUIUtility.FormatLabel(obj.identity);
             OuUIUtility.FormatFillVariable_SelectedType(ref obj, ref obj.FillIndex, obj.name, true);
         }
         #endregion
@@ -167,6 +188,25 @@ namespace Ou.Support.NodeSupport
             Handles.DrawBezier(startPos, endPos, startTan, endTan, Color.white, null, 5);
         }
 
+        public static void DrawLineA(Vector3 startPos, Vector3 endPos)
+        {
+            Vector3[] Points=new Vector3[4];
+            Points[0] = startPos;
+            Points[3] = endPos;
+            if (startPos.y < endPos.y)
+            {
+                Points[1] = new Vector3(startPos.x, startPos.y + 10);
+                Points[2] = new Vector3(endPos.x, Points[1].y);
+            }
+            else
+            {
+                float xMins = startPos.x - endPos.x;
+                float yMins = startPos.y - endPos.y;
+                Points[1] = new Vector3(startPos.x - 0.2f * xMins, startPos.y);
+                Points[2] = new Vector3(Points[1].x, endPos.y);
+            }
+            Handles.DrawAAPolyLine(5,Points);
+        }
 
 
         public static void FormatPopup(ref int index, params string[] strs)
@@ -315,5 +355,138 @@ namespace Ou.Support.NodeSupport
             }
             return false;
         }
+
+        #region algorithm
+
+        public static string MathString_InfixToPostfix(string input)
+        {
+            Stack<char> operators = new Stack<char>();
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < input.Length; i++)
+            {
+                char ch = input[i];
+                if (char.IsWhiteSpace(ch)) continue;
+                switch (ch)
+                {
+                    case '+':
+                    case '-':
+                        while (operators.Count > 0)
+                        {
+                            char c = operators.Pop();   //pop Operator
+                            if (c == '(')
+                            {
+                                operators.Push(c);      //push Operator
+                                break;
+                            }
+                            else
+                            {
+                                result.Append(c);
+                            }
+                        }
+                        operators.Push(ch);
+                        result.Append(" ");
+                        break;
+                    case '*':
+                    case '/':
+                        while (operators.Count > 0)
+                        {
+                            char c = operators.Pop();
+                            if (c == '(')
+                            {
+                                operators.Push(c);
+                                break;
+                            }
+                            else
+                            {
+                                if (c == '+' || c == '-')
+                                {
+                                    operators.Push(c);
+                                    break;
+                                }
+                                else
+                                {
+                                    result.Append(c);
+                                }
+                            }
+                        }
+                        operators.Push(ch);
+                        result.Append(" ");
+                        break;
+                    case '(':
+                        operators.Push(ch);
+                        break;
+                    case ')':
+                        while (operators.Count > 0)
+                        {
+                            char c = operators.Pop();
+                            if (c == '(')
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                result.Append(c);
+                            }
+                        }
+                        break;
+                    default:
+                        result.Append(ch);
+                        break;
+                }
+            }
+            while (operators.Count > 0)
+            {
+                result.Append(operators.Pop()); //pop All Operator
+            }
+            return result.ToString();
+        }
+
+        public static double MathString_Parse(string expression)
+        {
+            string postfixExpression = MathString_InfixToPostfix(expression);
+            Stack<double> results = new Stack<double>();
+            double x, y;
+            for (int i = 0; i < postfixExpression.Length; i++)
+            {
+                char ch = postfixExpression[i];
+                if (char.IsWhiteSpace(ch)) continue;
+                switch (ch)
+                {
+                    case '+':
+                        y = results.Pop();
+                        x = results.Pop();
+                        results.Push(x + y);
+                        break;
+                    case '-':
+                        y = results.Pop();
+                        x = results.Pop();
+                        results.Push(x - y);
+                        break;
+                    case '*':
+                        y = results.Pop();
+                        x = results.Pop();
+                        results.Push(x * y);
+                        break;
+                    case '/':
+                        y = results.Pop();
+                        x = results.Pop();
+                        results.Push(x / y);
+                        break;
+                    default:
+                        int pos = i;
+                        StringBuilder operand = new StringBuilder();
+                        do
+                        {
+                            operand.Append(postfixExpression[pos]);
+                            pos++;
+                        } while (char.IsDigit(postfixExpression[pos]) || postfixExpression[pos] == '.');
+                        i = --pos;
+                        results.Push(double.Parse(operand.ToString()));
+                        break;
+                }
+            }
+            return results.Peek();
+        }
+        #endregion
     }
 }

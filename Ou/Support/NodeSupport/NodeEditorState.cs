@@ -65,5 +65,13 @@ namespace Ou.Support.NodeSupport
             _switch = true;
         }
         #endregion
+
+        #region SelectedPanelNodes
+
+        [NonSerialized] public bool IsSelectedPanelNodes = false;
+        [NonSerialized] public Vector2 selectedPanelNodesStartPos=Vector2.zero;
+        [NonSerialized] public Vector2 selectedPanelNodesEndPos= Vector2.zero;
+        [NonSerialized] public List<Node> SelectedNodes=new List<Node>();
+        #endregion
     }
 }

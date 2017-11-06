@@ -22,14 +22,14 @@ namespace Ou.Support.NodeSupport
         protected internal override void Start()
         {
             base.Start();
-            variables[0].setRangeType(this, "字符串", "真值", "实值");
-            variables[1].setRangeType(this, "字符串", "真值", "实值");
+            variables[0].setRangeType(this);
+            variables[1].setRangeType(this);
         }
 
         protected internal override void NodeGUI()
         {
             GUILayout.Label("设置值");            
-            DrawFillsLayout(variables[0]);
+            DrawGlobalLayout(variables[0]);
             DrawFillsLayout(variables[1]);
         }
 
@@ -37,8 +37,8 @@ namespace Ou.Support.NodeSupport
         public override Node Create(Vector2 pos)
         {
             TreeNode node = CreateInstance<TreeInputNode>();
-            node.Title = "字符串输入";
-            node.rect = new Rect(pos, new Vector2(100,120));
+            node.Title = "设置值";
+            node.rect = new Rect(pos, new Vector2(100,140));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
             node.CreateVariable();         

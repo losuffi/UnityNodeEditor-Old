@@ -9,6 +9,7 @@ namespace Ou.Support.NodeSupport
 {
     public class TreeNodeManager:NodeManager
     {
+        public float RunTimeCount;
         public static TreeNodeManager Instance;
         void Awake()
         {

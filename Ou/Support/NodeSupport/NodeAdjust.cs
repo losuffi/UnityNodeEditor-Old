@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Ou.Support.UnitSupport;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,6 +33,7 @@ namespace Ou.Support.NodeSupport
 
         private static int FillIndex = 0;
         private static GlobalVariable obj = new GlobalVariable(typeof(string), string.Empty, "字符串", string.Empty);
+        private static GlobalVariable Unitobj = new GlobalVariable(typeof(string), string.Empty, "字符串", string.Empty);
         private static string objname = string.Empty;
         public static void Draw(GUISkin skin)
         {
@@ -181,22 +183,26 @@ namespace Ou.Support.NodeSupport
             for (int i=0;i<NodeEditor.curNodeGraph.GlobalVariablesCount;i++)
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(NodeEditor.curNodeGraph.ReadGlobalVariable(i).name);
+                var readGlobalVariable = NodeEditor.curNodeGraph.ReadGlobalVariable(i);
+                OuUIUtility.FormatShowVariable_Exits(ref readGlobalVariable);
                 //GUILayout.Label(NodeEditor.curNodeGraph.globalVariables[i].Value.obj.ToString());
-                OuUIUtility.FormatButton("-", () => { NodeEditor.curNodeGraph.RemoveGlobalVariable(i);
+                OuUIUtility.FormatButton("-", () =>
+                {
+                    NodeEditor.curNodeGraph.RemoveGlobalVariable(i);
                     i--;
                 });
                 GUILayout.EndHorizontal();
             }
             obj.setRangeType(NodeEditor.curNodeGraph);
+            Unitobj.setRangeType(NodeEditor.curNodeGraph, "Unit");
             GUILayout.Label("---添加变量---", skin.GetStyle("adjustBodyLabel"));
             GUILayout.Label("变量名：");
             OuUIUtility.FormatTextfield(ref objname);
             GUILayout.Label("变量种类：");
             OuUIUtility.FormatFillVariable_SelectedType(ref obj, ref FillIndex, objname,true);
             OuUIUtility.FormatButton("添加",AddVariable);
-
-
+            OuUIUtility.FormatFillVariable_SelectedType(ref Unitobj, ref Unitobj.FillIndex, "ImportUnitData", true);
+            OuUIUtility.FormatButton("导入Unit", ImportUnitData);
             GUILayout.Space(20);
             OuUIUtility.FormatButton("返回", () => { drawIdentity = "Normal"; }, skin.GetStyle("adjustBodyButton"));
         }
@@ -206,6 +212,16 @@ namespace Ou.Support.NodeSupport
             NodeEditor.curNodeGraph.AddGlobalVariable(obj);
             NodeEditor.curNodeGraph.nodes.ForEach(z=>z.Start());
             obj=new GlobalVariable(typeof(string),string.Empty,"字符串",string.Empty);
+        }
+
+        private static void ImportUnitData()
+        {
+            UnitBase unit=Unitobj.obj as UnitBase;
+            for (int i = 0; i < unit.fields.Count; i++)
+            {
+                NodeEditor.curNodeGraph.AddGlobalVariable(new GlobalVariable(unit.fields[i]));
+            }
+            NodeEditor.curNodeGraph.nodes.ForEach(z => z.Start());
         }
         #endregion
     }

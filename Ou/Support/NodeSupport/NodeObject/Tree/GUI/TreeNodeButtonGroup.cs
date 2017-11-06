@@ -20,6 +20,12 @@ namespace Ou.Support.NodeSupport
         [SerializeField] private List<string> strNames=new List<string>();
         protected internal override void Evaluator()
         {
+            var btns = ext.obj as ButtonGroup;
+            for (int i = 0; i < Count; i++)
+            {
+                var btn = btns.groupButton["btn" + i];
+                btn.onClick.RemoveAllListeners();
+            }
             base.Evaluator();
         }
 
@@ -97,13 +103,16 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void OnStart()
         {
+            flag = false;
             var btns = ext.obj as ButtonGroup;
             for (int i = 0; i < Count; i++)
             {
                 var btn = btns.AddButton("btn" + i, strNames[i]);
                 btn.onClick.RemoveAllListeners();
                 int j = i;
-                btn.onClick.AddListener(() => { btnsOutputs[j].SetValue<TreeNodeResult>(TreeNodeResult.Start); });
+                btn.onClick.AddListener(() => { btnsOutputs[j].SetValue<TreeNodeResult>(TreeNodeResult.Start);
+                    flag = true;
+                });
             }
 
             base.OnStart();

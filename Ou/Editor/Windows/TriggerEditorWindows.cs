@@ -47,7 +47,7 @@ namespace Ou.Editor.Windows
                 }
                 catch (ArgumentException exception)
                 {
-                    Debug.Log(exception);
+                    return;
                 }
                 if (!IsPaintDone && e.type == EventType.Layout)
                 {
