@@ -42,6 +42,7 @@ namespace Ou.Support.NodeSupport
             node.rect = new Rect(pos, new Vector2(120, 200));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateNodeOutput("Forout", "工作状态", Side.Right,30);
             node.CreateVariable();
             node.CreateVariable();
             node.CreateVariable();
@@ -52,28 +53,38 @@ namespace Ou.Support.NodeSupport
 
         protected internal override TreeNodeResult OnUpdate()
         {
-            if (sizeAnim())
+            if (isLoop)
+            {
+                CallFeedBack();
+                Goto(GotoType.Single, "Forout"); 
+                var res = feedback;
+                if (res == TreeNodeResult.Break)
+                    return TreeNodeResult.Done;
+            }
+            if (Anim())
+            {
                 return TreeNodeResult.Done;
+            }
             return TreeNodeResult.Running;
         }
 
         float Curve()
         {
-            float minusVal = (Time.deltaTime - initTime);
+            float minusVal = (Time.time - initTime);
             float percentVal = minusVal / (float) variables[1].obj;
             float startVal = (float)variables[2].obj;
             float endVal = (float) variables[3].obj;
             float resultDynamicVal = (endVal - startVal) * percentVal;
-         //   float resultVal = startVal + resultDynamicVal;
-            return resultDynamicVal;
+            float resultVal = startVal + resultDynamicVal;
+            return resultVal;
         }
 
-        void sizeEndAnim()
+        void EndAnim()
         {
             GameObject obj = variables[0].obj as GameObject;
             obj.transform.localScale = cache;
         }
-        bool sizeAnim()
+        bool Anim()
         {
             GameObject obj=variables[0].obj as GameObject;
             float TimeLine = (float)variables[1].obj;
@@ -82,25 +93,25 @@ namespace Ou.Support.NodeSupport
             if (isComplete)
             {
                 cache = obj.transform.localScale;
+                isComplete = false;
             }
             obj.transform.localScale = cache * Curve();
             if (isLoop)
             {
-                if (Time.deltaTime - initTime > TimeLine)
+                if (Time.time - initTime > TimeLine)
                 {
                     obj.transform.localScale = cache;
-                    initTime = Time.deltaTime;
+                    initTime = Time.time;
                 }
                 return false;
             }
             else
             {
-                if (Time.deltaTime - initTime > TimeLine)
+                if (Time.time - initTime > TimeLine)
                 {
                     return true;
                 }
             }
-            Debug.Log(Time.deltaTime - initTime + "," + TimeLine);
             return false;
         }
         protected internal override void OnStart()
