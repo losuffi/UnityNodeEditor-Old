@@ -255,6 +255,12 @@ namespace Ou.Support.NodeSupport {
             {
                 state.selectedPanelNodesEndPos = inputInfo.InputPos;
                 state.IsSelectedPanelNodes = false;
+               // Rect rect=new Rect(state.selectedPanelNodesStartPos);
+                for (int i = 0; i < state.CurGraph.nodes.Count; i++)
+                {
+                    //if( state.CurGraph.nodes[i].rect)
+                    state.SelectedNodes.Add(state.CurGraph.nodes[i]);
+                }
             }
         }
         [Handle(EventType.MouseDrag)]

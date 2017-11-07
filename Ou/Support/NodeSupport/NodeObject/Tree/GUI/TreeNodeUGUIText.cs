@@ -21,11 +21,9 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void NodeGUI()
         {
-            GUILayout.Label("显示位置");
-            GUILayout.Label("UI目标");
-           // ConnectionType.types["TextUI"].GUILayout(ref ext.obj);
+            OuUIUtility.FormatLabel("UI目标");
             DrawFillsLayout(variables[0]);
-            GUILayout.Label("内容文本:");
+            OuUIUtility.FormatLabel("内容文本:");
             DrawFillsLayout(variables[1]);
         }
 

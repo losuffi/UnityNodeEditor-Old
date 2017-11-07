@@ -14,8 +14,6 @@ namespace Ou.Support.NodeSupport
     {
         public override string GetId { get { return "对话框"; } }
         private bool flag;
-        [SerializeField] private string content = string.Empty;
-        [SerializeField] private GlobalVariable ext;
         protected internal override void Evaluator()
         {            
             base.Evaluator();
@@ -24,21 +22,24 @@ namespace Ou.Support.NodeSupport
         protected internal override void NodeGUI()
         {
 
-            GUILayout.Label("显示位置");
-            GUILayout.Label("UI目标");
-            ConnectionType.types["TextUI"].GUILayout(ref ext.obj);
-            GUILayout.Label("内容文本:");
-            OuUIUtility.FormatTextArea(ref content);
-
+            OuUIUtility.FormatLabel("显示位置");
+            DrawFillsLayout(variables[0]);
+            OuUIUtility.FormatLabel("内容文本:");
+            DrawFillsLayout(variables[1]);
+            OuUIUtility.FormatLabel("切换按钮");
+            DrawFillsLayout(variables[2]);
         }
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreeNodeGUIDialogue>();
+            TreeNode node = CreateInstance<TreeNodeGUIDialogue>();
             node.Title = "对话框";
             node.rect = new Rect(pos, new Vector2(120, 200));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateVariable();
+            node.CreateVariable();
+            node.CreateVariable();
             return node;
 
         }
@@ -54,9 +55,9 @@ namespace Ou.Support.NodeSupport
         {
             base.OnStart();
             flag = false;
-            var text = ext.obj as Text;
-            var btn = text.gameObject.GetComponent<Button>();
-            text.text = content;
+            var text = variables[0].obj as Text;
+            var btn = variables[2].obj as Button;
+            text.text = variables[1].obj.ToString();
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(()=> { flag = true; });
 
@@ -64,7 +65,9 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void Start()
         {
-            ext = new GlobalVariable(typeof(Text), null, "TextUI", "text");
+            variables[0].setRangeType(this,"TextUI");
+            variables[1].setRangeType(this,"字符串");
+            variables[2].setRangeType(this,"ButtonUI");
             base.Start();
         }
     }

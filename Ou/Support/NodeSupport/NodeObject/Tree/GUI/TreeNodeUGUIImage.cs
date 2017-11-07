@@ -22,10 +22,9 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void NodeGUI()
         {
-            GUILayout.Label("贴图设置");
-            GUILayout.Label("UI目标");
+            OuUIUtility.FormatLabel("UI目标");
             DrawFillsLayout(variables[0]);
-            GUILayout.Label("贴图:");
+            OuUIUtility.FormatLabel("贴图:");
             content=EditorGUILayout.ObjectField(content, typeof(Sprite), true) as Sprite;
         }
 

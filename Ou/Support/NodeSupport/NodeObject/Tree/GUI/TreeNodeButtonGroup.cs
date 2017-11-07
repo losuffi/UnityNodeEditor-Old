@@ -15,12 +15,11 @@ namespace Ou.Support.NodeSupport
         private bool flag;
         private Vector2 scrVector2 = Vector2.zero;
         [SerializeField] private int Count = 0;
-        [SerializeField] private GlobalVariable ext;
         [SerializeField] private List<NodeOutput> btnsOutputs = new List<NodeOutput>();
         [SerializeField] private List<string> strNames=new List<string>();
         protected internal override void Evaluator()
         {
-            var btns = ext.obj as ButtonGroup;
+            var btns = variables[0].obj as ButtonGroup;
             for (int i = 0; i < Count; i++)
             {
                 var btn = btns.groupButton["btn" + i];
@@ -32,16 +31,16 @@ namespace Ou.Support.NodeSupport
         protected internal override void NodeGUI()
         {
 
-            GUILayout.Label("显示位置");
-            GUILayout.Label("UI目标");
-            ConnectionType.types["ButtonGroupUI"].GUILayout(ref ext.obj);
-            GUILayout.Label("按钮数目:");
+            OuUIUtility.FormatLabel("显示位置");
+            OuUIUtility.FormatLabel("UI目标");
+            DrawFillsLayout(variables[0]);
+            OuUIUtility.FormatLabel("按钮数目:");
             OuUIUtility.FormatIntfield(ref Count);
             if (btnsOutputs.Count != Count)
             {
                 UpdateBtnsTriggerPipe();
             }
-            GUILayout.Label("按钮名：");
+            OuUIUtility.FormatLabel("按钮名：");
             scrVector2 = GUILayout.BeginScrollView(scrVector2);
             for (int i = 0; i < strNames.Count; i++)
             {
@@ -53,7 +52,6 @@ namespace Ou.Support.NodeSupport
 
         void UpdateBtnsTriggerPipe()
         {
-            Debug.Log("update");
             foreach (NodeOutput btnsOutput in btnsOutputs)
             {
                 DestroyImmediate(btnsOutput,true);
@@ -85,11 +83,12 @@ namespace Ou.Support.NodeSupport
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreeNodeButtonGroup>();
+            TreeNode node = CreateInstance<TreeNodeButtonGroup>();
             node.Title = "按钮组";
             node.rect = new Rect(pos, new Vector2(120, 200));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateVariable();
             return node;
 
         }
@@ -104,7 +103,7 @@ namespace Ou.Support.NodeSupport
         protected internal override void OnStart()
         {
             flag = false;
-            var btns = ext.obj as ButtonGroup;
+            var btns = variables[0].obj as ButtonGroup;
             for (int i = 0; i < Count; i++)
             {
                 var btn = btns.AddButton("btn" + i, strNames[i]);
@@ -120,7 +119,7 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void Start()
         {
-            ext = new GlobalVariable(typeof(ButtonGroup), null, "ButtonGroupUI", "btnsG");
+            variables[0].setRangeType(this, "ButtonGroupUI");
             base.Start();
         }
     }

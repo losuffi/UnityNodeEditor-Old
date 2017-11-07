@@ -44,7 +44,7 @@ namespace Ou.Support.NodeSupport
             }
         }
 
-        public static string UnityObjectToString<T>(T obj) where T:Component
+        public static string UnityUIObjectToString<T>(T obj) where T:Component
         {
             if (obj == null)
                 return string.Empty;
@@ -52,9 +52,10 @@ namespace Ou.Support.NodeSupport
             Transform vobj = obj.transform;
             while (true)
             {
-                if (vobj.parent == null)
+                if (vobj.parent==null)
                 {
-                    path.Insert(0, vobj.name);
+                    path.Remove(0, 1);
+                    path.Append("|" + vobj.name);
                     break;
                 }
                 else
@@ -66,7 +67,7 @@ namespace Ou.Support.NodeSupport
             return path.ToString();
         }
 
-        public static string UnityObjectToString(GameObject obj)
+        public static string UnityUIObjectToString(GameObject obj)
         {
             if (obj == null)
                 return string.Empty;
@@ -76,7 +77,8 @@ namespace Ou.Support.NodeSupport
             {
                 if (vobj.parent == null)
                 {
-                    path.Insert(0, vobj.name);
+                    path.Remove(0, 1);
+                    path.Append("|" + vobj.name);
                     break;
                 }
                 else
@@ -86,6 +88,29 @@ namespace Ou.Support.NodeSupport
                 vobj = vobj.parent;
             }
             return path.ToString();
+        }
+
+        public static T UnityUIStringToObject<T>(string str) where T : Component
+        {
+            string[] strs = str.Split('|');
+            var path = strs[0];
+            var root = strs[1];
+            var gobj = GameObject.Find(root);
+            var target = gobj.transform.Find(path);
+            if (target == null)
+                return null;
+            return target.GetComponent<T>();
+        }
+        public static GameObject UnityUIStringToObject(string str)
+        {
+            string[] strs = str.Split('|');
+            var path = strs[0];
+            var root = strs[1];
+            var gobj = GameObject.Find(root);
+            var target = gobj.transform.Find(path);
+            if (target == null)
+                return null;
+            return target.gameObject;
         }
     }
 
@@ -280,15 +305,12 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ConnectionType.UnityObjectToString<Text>((Text)obj);
+            return ConnectionType.UnityUIObjectToString<Text>((Text)obj);
         }
 
         public object stringtoobj(string str)
         {
-            var gobj = GameObject.Find(str);
-            if (gobj == null)
-                return null;
-            return GameObject.Find(str).GetComponent<Text>();
+            return ConnectionType.UnityUIStringToObject<Text>(str);
         }
     }
 
@@ -316,15 +338,12 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ConnectionType.UnityObjectToString<ButtonGroup>((ButtonGroup)obj);
+            return ConnectionType.UnityUIObjectToString<ButtonGroup>((ButtonGroup)obj);
         }
 
         public object stringtoobj(string str)
         {
-            var gobj = GameObject.Find(str);
-            if (gobj == null)
-                return null;
-            return GameObject.Find(str).GetComponent<ButtonGroup>();
+            return ConnectionType.UnityUIStringToObject<ButtonGroup>(str);
         }
     }
 
@@ -352,15 +371,12 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ConnectionType.UnityObjectToString<Button>((Button)obj);
+            return ConnectionType.UnityUIObjectToString<Button>((Button)obj);
         }
 
         public object stringtoobj(string str)
         {
-            var gobj = GameObject.Find(str);
-            if (gobj == null)
-                return null;
-            return GameObject.Find(str).GetComponent<Button>();
+            return ConnectionType.UnityUIStringToObject<Button>(str);
         }
     }
 
@@ -388,15 +404,12 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ConnectionType.UnityObjectToString((GameObject)obj);
+            return ConnectionType.UnityUIObjectToString((GameObject)obj);
         }
 
         public object stringtoobj(string str)
         {
-            var gobj = GameObject.Find(str);
-            if (gobj == null)
-                return null;
-            return gobj;
+            return ConnectionType.UnityUIStringToObject(str);
         }
     }
     public class UGUIImageType : IConnectionDecorator
@@ -423,15 +436,12 @@ namespace Ou.Support.NodeSupport
         {
             if (obj == null)
                 return string.Empty;
-            return ConnectionType.UnityObjectToString<Image>((Image)obj);
+            return ConnectionType.UnityUIObjectToString<Image>((Image)obj);
         }
 
         public object stringtoobj(string str)
         {
-            var gobj = GameObject.Find(str);
-            if (gobj == null)
-                return null;
-            return GameObject.Find(str).GetComponent<Image>();
+            return ConnectionType.UnityUIStringToObject<Image>(str);
         }
     }
     #endregion

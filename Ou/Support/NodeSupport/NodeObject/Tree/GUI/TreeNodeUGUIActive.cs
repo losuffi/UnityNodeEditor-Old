@@ -13,11 +13,10 @@ namespace Ou.Support.NodeSupport
     {
         public override string GetId { get { return "UI显示隐藏"; } }
         [SerializeField] private bool flag;
-        [SerializeField] private GlobalVariable ext;
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            var gobj = ext.obj as GameObject;
+            GameObject gobj = variables[0].obj as GameObject;
             if(gobj==null)
                 return;
             gobj.SetActive(flag);
@@ -25,19 +24,20 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void NodeGUI()
         {
-            GUILayout.Label("UI目标");
-            ConnectionType.types["ObjectUI"].GUILayout(ref ext.obj);
-            GUILayout.Label("是否显示");
+            OuUIUtility.FormatLabel("UI目标");
+            DrawFillsLayout(variables[0]);
+            OuUIUtility.FormatLabel("是否显示");
             flag = EditorGUILayout.Toggle(flag);
         }
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreeNodeUGUIActive>();
-            node.Title = "点击等待";
-            node.rect = new Rect(pos, new Vector2(60, 60));
+            TreeNode node = CreateInstance<TreeNodeUGUIActive>();
+            node.Title = "UI显示隐藏";
+            node.rect = new Rect(pos, new Vector2(120, 120));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateVariable();
             return node;
 
         }
@@ -54,7 +54,8 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void Start()
         {
-            ext = new GlobalVariable(typeof(GameObject), null, "ObjectUI", "obj");
+            //ext = new GlobalVariable(typeof(GameObject), null, "ObjectUI", "obj");
+            variables[0].setRangeType(this, "ObjectUI");
             base.Start();
         }
     }

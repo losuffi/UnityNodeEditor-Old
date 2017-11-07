@@ -12,7 +12,6 @@ namespace Ou.Support.NodeSupport
     {
         public override string GetId { get { return "UI按钮点击等待"; } }
         private bool flag;
-        [SerializeField] private GlobalVariable ext;
         protected internal override void Evaluator()
         {
             base.Evaluator();
@@ -20,17 +19,18 @@ namespace Ou.Support.NodeSupport
 
         protected internal override void NodeGUI()
         {
-            GUILayout.Label("UI目标");
-            ConnectionType.types["ButtonUI"].GUILayout(ref ext.obj);
+            OuUIUtility.FormatLabel("UI目标");
+            DrawFillsLayout(variables[0]);
         }
 
         public override Node Create(Vector2 pos)
         {
-            Node node = CreateInstance<TreeNodeUGUIButton>();
+            TreeNode node = CreateInstance<TreeNodeUGUIButton>();
             node.Title = "点击等待";
-            node.rect = new Rect(pos, new Vector2(60, 60));
+            node.rect = new Rect(pos, new Vector2(100, 100));
             node.CreateNodeInput("PreIn", "工作状态");
             node.CreateNodeOutput("Nextout", "工作状态");
+            node.CreateVariable();
             return node;
 
         }
@@ -46,14 +46,14 @@ namespace Ou.Support.NodeSupport
         {
             base.OnStart();
             flag = false;
-            var btn = ext.obj as Button;
+            var btn = variables[0].obj as Button;
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(()=> { flag = true; });
         }
 
         protected internal override void Start()
         {
-            ext = new GlobalVariable(typeof(Button), null, "ButtonUI", "btn");
+            variables[0].setRangeType(this, "ButtonUI");
             base.Start();
         }
     }
