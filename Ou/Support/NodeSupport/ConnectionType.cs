@@ -50,6 +50,8 @@ namespace Ou.Support.NodeSupport
                 return string.Empty;
             StringBuilder path = new StringBuilder();
             Transform vobj = obj.transform;
+            if (vobj.parent == null)
+                return "*noObj|" + vobj.name;
             while (true)
             {
                 if (vobj.parent==null)
@@ -73,6 +75,8 @@ namespace Ou.Support.NodeSupport
                 return string.Empty;
             StringBuilder path = new StringBuilder();
             Transform vobj = obj.transform;
+            if (vobj.parent == null)
+                return "*noObj|" + vobj.name;
             while (true)
             {
                 if (vobj.parent == null)
@@ -95,6 +99,8 @@ namespace Ou.Support.NodeSupport
             string[] strs = str.Split('|');
             var path = strs[0];
             var root = strs[1];
+            if (path.Equals("*noObj"))
+                return GameObject.Find(root).GetComponent<T>();
             var gobj = GameObject.Find(root);
             var target = gobj.transform.Find(path);
             if (target == null)
@@ -106,6 +112,8 @@ namespace Ou.Support.NodeSupport
             string[] strs = str.Split('|');
             var path = strs[0];
             var root = strs[1];
+            if(path.Equals("*noObj"))
+                return GameObject.Find(root);
             var gobj = GameObject.Find(root);
             var target = gobj.transform.Find(path);
             if (target == null)

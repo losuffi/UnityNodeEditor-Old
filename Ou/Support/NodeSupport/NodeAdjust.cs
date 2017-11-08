@@ -159,6 +159,7 @@ namespace Ou.Support.NodeSupport
             OuUIUtility.FormatButton("Clear", NodeEditor.Clear, skin.GetStyle("adjustBodyButton"));
             NodeEditor.curNodeEditorState.Name = GUILayout.TextArea(NodeEditor.curNodeEditorState.Name, skin.GetStyle("adjustBodyTextArea"));
             OuUIUtility.FormatButton("SetName", NodeEditor.RemDataAsset, skin.GetStyle("adjustBodyButton"));
+            OuUIUtility.FormatButton("ResetPos",NodeEditor.ResetPos, skin.GetStyle("adjustBodyButton"));
             OuUIUtility.FormatButton("Global Variable", () => { drawIdentity = "Variable";
                 Selection.activeObject = NodeEditor.curNodeGraph;
             }, skin.GetStyle("adjustBodyButton"));
@@ -176,6 +177,7 @@ namespace Ou.Support.NodeSupport
             DrawNodeTypeToggles(skin);
             #endregion
         }
+
 
         private static void DrawTreeNodeVariable()
         {

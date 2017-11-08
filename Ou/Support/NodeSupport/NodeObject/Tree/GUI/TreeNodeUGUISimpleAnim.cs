@@ -18,7 +18,7 @@ namespace Ou.Support.NodeSupport
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            sizeEndAnim();
+            EndAnim();
         }
 
         protected internal override void NodeGUI()

@@ -10,13 +10,16 @@ public class DrawLine : MonoBehaviour
     public Material LineMaterial;
     public List<LinePoints> lines;
     private List<Vector3> points;
+
+    void Awake()
+    {
+        lines = new List<LinePoints>();
+    }
     void Start()
     {
-        lines=new List<LinePoints>();
         points = new List<Vector3>();
-        LineMaterial = new Material(Shader.Find("Unlit/Color"));
+        LineMaterial = new Material(Shader.Find("Hid/LineShader"));
         LineMaterial.color=Color.blue;
-        StartCoroutine(Draw());
     }
 
     Vector3 UItoScrren(Vector3 pos)
@@ -41,10 +44,11 @@ public class DrawLine : MonoBehaviour
             GL.LoadOrtho();
             GL.Begin(GL.LINES);
             LineMaterial.SetPass(0);
-            GL.Color(Color.blue);
+            GL.Color(lines[j].lineColor);
             for (int i = 0; i < points.Count; i++)
             {
-                GL.Vertex(Convert(points[i]));
+                GL.Vertex3(i,i,0);
+                //GL.Vertex(Convert(points[i]));
             }
             GL.End();
             GL.PopMatrix();

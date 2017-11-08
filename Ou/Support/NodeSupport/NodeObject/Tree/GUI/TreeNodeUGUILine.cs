@@ -19,18 +19,15 @@ namespace Ou.Support.NodeSupport
         // [SerializeField] private string content = string.Empty;
         protected internal override void Evaluator()
         {
-            var manager = TreeNodeManager.Instance.gameObject.GetComponent<DrawLine>();
-            if (manager == null)
-            {
-                manager = TreeNodeManager.Instance.gameObject.AddComponent<DrawLine>();
-            }
+            var manager = GameObject.Find("DrawLine").gameObject.GetComponent<DrawLine>();
             GameObject v1=variables[0].obj as GameObject;
             GameObject v2 = variables[1].obj as GameObject;
             if (active)
             {
-                manager.lines.Add(new LinePoints(v1.transform.localPosition, v2.transform.localPosition,
+                var line = new LinePoints(v1.transform.localPosition, v2.transform.localPosition,
                     v1.transform.name + "UILines" + v2.transform.name,
-                    colFill));
+                    colFill);
+                manager.lines.Add(line);
             }
             else
             {

@@ -30,8 +30,10 @@ namespace Ou.Editor.Views
                     menu = NodeEditor.GetGenericMenu();//需要修改 装入InputControls中
                     menu.ShowAsContext();
                 }
-                if(TriggerEditorUtility.CheckInit())
+                if (TriggerEditorUtility.CheckInit())
+                {
                     NodeEditor.DrawCanvas(ViewRect);
+                }
             }
             GUILayout.EndArea();
         }

@@ -19,6 +19,19 @@ namespace Ou.Support.NodeSupport
         [SerializeField]
         internal List<NodeOutput> outputKnobs=new List<NodeOutput>();
 
+        public bool isNoneUsefulNode
+        {
+            get
+            {
+                foreach (NodeInput input in inputKnobs)
+                {
+                    if (input.connection != null)
+                        return false;
+                }
+                return true;
+            }
+        }
+
 
         public virtual void Init()
         {

@@ -81,6 +81,7 @@ namespace Ou.Support.NodeSupport
 
         public void AddNode(Node prototypeNode,Vector2 pos)
         {
+            Undo.RecordObject(this, "AddNode");
             Node node = Node.CreateNode(pos, prototypeNode.GetId);
             nodes.Add(node);
             AssetDatabase.AddObjectToAsset(node, this);

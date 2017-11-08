@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Ou.Support.NodeSupport
 {
-    [Node(false,"UI按钮点击等待","Node")]
-    public class TreeNodeUGUIButton:TreeNodeGUI
+    [Node(false, "UI按钮点击等待", "Node")]
+    public class TreeNodeUGUIButton : TreeNodeGUI
     {
         public override string GetId { get { return "UI按钮点击等待"; } }
         private bool flag;
+        private UnityAction tar;
         protected internal override void Evaluator()
         {
             base.Evaluator();
+            var btn = variables[0].obj as Button;
+            btn.onClick.RemoveListener(tar);
         }
 
         protected internal override void NodeGUI()
@@ -47,8 +51,8 @@ namespace Ou.Support.NodeSupport
             base.OnStart();
             flag = false;
             var btn = variables[0].obj as Button;
-            btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(()=> { flag = true; });
+            tar = () => { flag = true; };
+            btn.onClick.AddListener(tar);
         }
 
         protected internal override void Start()

@@ -19,6 +19,8 @@ namespace Ou.Support.NodeSupport
         public static TreeNodeManager TreeNodeManager;
         public static TreeNodeGUIManager TreeNodeGUIManager;
         public static string Path = @"Assets/Ou/Property/Node/Default.asset";
+        public static Node memoryNode;
+        public static Stack<Node> selectNodes=new Stack<Node>();
         public static void Clear()
         {
             curNodeGraph.Clear();
@@ -43,16 +45,25 @@ namespace Ou.Support.NodeSupport
             }
             for (int nodeCnt = 0; nodeCnt < curNodeGraph.nodes.Count; nodeCnt++)
             {
-                try
+                if (curNodeGraph.nodes[nodeCnt] == null)
+                {
+                    curNodeGraph.nodes.RemoveAt(nodeCnt);
+                    nodeCnt--;
+                }
+                else
                 {
                     curNodeGraph.nodes[nodeCnt].Draw();
                 }
-                catch (NullReferenceException e)
-                {
-                    curNodeEditorState = null;
-                    curNodeGraph = null;
-                    return;
-                }
+                //try
+                //{
+                //    curNodeGraph.nodes[nodeCnt].Draw();
+                //}
+                //catch (NullReferenceException e)
+                //{
+                //    curNodeEditorState = null;
+                //    curNodeGraph = null;
+                //    return;
+                //}
             }
 
             if (CurNodeInputInfo == null || CurNodeInputInfo.EdState == null) 
@@ -104,6 +115,10 @@ namespace Ou.Support.NodeSupport
         public static GenericMenu GetGenericMenu()
         {
             GenericMenu menu=new GenericMenu();
+            if (memoryNode!=null)
+            {
+                menu.AddItem(new GUIContent("粘贴节点"), false, SelectedNodeMenuCallback, "Paste");
+            }
             foreach (var node in NodeTypes.nodes)
             {
                 if (NodeAdjust.selectedEditorTypeName.Equals(string.Empty) ||
@@ -132,6 +147,10 @@ namespace Ou.Support.NodeSupport
         public static void DrawSelectedNodeMenu()
         {
             GenericMenu menu=new GenericMenu();
+            if (curNodeEditorState.SelectedNode.GetType() != typeof(TreeInitNode))
+            {
+                menu.AddItem(new GUIContent("复制节点"), false, SelectedNodeMenuCallback, "Copy");
+            }
             menu.AddItem(new GUIContent("删除节点"),false,SelectedNodeMenuCallback,"Remov");
             menu.AddItem(new GUIContent("剔除入口线"), false, SelectedNodeMenuCallback, "RemovInputLine");
             menu.AddItem(new GUIContent("剔除出口线"), false, SelectedNodeMenuCallback, "RemovOutputLine");
@@ -153,6 +172,13 @@ namespace Ou.Support.NodeSupport
             {
                 var node = curNodeEditorState.SelectedNode;
                 node.RemoveLink(typeof(NodeOutput));
+            }
+            else if(obj.ToString().Equals("Copy"))
+            {
+                memoryNode = curNodeEditorState.SelectedNode;
+            }else if (obj.ToString().Equals("Paste"))
+            {
+                PasteNode();
             }
         }
 
@@ -285,11 +311,16 @@ namespace Ou.Support.NodeSupport
         public static void CreateManager()
         {
             var obj = GameObject.Find("_nodeTreeManager");
+            var cam = GameObject.Find("DrawLine");
             if (obj == null)
             {
                 obj = new GameObject("_nodeTreeManager");
                 TreeNodeManager = obj.AddComponent<TreeNodeManager>();
                 TreeNodeGUIManager = obj.AddComponent<TreeNodeGUIManager>();
+            }
+            if (cam.gameObject.GetComponent<DrawLine>() == null)
+            {
+                var dl= cam.gameObject.AddComponent<DrawLine>();
             }
         }
 
@@ -306,6 +337,27 @@ namespace Ou.Support.NodeSupport
             }
             TreeNodeManager = TreeNodeManager ?? GameObject.Find("_nodeTreeManager").GetComponent<TreeNodeManager>();
             TreeNodeManager.RegisterGraph(curNodeGraph);
+        }
+        #endregion
+
+        #region Handle
+
+        public static void PasteNode()
+        {
+            CallBack(NodeTypes.getDefaultNode(memoryNode.GetId));
+        }
+        public static void ResetPos()
+        {
+            var nonuseful =
+                curNodeGraph.nodes.Find(res => res.GetType() != typeof(TreeInitNode) && res.isNoneUsefulNode);
+            curNodeEditorState.GraphZoom = 1;
+            curNodeEditorState.PanOffset=Vector2.zero;
+            curNodeEditorState.ZoomPos=Vector2.zero;
+            curNodeEditorState.DragOffset=Vector2.zero;
+            curNodeEditorState.DragStart=Vector2.zero;
+            curNodeEditorState.PanAdjust=Vector2.zero;
+            Selection.activeObject = nonuseful;
+            nonuseful.rect = new Rect(Vector2.zero, nonuseful.rect.size);
         }
         #endregion
     }
