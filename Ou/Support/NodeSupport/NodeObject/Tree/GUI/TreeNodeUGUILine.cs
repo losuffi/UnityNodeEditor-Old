@@ -13,38 +13,43 @@ namespace Ou.Support.NodeSupport
     {
         public override string GetId { get { return "UI连线"; } }
         [SerializeField]
-        private Color colFill=Color.black;
+        private Color colFill = Color.black;
 
+        [SerializeField] private float width;
         [SerializeField] private bool active = false;
         // [SerializeField] private string content = string.Empty;
         protected internal override void Evaluator()
         {
-            var manager = GameObject.Find("DrawLine").gameObject.GetComponent<DrawLine>();
-            GameObject v1=variables[0].obj as GameObject;
-            GameObject v2 = variables[1].obj as GameObject;
-            if (active)
+            var manager = GameObject.Find("Canvas/drawline").gameObject.GetComponent<DrawLine>();
+            if (!active)
             {
-                var line = new LinePoints(v1.transform.localPosition, v2.transform.localPosition,
-                    v1.transform.name + "UILines" + v2.transform.name,
-                    colFill);
-                manager.lines.Add(line);
+                manager.Clean();
             }
             else
             {
-                manager.lines.RemoveAll(res => res.lineName.Equals(v1.transform.name + "UILines" + v2.transform.name));
+                GameObject v1 = variables[0].obj as GameObject;
+                GameObject v2 = variables[1].obj as GameObject;
+                Vector3 v1Pos = manager.transform.InverseTransformPoint(v1.transform.position);
+                Vector3 v2Pos = manager.transform.InverseTransformPoint(v2.transform.position);
+                var line = new LinePoint(v1Pos, v2Pos,
+                    width, v1.transform.name + "UILines" + v2.transform.name);
+                manager.DrawlinePoint(line);
             }
             base.Evaluator();
         }
 
         protected internal override void NodeGUI()
         {
-            OuUIUtility.FormatLabel("连线颜色");
-            colFill = EditorGUILayout.ColorField(colFill);
-            OuUIUtility.FormatLabel("连线起始目标");
-            DrawFillsLayout(variables[0]);
-            OuUIUtility.FormatLabel("连线终止目标");
-            DrawFillsLayout(variables[1]);
             active = GUILayout.Toggle(active, "显示/隐藏");
+            if (active)
+            {
+                OuUIUtility.FormatLabel("连线粗细");
+                width = EditorGUILayout.FloatField(width);
+                OuUIUtility.FormatLabel("连线起始目标");
+                DrawFillsLayout(variables[0]);
+                OuUIUtility.FormatLabel("连线终止目标");
+                DrawFillsLayout(variables[1]);
+            }
         }
 
         public override Node Create(Vector2 pos)

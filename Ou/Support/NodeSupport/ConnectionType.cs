@@ -452,6 +452,40 @@ namespace Ou.Support.NodeSupport
             return ConnectionType.UnityUIStringToObject<Image>(str);
         }
     }
+
+    public class UGUISprite : IConnectionDecorator
+    {
+        public string identity { get { return "UISprite"; } }
+        public Type type { get { return typeof(Sprite); } }
+        public Color color { get { return Color.cyan; } }
+        public bool isGlobalType { get { return true; } }
+        public string _Class { get { return "UGUI"; } }
+
+        public void GUIFill(ref object obj)
+        {
+            try
+            {
+                obj = EditorGUILayout.ObjectField((Sprite)obj, typeof(Sprite), true);
+            }
+            catch (InvalidCastException e)
+            {
+                obj = null;
+            }
+        }
+
+        public string objTostring(object obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            return AssetDatabase.GetAssetPath(((Sprite)obj));
+        }
+
+        public object stringtoobj(string str)
+        {
+            var obj = AssetDatabase.LoadAssetAtPath<Sprite>(str);
+            return obj;
+        }
+    }
     #endregion
 
     #region Data

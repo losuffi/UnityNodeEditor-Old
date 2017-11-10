@@ -18,8 +18,8 @@ namespace Ou.Editor.Windows
         public static void Init()
         {
             Instance = GetWindow<UnitEditorWindows>(true);
-            Instance.maxSize = new Vector2(400, 1000);
-            Instance.minSize = new Vector2(400, 1000);
+            Instance.maxSize = new Vector2(500, 1000);
+            Instance.minSize = new Vector2(500, 1000);
             Instance.titleContent = new GUIContent("UnitEditor");
         }
 
@@ -58,6 +58,10 @@ namespace Ou.Editor.Windows
 
         void DrawViews(Event e)
         {
+            if (UnitEditor.curInfo.curUnit != null)
+            {
+                Instance.titleContent = new GUIContent(UnitEditor.curInfo.curUnit.Name);
+            }
             ToolBarView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
                 new Rect(0, 0, 1, 0.039f),
                 e);

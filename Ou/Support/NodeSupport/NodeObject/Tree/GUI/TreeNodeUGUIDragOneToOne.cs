@@ -18,6 +18,7 @@ namespace Ou.Support.NodeSupport
         private RectTransform tarTransform;
         private Vector3 mousePos;
         private Vector3 triCachePos;
+        private Vector3 initPos;
         private bool isDragging;
         protected internal override void Evaluator()
         {
@@ -48,20 +49,22 @@ namespace Ou.Support.NodeSupport
 
         protected internal override TreeNodeResult OnUpdate()
         {
-            mousePos = Input.mousePosition;
+            mousePos = triTransform.parent.InverseTransformPoint(Input.mousePosition);
             if (!isDragging)
             {
                 if (rectTrigger.Contains(mousePos) && Input.GetMouseButtonDown(0))
                 {
+                    Debug.Log(mousePos);
                     isDragging = true;
                 }
+
             }
             else
             {
-                triTransform.position = mousePos;
+                triTransform.localPosition = mousePos;
                 if (Input.GetMouseButtonUp(0))
                 {
-                    triTransform.position = triCachePos;
+                    triTransform.localPosition = triCachePos;
                     isDragging = false;
                     if (rectTarget.Contains(mousePos))
                     {
@@ -83,9 +86,9 @@ namespace Ou.Support.NodeSupport
             {
                 throw new InvalidOperationException("输入参数不当，请确认为UGUI元素");
             }
-            triCachePos = triTransform.position;
-            rectTrigger = new Rect(new Vector2(triTransform.position.x - triTransform.sizeDelta.x / 2, triTransform.position.y - triTransform.sizeDelta.y / 2), triTransform.sizeDelta);
-            rectTarget = new Rect(new Vector2(tarTransform.position.x - tarTransform.sizeDelta.x / 2, tarTransform.position.y - tarTransform.sizeDelta.y / 2), tarTransform.sizeDelta);
+            triCachePos = triTransform.localPosition;
+            rectTrigger = new Rect(new Vector2(triTransform.localPosition.x - triTransform.rect.size.x / 2, triTransform.localPosition.y - triTransform.rect.size.y / 2), triTransform.rect.size);
+            rectTarget = new Rect(new Vector2(tarTransform.localPosition.x - tarTransform.rect.size.x / 2, tarTransform.localPosition.y - tarTransform.rect.size.y / 2), tarTransform.rect.size);
             base.OnStart();
         }
 

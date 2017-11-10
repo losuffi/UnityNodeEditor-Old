@@ -105,7 +105,10 @@ namespace Ou.Support.NodeSupport
         }
         protected internal virtual void OnStart()
         {
-            
+            //for (int i = 0; i < variables.Count; i++)
+            //{
+            //    variables[i] = curGraph.ReadGlobalVariable(variables[i]);
+            //}
         }
         protected internal override void Evaluator()
         {
@@ -196,8 +199,10 @@ namespace Ou.Support.NodeSupport
 
         protected internal void DrawFillsLayout(GlobalVariable gv)
         {
-            if(gv.structerTypeRange==null)
-                return;
+            if (gv.structerTypeRange == null)
+            {
+                throw new NullReferenceException("gv 设置错误");
+            }
 
             gv.isSetVariable = GUILayout.Toggle(gv.isSetVariable, "全局变量？");
             if (gv.isSetVariable)
@@ -311,7 +316,6 @@ namespace Ou.Support.NodeSupport
         public object obj;
         public string identity;
         public string name;
-        [NonSerialized]
         public int FillIndex=0;
 
         public bool isSetVariable = false;

@@ -169,6 +169,16 @@ namespace Ou.Support.NodeSupport
             }
             return new GlobalVariable(typeof(string), string.Empty, "字符串", "none");
         }
+
+        public GlobalVariable ReadGlobalVariable(GlobalVariable gv)
+        {
+            if (CheckKey(gv.name))
+            {
+                var tar = globalVariables.Find(z => z.name.Equals(gv.name));
+                return tar;
+            }
+            return gv;
+        }
         public void UpdateGlobalVarible(string key,object obj)
         {
             if (CheckKey(key))

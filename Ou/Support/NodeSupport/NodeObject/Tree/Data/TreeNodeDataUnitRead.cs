@@ -15,7 +15,7 @@ namespace Ou.Support.NodeSupport
         protected internal override void Evaluator()
         {
             base.Evaluator();
-            UnitBase tar=variables[0].obj as UnitBase;
+            UnitBase tar = curGraph.ReadGlobalVariable(variables[0]).obj as UnitBase;
             GlobalVariable res = tar.ReadGlobalVariable(variables[1].name);
             if (curGraph.CheckKey(variables[2].name))
             {

@@ -46,7 +46,7 @@ namespace Ou.Support.UnitSupport
             if (AssetDatabase.GetAssetPath(curInfo.curUnit).Equals(string.Empty))
             {
                 string path = EditorUtility.SaveFilePanel("Save unit", Application.dataPath + "/Ou/Property",
-                    "DefaultUnit", "asset");
+                    curInfo.curUnit.Name, "asset");
                 path = Regex.Replace(path, @"^.+/Assets", "Assets");
                 AssetDatabase.CreateAsset(curInfo.curUnit, path);
                 UnitField.stateIdentity = "showField";
@@ -56,6 +56,20 @@ namespace Ou.Support.UnitSupport
                 EditorUtility.SetDirty(curInfo.curUnit);
                 AssetDatabase.SaveAssets();
             }
+        }
+
+        public static void SaveAs()
+        {
+            string path = EditorUtility.SaveFilePanel("Save unit", Application.dataPath + "/Ou/Property",
+                curInfo.curUnit.Name+"Duplicate", "asset");
+            path = Regex.Replace(path, @"^.+/Assets", "Assets");
+            AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(curInfo.curUnit), path);
+            AssetDatabase.Refresh();
+            var tar = AssetDatabase.LoadAssetAtPath<UnitBase>(path);
+            tar.Name = Regex.Match(path, @"/.+?\.", RegexOptions.RightToLeft).Value.TrimStart('/').TrimEnd('.');
+            Debug.Log(tar.Name);
+            curInfo.curUnit = tar;
+            UnitField.stateIdentity = "showField";
         }
 
         public static void Load()

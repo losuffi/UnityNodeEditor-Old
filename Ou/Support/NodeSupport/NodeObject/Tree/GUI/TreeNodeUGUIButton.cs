@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -52,6 +53,8 @@ namespace Ou.Support.NodeSupport
             flag = false;
             var btn = variables[0].obj as Button;
             tar = () => { flag = true; };
+            if(btn==null)
+                Selection.activeObject=this.curGraph;
             btn.onClick.AddListener(tar);
         }
 

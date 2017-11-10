@@ -1,109 +1,95 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+public class Linedata
+{
+    public List<Vector3> verts;
+    public List<int> triganles;
 
+    public Linedata()
+    {
+        triganles = new List<int>();
+        verts = new List<Vector3>();
+    }
+}
 public class DrawLine : MonoBehaviour
 {
-    Vector3 vstart = Vector3.zero;
-    Vector3 vend = Vector3.zero;
-    private bool isStart = false;
-    public Material LineMaterial;
-    public List<LinePoints> lines;
-    private List<Vector3> points;
+    private Linedata datas;
+    private CanvasRenderer canvasRenderer;
+    public Material material;
+    private Mesh mesh;
+    #region Calc
 
     void Awake()
     {
-        lines = new List<LinePoints>();
-    }
-    void Start()
-    {
-        points = new List<Vector3>();
-        LineMaterial = new Material(Shader.Find("Hid/LineShader"));
-        LineMaterial.color=Color.blue;
+        canvasRenderer = gameObject.AddComponent<CanvasRenderer>();
+        canvasRenderer.SetMaterial(material, null);
+        mesh = new Mesh();
+        datas = new Linedata();
     }
 
-    Vector3 UItoScrren(Vector3 pos)
-    {
-        return new Vector3(pos.x + Screen.width / 2, pos.y + Screen.height / 2, 0);
-    }
-    Vector3 Convert(Vector3 pos)
-    {
-        return new Vector3(pos.x/Screen.width,pos.y/Screen.height);
-    }
-
-    void OnPostRender()
-    {
-        StartCoroutine_Auto(Draw());
-    }
-    IEnumerator Draw()
-    {
-        for (int j = 0; j < lines.Count; j++)
-        {
-            GetPoints(lines[j], ref points);
-            GL.PushMatrix();
-            GL.LoadOrtho();
-            GL.Begin(GL.LINES);
-            LineMaterial.SetPass(0);
-            GL.Color(lines[j].lineColor);
-            for (int i = 0; i < points.Count; i++)
-            {
-                GL.Vertex3(i,i,0);
-                //GL.Vertex(Convert(points[i]));
-            }
-            GL.End();
-            GL.PopMatrix();
-            yield return 0;
-        }
-        yield return 0;
-    }
-
-
-    bool CheckInCanvas(Vector3 vstart)
-    {
-        if (vstart.x > 0 && vstart.x < Screen.width && vstart.y > 0 && vstart.y < Screen.height)
-            return true;
-        return false;
-    }
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            vstart = Input.mousePosition;
-            if(CheckInCanvas(vstart))
-                isStart = true;
-        }
-        if (Input.GetMouseButtonUp(0)&&isStart)
-        {
-            vend = Input.mousePosition;
-            if (CheckInCanvas(vend))
-            {
-                lines.Add(new LinePoints(vstart, vend, "test", Color.blue));
-            }
-            isStart = false;
-        }
+        mesh.Clear();
+        mesh.vertices = datas.verts.ToArray();
+        mesh.triangles = datas.triganles.ToArray();
+        canvasRenderer.SetMesh(mesh);
     }
-    void GetPoints(LinePoints line,ref List<Vector3> points)    
+    void ADDLine(Vector3 start, Vector3 end, float width, ref Linedata ld)
     {
-        points.Add(line.startPos);
-        var p1 = new Vector3(line.endPos.x, line.startPos.y, 0);
-        points.Add(p1);
-        points.Add(p1);
-        points.Add(line.endPos);
-        LineMaterial.color = line.lineColor;
+        float h = 0.5f * width;
+        float angle = getAngle(start, end);
+        int initIndex = ld.verts.Count;
+        ld.verts.Add(new Vector3(start.x + h * Mathf.Cos(angle / 180 * Mathf.PI),
+            start.y + h * Mathf.Sin(angle / 180 * Mathf.PI)));
+        ld.verts.Add(new Vector3(start.x - h * Mathf.Cos(angle / 180 * Mathf.PI),
+            start.y - h * Mathf.Sin(angle / 180 * Mathf.PI)));
+        ld.verts.Add(new Vector3(end.x + h * Mathf.Cos(angle / 180 * Mathf.PI),
+            end.y + h * Mathf.Sin(angle / 180 * Mathf.PI)));
+        ld.verts.Add(new Vector3(end.x - h * Mathf.Cos(angle / 180 * Mathf.PI),
+            end.y - h * Mathf.Sin(angle / 180 * Mathf.PI)));
+
+        ld.triganles.Add(initIndex);
+        ld.triganles.Add(initIndex + 1);
+        ld.triganles.Add(initIndex + 3);
+        ld.triganles.Add(initIndex);
+        ld.triganles.Add(initIndex + 2);
+        ld.triganles.Add(initIndex + 3);
+    }
+    float getAngle(Vector3 start, Vector3 end)
+    {
+        Vector3 a = end - start;
+        Vector3 z = Vector3.forward;
+        Vector3 b = Vector3.Cross(a, z);
+        return Vector3.Angle(new Vector3(1, 0, 0), b);
+    }
+
+    #endregion
+
+    public void DrawlinePoint(LinePoint lp)
+    {
+        Vector3 mid = new Vector3(lp.startPos.x, lp.endPos.y, 0);
+        ADDLine(lp.startPos, mid, lp.width, ref datas);
+        ADDLine(mid, lp.endPos, lp.width, ref datas);
+    }
+
+    public void Clean()
+    {
+        datas.triganles.Clear();
+        datas.verts.Clear();
     }
 }
-[System.Serializable]
-public class LinePoints
+public class LinePoint
 {
-    public Vector3 startPos;
-    public Vector3 endPos;
-    public string lineName;
-    public Color lineColor;
-    public LinePoints(Vector3 startPos, Vector3 endPos, string lineName, Color lineColor)
+    public Vector3 startPos, endPos;
+    public float width;
+    public string name;
+
+    public LinePoint(Vector3 startPos, Vector3 endPos, float width, string name)
     {
         this.startPos = startPos;
         this.endPos = endPos;
-        this.lineName = lineName;
-        this.lineColor = lineColor;
+        this.width = width;
+        this.name = name;
     }
 }

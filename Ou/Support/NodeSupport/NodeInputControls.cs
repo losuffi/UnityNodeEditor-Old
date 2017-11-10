@@ -27,11 +27,6 @@ namespace Ou.Support.NodeSupport {
             }
         }
 
-        static bool NodeTest(NodeInputInfo info)
-        {
-            return info.InputEvent.button == 0;
-        }
-
         [Handle(EventType.MouseDown)]
         private static void HandleWindowPineDown(NodeInputInfo inputInfo)
         {
@@ -100,6 +95,15 @@ namespace Ou.Support.NodeSupport {
             NodeEditorState state = inputInfo.EdState;
             state.FocusNode = state.CurGraph.CheckFocus(inputInfo.InputPos);
             state.FocusKnob = state.CurGraph.CheckFocusKnob(inputInfo.InputPos);
+            if (state.FocusKnob != null)
+            {
+                NodeEditor.Messagerect = new Rect(state.FocusKnob.rect.position,new Vector2(150,150));
+                NodeEditor.Message = state.FocusKnob.Name;
+            }
+            else
+            {
+                NodeEditor.Message = string.Empty;
+            }
         }
 
         [Handle(EventType.MouseDown, 110)]

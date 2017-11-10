@@ -31,15 +31,11 @@ namespace Ou.Support.NodeSupport
             {
                 output.texture2D = OuUIUtility.Tex(Color.black);
             }
-            if (output.Name.Contains("Forout"))
+            else if (output.Name.Contains("Forout"))
             {
                 output.texture2D = OuUIUtility.Tex(Color.blue);
             }
-            if (output.Name.Contains("Setout"))
-            {
-                output.texture2D = OuUIUtility.Tex(Color.green);
-            }
-            if (output.Name.Contains("Btns"))
+            else
             {
                 output.texture2D = OuUIUtility.Tex(Color.green);
             }

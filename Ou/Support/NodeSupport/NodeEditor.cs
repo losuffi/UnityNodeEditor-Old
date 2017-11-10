@@ -21,6 +21,8 @@ namespace Ou.Support.NodeSupport
         public static string Path = @"Assets/Ou/Property/Node/Default.asset";
         public static Node memoryNode;
         public static Stack<Node> selectNodes=new Stack<Node>();
+        public static string Message = string.Empty;
+        public static Rect Messagerect= new Rect(0, 0, 100, 20);
         public static void Clear()
         {
             curNodeGraph.Clear();
@@ -52,7 +54,8 @@ namespace Ou.Support.NodeSupport
                 }
                 else
                 {
-                    curNodeGraph.nodes[nodeCnt].Draw();
+					curNodeGraph.nodes[nodeCnt].Draw();
+
                 }
                 //try
                 //{
@@ -71,7 +74,14 @@ namespace Ou.Support.NodeSupport
                 CurNodeInputInfo = new NodeInputInfo("test", curNodeEditorState);
             }
             DrawLink();
+            DrawMessage();
             NodeInputSystem.DynamicInvoke(CurNodeInputInfo);
+        }
+
+        public static void DrawMessage()
+        {
+            Vector2 pos = CurNodeInputInfo.InputPos;
+            GUI.Label(Messagerect, Message);
         }
 
         public static void DrawBackground()
@@ -311,16 +321,23 @@ namespace Ou.Support.NodeSupport
         public static void CreateManager()
         {
             var obj = GameObject.Find("_nodeTreeManager");
-            var cam = GameObject.Find("DrawLine");
+            var cam = GameObject.Find("Canvas/drawline");
             if (obj == null)
             {
                 obj = new GameObject("_nodeTreeManager");
                 TreeNodeManager = obj.AddComponent<TreeNodeManager>();
                 TreeNodeGUIManager = obj.AddComponent<TreeNodeGUIManager>();
             }
-            if (cam.gameObject.GetComponent<DrawLine>() == null)
+            if (cam == null)
             {
-                var dl= cam.gameObject.AddComponent<DrawLine>();
+                cam = new GameObject("drawline", typeof(DrawLine));
+                var canvas = GameObject.Find("Canvas");
+                if (canvas == null)
+                {
+                    throw new InvalidCastException("目前，需要一个名字为Canvas的UGUI_Canvas");
+                }
+                cam.transform.SetParent(canvas.transform);
+                cam.transform.localPosition=Vector3.zero;
             }
         }
 
@@ -357,7 +374,8 @@ namespace Ou.Support.NodeSupport
             curNodeEditorState.DragStart=Vector2.zero;
             curNodeEditorState.PanAdjust=Vector2.zero;
             Selection.activeObject = nonuseful;
-            nonuseful.rect = new Rect(Vector2.zero, nonuseful.rect.size);
+			if(nonuseful!=null)
+            	nonuseful.rect = new Rect(Vector2.zero, nonuseful.rect.size);
         }
         #endregion
     }

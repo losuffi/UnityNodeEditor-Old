@@ -12,11 +12,15 @@ namespace Ou.Support.NodeSupport
         protected NodeGraph currentGraph;
         [SerializeField]
         protected List<NodeGraph> graphs=new List<NodeGraph>();
+        protected List<runTimeMac> macs=new List<runTimeMac>();
 
-        protected internal void RegisterGraph(NodeGraph graph)
+        protected internal virtual void RegisterGraph(NodeGraph graph)
         {
-            if(!graphs.Contains(graph))
-                graphs.Add(graph);
+        }
+
+        public int graphsCount
+        {
+            get { return graphs.Count; }
         }
     }
 }

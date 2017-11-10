@@ -9,13 +9,27 @@ namespace Ou.Support.NodeSupport
 {
     public class TreeNodeManager:NodeManager
     {
-        public float RunTimeCount;
         public static TreeNodeManager Instance;
         void Awake()
         {
             TriggerEditorUtility.Init();
             Instance = this;
         }
+
+        protected internal override void RegisterGraph(NodeGraph graph)
+        {
+            base.RegisterGraph(graph);
+            if (!graphs.Contains(graph))
+            {
+                graphs.Add(graph);
+                var obj = new GameObject("macs" + graphs.Count);
+                var mac = obj.AddComponent<TreeNrunTimeMac>();
+                mac.set(graph);
+                macs.Add(mac);
+                obj.transform.SetParent(this.transform);
+            }
+        }
+#if OldCode
 
         void Start()
         {
@@ -60,13 +74,6 @@ namespace Ou.Support.NodeSupport
                 }
             }
         }
-        //void Update()
-        //{
-        //    for (int i = 0; i < graphs.Count; i++)
-        //    {
-        //        TreeRun(graphs[i]);
-        //    }
-        //}
         void TreeRun(NodeGraph graph)
         {
             foreach (TreeNode node in graph.nodes)
@@ -85,5 +92,6 @@ namespace Ou.Support.NodeSupport
                 }
             }
         }
+#endif
     }
 }
