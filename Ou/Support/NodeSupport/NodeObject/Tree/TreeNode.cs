@@ -320,7 +320,7 @@ namespace Ou.Support.NodeSupport
 
         public bool isSetVariable = false;
         public PopupStructer structerTypeRange = null;
-        // [SerializeField] private string objMessage;
+        // [SerializeField] private string objMessag;
         [SerializeField] public string objMessage;
 
         public bool isFromGlobaldatas = false;

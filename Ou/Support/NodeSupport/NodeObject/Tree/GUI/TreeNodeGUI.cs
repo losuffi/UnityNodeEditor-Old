@@ -11,6 +11,7 @@ namespace Ou.Support.NodeSupport
     public class TreeNodeGUI:TreeNode
     {
         private const string nodeId = "UGUI";
+        protected Vector2 scrollVector2=Vector2.zero;
         protected GUISkin gUISkin;
         protected internal override void Evaluator()
         {

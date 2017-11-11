@@ -330,6 +330,7 @@ namespace Ou.Support.NodeSupport
             NodeTypes.FetchNode();
             NodeInputSystem.Fetch();
             ConnectionType.Fetch();
+            TreeNodeReflectionSystem.Fetch();
             NodeEditor.CreateManager();
             UnitEditor.CreateManager();
             IsInit = true;

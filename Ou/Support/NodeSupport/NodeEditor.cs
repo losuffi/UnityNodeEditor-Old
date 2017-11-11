@@ -54,8 +54,15 @@ namespace Ou.Support.NodeSupport
                 }
                 else
                 {
-					curNodeGraph.nodes[nodeCnt].Draw();
-
+                    try
+                    {
+                        curNodeGraph.nodes[nodeCnt].Draw();
+                    }
+                    catch (IndexOutOfRangeException e)
+                    {
+                        curNodeGraph.Remove(curNodeGraph.nodes[nodeCnt]);
+                        nodeCnt--;
+                    }
                 }
                 //try
                 //{
@@ -206,7 +213,26 @@ namespace Ou.Support.NodeSupport
             EditorUtility.SetDirty(curNodeEditorState);
             AssetDatabase.SaveAssets();
         }
-
+        public static void SaveAs()
+        {
+            string path = EditorUtility.SaveFilePanel("Save unit", Application.dataPath + "/Ou/Property/Node",
+                "Duplicate", "asset");
+            path = Regex.Replace(path, @"^.+/Assets", "Assets");
+            AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(curNodeEditorState), path);
+            AssetDatabase.Refresh();
+            NodeEditorState state = AssetDatabase.LoadAssetAtPath<NodeEditorState>(path);
+            state.Name = Regex.Match(path, @"/.+?\.", RegexOptions.RightToLeft).Value.TrimStart('/').TrimEnd('.');
+            TriggerEditorUtility.Init();
+            NodeGraph graph = null;
+            if (state != null)
+            {
+                graph = state.CurGraph;
+            }
+            CurNodeInputInfo = null;
+            curNodeGraph = graph;
+            curNodeEditorState = state;
+            CreateCache(path);
+        }
         public static void RemDataAsset()
         {
             var newPath = @"Assets/Ou/Property/Node/" + curNodeEditorState.Name + ".asset";
@@ -368,7 +394,6 @@ namespace Ou.Support.NodeSupport
             var nonuseful =
                 curNodeGraph.nodes.Find(res => res.GetType() != typeof(TreeInitNode) && res.isNoneUsefulNode);
             curNodeEditorState.GraphZoom = 1;
-            curNodeEditorState.PanOffset=Vector2.zero;
             curNodeEditorState.ZoomPos=Vector2.zero;
             curNodeEditorState.DragOffset=Vector2.zero;
             curNodeEditorState.DragStart=Vector2.zero;

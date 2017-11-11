@@ -46,8 +46,9 @@ namespace Ou.Support.NodeSupport
                 Debug.Log("node editor running is warning!");
                 TriggerEditorUtility.Init();
             }
+            var npos = (pos - NodeEditor.curNodeEditorState.PanOffset) / NodeEditor.curNodeEditorState.GraphZoom;
             node = node.Create(
-                (pos - NodeEditor.curNodeEditorState.PanOffset) / NodeEditor.curNodeEditorState.GraphZoom);
+                npos);
             node.Init();
             return node;
         }

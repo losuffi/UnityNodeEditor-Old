@@ -59,6 +59,10 @@ namespace Ou.Editor.Windows
 
         private void DrawViews(Event e)
         {
+            if (NodeEditor.curNodeEditorState != null)
+            {
+                Instance.titleContent = new GUIContent(NodeEditor.curNodeEditorState.Name);
+            }
             CanvasView.UpdateView(new Rect(position.width, position.height, position.width, position.height),
                 new Rect(0.201f, 0.05f, 0.799f, 0.951f),
                 e);
